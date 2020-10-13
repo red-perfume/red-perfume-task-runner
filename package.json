@@ -27,6 +27,7 @@
   "homepage": "https://github.com/TheJaredWilcurt/red-perfume#readme",
   "dependencies": {
     "css": "^3.0.0",
+    "css-what": "^3.4.2",
     "parse5": "^6.0.1"
   }
 }
