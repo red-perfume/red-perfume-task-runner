@@ -8,10 +8,10 @@ This library takes in any CSS and breaks it down to pure Atomic CSS. This is a p
 
 Outside of our industry jargon, "Atomizer" already existed as a word.
 
-> **Atomizer**
-> *NOUN*
+> **Atomizer** <sub><sup>(*NOUN*)</sup></sub>
 > 1. A device for emitting water, perfume, or other liquids as a fine spray.
-> - [Oxford English Dictionary](https://www.lexico.com/definition/atomizer)
+> 
+> \- [Oxford English Dictionary](https://www.lexico.com/definition/atomizer)
 
 Though actual atomizers themselves have no consistent size, design, color, or shape. So there is no iconic image that represents them.
 
