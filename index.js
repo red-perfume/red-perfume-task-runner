@@ -9,6 +9,7 @@ const styles = `
     padding: 8px;
 }
 .dog {
+    font-size: 12px;
     backgroud: #F00;
     padding: 8px;
 }`;
