@@ -10,7 +10,7 @@ const styles = `
 }
 .dog {
     font-size: 12px;
-    backgroud: #F00;
+    background: #F00;
     padding: 8px;
 }`;
 
@@ -44,14 +44,3 @@ const updatedMarkup = html(markup, processedStyles);
 console.log(processedStyles.classMap)
 console.log(processedStyles.output)
 console.log(updatedMarkup);
-
-
-/*
-Can loop over all elements and find all classes.
-Can replace a class with atomic classes.
-Can output HTML, though some whitespace changes occur from parse5.
-Probably unimportant since this is a build step, and minified html will either be passed or the result will be minified.
-
-Still need to parse CSS and actually atomize it.
-Also need to set up JS approach.
-*/
