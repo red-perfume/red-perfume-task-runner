@@ -1,90 +1,48 @@
+const css = require('./css.js');
+const html = require('./html.js');
 
-const parse5 = require('parse5');
+// To be atomized
+const styles = `
+.cow,
+.cat {
+    font-size: 12px;
+    padding: 8px;
+}
+.dog {
+    backgroud: #F00;
+    padding: 8px;
+}`;
 
-const originalString = `<!DOCTYPE html>
+// Original classes ot be replaced with atomized versions
+const markup = `<!DOCTYPE html>
 <html>
   <head>
-  <style>
-  .cool { background: #F00; }
-  .cow {
-    display: flex;
-    border: 1px solid #F00;
-    text-align: center;
-  }
-  </style>
+    <title>Test</title>
   </head>
   <body>
-    <p class="cool cow moo">Hi there!</p>
+    <p class="cool cow moo">
+      Hi there!
+    </p>
     <!--
-      <span class="dog">asdf</span>
+      <span class="dog">comments are skipped</span>
     -->
-    <h1 class="cool nice wow">asdf</h1>
+    <h1 class="cool cat nice wow">
+      Meow
+    </h1>
+    <h2 class="dog">
+      Woof
+    </h2>
   </body>
 </html>`;
 
-// String => Object
-const document = parse5.parse(originalString);
 
-// Parent nodes are circular and don't allow you to JSON.stringify
-function removeParentNodes (node) {
-  delete node.parentNode;
-  if (node.childNodes) {
-    node.childNodes.forEach(function (child) {
-      removeParentNodes(child);
-    });
-  }
-}
-removeParentNodes(document);
-console.log(JSON.stringify(document, null, 2));
 
-function removeEveryInstance (arr, value) {
-  let i = 0;
-  while (i < arr.length) {
-    if (arr[i] === value) {
-      arr.splice(i, 1);
-    } else {
-      ++i;
-    }
-  }
-  return arr;
-}
+const processedStyles = css(styles);
+const updatedMarkup = html(markup, processedStyles);
 
-function replaceCoolWithYES (node) {
-  if (node.attrs) {
-    node.attrs.forEach(function (attribute) {
-      if (attribute.name === 'class') {
-        let classes = attribute.value.split(' ');
-        if (classes.includes('cool')) {
-          classes = removeEveryInstance(classes, 'cool');
-          classes.push('y', 'e', 's');
-        }
-        attribute.value = classes.join(' ');
-      }
-    });
-  }
-  if (node.childNodes) {
-    node.childNodes.forEach(function (child) {
-      replaceCoolWithYES(child);
-    });
-  }
-}
-replaceCoolWithYES(document);
-
-// Object => string
-const html = parse5.serialize(document);
-
-function oneLiner (string) {
-  return string
-    .split('\n')
-    .map(function (line) {
-      return line.trim();
-    })
-    .join('');
-}
-
-console.log(html);
-console.log(oneLiner(html) === oneLiner(originalString));
-
+console.log(processedStyles.classMap)
+console.log(processedStyles.output)
+console.log(updatedMarkup);
 
 
 /*

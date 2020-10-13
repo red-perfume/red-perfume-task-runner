@@ -12,7 +12,7 @@ const cssParser = function (input) {
     parsed.stylesheet.rules.forEach(function (rule) {
       let parsedSelectors = selectorParse(rule.selectors.join(','));
       for (let i = 0; i < parsedSelectors.length; i++) {
-        parsedSelectors[0][i]['original'] = rule.selectors[i];
+        parsedSelectors[i][0]['original'] = rule.selectors[i];
       }
       rule.selectors = parsedSelectors;
     });
