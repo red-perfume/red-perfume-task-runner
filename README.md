@@ -90,7 +90,7 @@ This is already working as a proof of concept, however it needs a lot more work 
 
 This library takes in any CSS and breaks it down to pure Atomic CSS. This is a process called "CSS Atomization", and libraries that do this process are called "CSS Atomizers".
 
-Outside of our industry jargon, "Atomizer" already existed as a word.
+Outside of our industry jargon, "Atomizer" already exists as a word.
 
 > **Atomizer** <sub><sup>(*NOUN*)</sup></sub>
 > 1. A device for emitting water, perfume, or other liquids as a fine spray.
