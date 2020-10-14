@@ -90,10 +90,9 @@ Leave feedback as an issue or a response [on Twitter](https://twitter.com/TheJar
 **Star** and **Watch** this repo for updates.
 
 
+## Running locally to see the proof of concept or contribute
 
-## Running locally to see the proof of concept
-
-1. Install Node.js & npm
+1. Install [Node.js](https://nodejs.org) & npm
 1. Download or fork or clone the repo
 1. `npm install`
 1. `node index.js`
