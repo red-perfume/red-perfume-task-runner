@@ -1,5 +1,5 @@
-const css = require('./css.js');
-const html = require('./html.js');
+const css = require('./src/css.js');
+const html = require('./src/html.js');
 
 // To be atomized
 const styles = `
@@ -41,6 +41,6 @@ const markup = `<!DOCTYPE html>
 const processedStyles = css(styles);
 const updatedMarkup = html(markup, processedStyles);
 
-console.log(processedStyles.classMap)
-console.log(processedStyles.output)
+console.log(processedStyles.classMap);
+console.log(processedStyles.output);
 console.log(updatedMarkup);

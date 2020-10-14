@@ -4,11 +4,25 @@
   "description": "CSS Atomizer",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "lint": "eslint --config=.eslintrc.js index.js src tests manual-testing.js",
+    "fix": "eslint --fix --config=.eslintrc.js index.js src tests manual-testing.js"
   },
+  "dependencies": {
+    "css": "^3.0.0",
+    "css-what": "^4.0.0",
+    "parse5": "^6.0.1"
+  },
+  "devDependencies": {
+    "babel-eslint": "^10.1.0",
+    "eslint": "^7.11.0",
+    "eslint-config-tjw-base": "^1.0.0",
+    "eslint-config-tjw-jest": "^1.0.0",
+    "eslint-plugin-jsdoc": "^30.6.5"
+  },
+  "homepage": "https://github.com/red-perfume/red-perfume#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/TheJaredWilcurt/red-perfume.git"
+    "url": "git+https://github.com/red-perfume/red-perfume.git"
   },
   "keywords": [
     "css",
@@ -22,12 +36,6 @@
   "author": "The Jared Wilcurt",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/TheJaredWilcurt/red-perfume/issues"
-  },
-  "homepage": "https://github.com/TheJaredWilcurt/red-perfume#readme",
-  "dependencies": {
-    "css": "^3.0.0",
-    "css-what": "^3.4.2",
-    "parse5": "^6.0.1"
+    "url": "https://github.com/red-perfume/red-perfume/issues"
   }
 }
