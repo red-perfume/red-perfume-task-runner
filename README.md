@@ -3,8 +3,11 @@
 
 ## Experimental CSS Atomizer (WIP)
 
+This is a library for a build tool that helps to drastically reduce the total amount of CSS that is shipped for your project. Facebook adopted this atomized CSS approach and it [reduced their homepage CSS by **80%**](https://engineering.fb.com/web/facebook-redesign/).
 
-Takes in CSS and HTML like this:
+With `red-perfume` you write your CSS however you like (semantic class names, BEM, utility classes, whatever). Then reference them in your HTML normally.
+
+**Example:**
 
 ```css
 .cow,
@@ -40,7 +43,7 @@ Takes in CSS and HTML like this:
   </body>
 </html>
 ```
-Then atomizes the styling into atomic classes, and replaces the references to them:
+Then `red-perfume` atomizes the styling into atomic classes, and replaces the references to them:
 ```css
 .rp__font-size__--COLON12px {
   font-size: 12px;
@@ -75,7 +78,16 @@ Then atomizes the styling into atomic classes, and replaces the references to th
 </html>
 ```
 
-This is already working as a proof of concept, however it needs a lot more work to be usable in production. Look at the **issues** page to see what work is left to be done and how you can help!
+This output isn't as pretty to read, but it's a build step, *not* your source code, so it doesn't really matter. **Note:** Uglification of classnames is on the TODO list.
+
+This above example already works as a proof of concept with the current code. However, the library needs a lot more work to be usable in most projecta. Look at the **issues** page to see what work is left to be done and how you can help!
+
+
+## Feedback
+
+Leave feedback as an issue or a response [on Twitter](https://twitter.com/TheJaredWilcurt/status/1316205761047998471).
+
+**Star** and **Watch** this repo for updates.
 
 
 
