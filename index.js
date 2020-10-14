@@ -1,5 +1,5 @@
-const css = require('./css.js');
-const html = require('./html.js');
+const css = require('./src/css.js');
+const html = require('./src/html.js');
 
 // To be atomized
 const styles = `
