@@ -1,0 +1,16 @@
+.git/
+.github/
+coverage/
+node_modules/
+tests/
+.editorconfig
+.eslintrc.js
+.gitattributes
+.gitignore
+.npmignore
+CODE_OF_CONDUCT.md
+jest.config.js
+package-lock.json
+README.md
+manual-testing.js
+test.css
