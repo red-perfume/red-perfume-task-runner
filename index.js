@@ -41,6 +41,6 @@ const markup = `<!DOCTYPE html>
 const processedStyles = css(styles);
 const updatedMarkup = html(markup, processedStyles);
 
-console.log(processedStyles.classMap)
-console.log(processedStyles.output)
+console.log(processedStyles.classMap);
+console.log(processedStyles.output);
 console.log(updatedMarkup);

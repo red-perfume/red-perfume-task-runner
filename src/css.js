@@ -1,6 +1,6 @@
-const cssParser = require('./src/css-parser.js');
-const cssStringify = require('./src/css-stringify.js');
-const encodeClassName = require('./src/class-encoding.js');
+const cssParser = require('./css-parser.js');
+const cssStringify = require('./css-stringify.js');
+const encodeClassName = require('./class-encoding.js');
 
 const css = function (input) {
   const parsed = cssParser(input);
@@ -35,12 +35,12 @@ const css = function (input) {
 
   Object.keys(newRules).forEach(function (key) {
     output.stylesheet.rules.push(newRules[key]);
-  })
+  });
 
   return {
     classMap: classMap,
     output: cssStringify(output)
   };
-}
+};
 
 module.exports = css;
