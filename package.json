@@ -6,6 +6,11 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "dependencies": {
+    "css": "^3.0.0",
+    "css-what": "^4.0.0",
+    "parse5": "^6.0.1"
+  },
   "homepage": "https://github.com/red-perfume/red-perfume#readme",
   "repository": {
     "type": "git",
@@ -23,10 +28,6 @@
   "author": "The Jared Wilcurt",
   "license": "MIT",
   "bugs": {
-  "dependencies": {
-    "css": "^3.0.0",
-    "css-what": "^3.4.2",
-    "parse5": "^6.0.1"
     "url": "https://github.com/red-perfume/red-perfume/issues"
   }
 }
