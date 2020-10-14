@@ -3,7 +3,7 @@
 
 ## Experimental CSS Atomizer (WIP)
 
-This is a library for a build tool that helps to drastically reduce the total amount of CSS that is shipped for your project. Facebook adopted this atomized CSS approach and it [reduced their homepage CSS by **80%**](https://engineering.fb.com/web/facebook-redesign/).
+This is a library for a build tool that helps to drastically reduce the total amount of CSS that is shipped for your project. Facebook adopted this atomized CSS approach and it [reduced their homepage CSS by **80%**](https://engineering.fb.com/web/facebook-redesign/). Twitter also atomizes their CSS.
 
 With `red-perfume` you write your CSS however you like (semantic class names, BEM, utility classes, whatever). Then reference them in your HTML normally.
 
