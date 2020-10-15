@@ -1,5 +1,6 @@
 # Red Perfume
 
+![Build Status](https://github.com/red-perfume/red-perfume/workflows/Build%20Status/badge.svg?branch=main) [![Lint Coverage: 100%](https://img.shields.io/badge/Lint%20Coverage-100%25-brightgreen.svg?logo=eslint)](https://github.com/tjw-lint) [![Code of Conduct: No Ideologies](https://img.shields.io/badge/CoC-No%20Ideologies-blue)](/CODE_OF_CONDUCT.md) [![MIT Licensed](https://img.shields.io/badge/License-MIT-brightgreen)](/LICENSE)
 
 ## Experimental CSS Atomizer (WIP)
 
