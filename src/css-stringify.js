@@ -13,14 +13,9 @@ function cssStringify (input) {
     !input.stylesheet ||
     !input.stylesheet.rules
   ) {
-    input = undefined;
+    return '';
   }
-  const fallback = {
-    stylesheet: {
-      rules: []
-    }
-  };
-  input = input || fallback;
+
   const options = {};
   const styles = css.stringify(input, options);
 

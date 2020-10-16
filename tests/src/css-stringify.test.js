@@ -29,6 +29,20 @@ describe('CSS stringify', () => {
   });
 
   describe('Stringify AST', () => {
+    test('0 rules', () => {
+      const AST = {
+        type: 'stylesheet',
+        stylesheet: {
+          rules: [],
+          parsingErrors: []
+        }
+      };
+
+      expect(cssStringify(AST))
+        .toEqual('');
+    });
+
+
     test('1 rule', () => {
       const AST = {
         type: 'stylesheet',

@@ -9,7 +9,8 @@
     "fix": "eslint --fix --config=.eslintrc.js index.js src tests manual-testing.js",
     "debug": "node --inspect-brk manual-testing.js",
     "manual-test": "node manual-testing.js",
-    "test": "jest --runInBand --coverage"
+    "test": "jest --runInBand --coverage",
+    "validate": "npm run lint && npm t"
   },
   "ManifestComments": [
     "Pinned jest to 24.9.0. 25.1.0 is broken on Windows. Waiting for issue #9459 to be resolved."
