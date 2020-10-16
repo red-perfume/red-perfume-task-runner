@@ -7,6 +7,20 @@ const css = require('css');
  * @return {string}        Valid CSS (not minified)
  */
 function cssStringify (input) {
+  if (
+    typeof(input) !== 'object' ||
+    Array.isArray(input) ||
+    !input.stylesheet ||
+    !input.stylesheet.rules
+  ) {
+    input = undefined;
+  }
+  const fallback = {
+    stylesheet: {
+      rules: []
+    }
+  };
+  input = input || fallback;
   const options = {};
   const styles = css.stringify(input, options);
 
