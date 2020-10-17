@@ -44,6 +44,7 @@ jobs:
         SUMMARY="$(npm test -- --coverageReporters='text-summary' | tail -2 | head -1)"
         TOKENS=($SUMMARY)
         echo "::set-env name=COVERAGE::$(echo ${TOKENS[2]})"
+    - if: ${{ matrix.node-version == '14.x' }}
       name: Create the Badge
       uses: schneegans/dynamic-badges-action@v1.0.0
       with:
