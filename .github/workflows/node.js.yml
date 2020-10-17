@@ -40,14 +40,16 @@ jobs:
 
     # Only run the coverage once
     - if: ${{ matrix.node-version == '14.x' }}
-      run: npm run coverage
-    - if: ${{ matrix.node-version == '14.x' }}
+      run: |
+        SUMMARY="$(npm test -- --coverageReporters='text-summary' | tail -2 | head -1)"
+        TOKENS=($SUMMARY)
+        echo "::set-env name=COVERAGE::$(echo ${TOKENS[2]})"
       name: Create the Badge
       uses: schneegans/dynamic-badges-action@v1.0.0
       with:
         auth: ${{ secrets.GIST_SECRET }}
         gistID: 9c5d16fe3fa8f8ef414fe8b0eff17f7f
-        filename: coverage.json
+        filename: ${{ github.ref }}.json
         label: Coverage
-        message: ${{ env.JEST_COVERAGE }}
+        message: ${{ env.COVERAGE }}
         color: green
