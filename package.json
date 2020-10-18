@@ -10,7 +10,6 @@
     "debug": "node --inspect-brk manual-testing.js",
     "manual-test": "node manual-testing.js",
     "test": "jest --runInBand --coverage",
-    "coverage": "node ./.github/jest-coverage.js",
     "validate": "npm run lint && npm t"
   },
   "ManifestComments": [
