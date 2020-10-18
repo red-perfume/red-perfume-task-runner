@@ -13,8 +13,6 @@ jobs:
   build:
 
     runs-on: ${{ matrix.os }}
-    env:
-      JEST_COVERAGE: '0%'
 
     strategy:
       matrix:
@@ -41,16 +39,42 @@ jobs:
     # Only run the coverage once
     - if: ${{ matrix.node-version == '14.x' }}
       run: |
+        # var SUMMARY = [
+        #   '',
+        #   '=============================== Coverage summary ===============================',
+        #   'Statements   : 32.5% ( 39/120 )',
+        #   'Branches     : 38.89% ( 21/54 )',
+        #   'Functions    : 21.74% ( 5/23 )',
+        #   'Lines        : 31.93% ( 38/119 )',
+        #   '================================================================================',
+        #   ''
+        # ];
+        # SUMMARY = SUMMARY.split('\n')[5]; // 'Lines        : 31.93% ( 38/119 )'
+        # SUMMARY = SUMMARY.split(':')[1].split('(')[0].trim(); // '31.93%'
         SUMMARY="$(npm test -- --coverageReporters='text-summary' | tail -2 | head -1)"
         TOKENS=($SUMMARY)
+        # process.env.COVERAGE = '31.93%';
         echo "::set-env name=COVERAGE::$(echo ${TOKENS[2]})"
+
+        # var REF = 'refs/pull/27/merge.json';
+        REF=${{ github.ref }}
+        # console.log('github.ref: ' + REF);
+        echo "github.ref: $REF"
+        # var PATHS = REF.split('/');
+        IFS='/' read -ra PATHS <<< "$REF"
+        # var BRANCH_NAME = PATHS[1] + PATHS[2];
+        BRANCH_NAME="${PATHS[1]}${PATHS[2]}"
+        # console.log(BRANCH_NAME); // 'pull27'
+        echo $BRANCH_NAME
+        # process.env.BRANCH = 'pull27';
+        echo "::set-env name=BRANCH::$(echo ${BRANCH_NAME})"
     - if: ${{ matrix.node-version == '14.x' }}
       name: Create the Badge
       uses: schneegans/dynamic-badges-action@v1.0.0
       with:
         auth: ${{ secrets.GIST_SECRET }}
         gistID: 9c5d16fe3fa8f8ef414fe8b0eff17f7f
-        filename: ${{ github.ref }}.json
+        filename: ${{ env.BRANCH }}.json
         label: Coverage
         message: ${{ env.COVERAGE }}
         color: green
