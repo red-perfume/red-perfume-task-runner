@@ -1,6 +1,6 @@
 # Red Perfume
 
-![Build Status](https://github.com/red-perfume/red-perfume/workflows/Build%20Status/badge.svg?branch=main) [![Lint Coverage: 100%](https://img.shields.io/badge/Lint%20Coverage-100%25-brightgreen.svg?logo=eslint)](https://github.com/tjw-lint) [![Code of Conduct: No Ideologies](https://img.shields.io/badge/CoC-No%20Ideologies-blue)](/CODE_OF_CONDUCT.md) [![MIT Licensed](https://img.shields.io/badge/License-MIT-brightgreen)](/LICENSE)
+![Build Status](https://github.com/red-perfume/red-perfume/workflows/Build%20Status/badge.svg?branch=main) ![Coverage Badge](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/TheJaredWilcurt/9c5d16fe3fa8f8ef414fe8b0eff17f7f/raw/headsmain.json) [![Lint Coverage: 100%](https://img.shields.io/badge/Lint%20Coverage-100%25-brightgreen.svg?logo=eslint)](https://github.com/tjw-lint) [![Code of Conduct: No Ideologies](https://img.shields.io/badge/CoC-No%20Ideologies-blue)](/CODE_OF_CONDUCT.md) [![MIT Licensed](https://img.shields.io/badge/License-MIT-brightgreen)](/LICENSE)
 
 ## Experimental CSS Atomizer (WIP)
 
