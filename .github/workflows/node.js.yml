@@ -76,6 +76,7 @@ jobs:
         auth: ${{ secrets.GIST_SECRET }}
         gistID: 9c5d16fe3fa8f8ef414fe8b0eff17f7f
         filename: ${{ env.BRANCH }}.json
-        label: Coverage
+        label: Test Coverage
         message: ${{ env.COVERAGE }}
         color: green
+        namedLogo: jest
