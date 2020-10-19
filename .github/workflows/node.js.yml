@@ -64,10 +64,10 @@ jobs:
         # var PATHS = REF.split('/');
         IFS='/' read -ra PATHS <<< "$REF"
         # var BRANCH_NAME = PATHS[1] + PATHS[2];
-        BRANCH_NAME="${PATHS[1]}${PATHS[2]}"
-        # console.log(BRANCH_NAME); // 'pull27'
+        BRANCH_NAME="${PATHS[1]}_${PATHS[2]}"
+        # console.log(BRANCH_NAME); // 'pull_27'
         echo $BRANCH_NAME
-        # process.env.BRANCH = 'pull27';
+        # process.env.BRANCH = 'pull_27';
         echo "::set-env name=BRANCH::$(echo ${BRANCH_NAME})"
     - if: ${{ matrix.node-version == '14.x' }}
       name: Create the Badge
@@ -75,7 +75,7 @@ jobs:
       with:
         auth: ${{ secrets.GIST_SECRET }}
         gistID: 9c5d16fe3fa8f8ef414fe8b0eff17f7f
-        filename: ${{ env.BRANCH }}.json
+        filename: red-perfume__${{ env.BRANCH }}.json
         label: Test Coverage
         message: ${{ env.COVERAGE }}
         color: green
