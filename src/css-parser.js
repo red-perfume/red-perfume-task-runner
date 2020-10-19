@@ -1,12 +1,19 @@
 const css = require('css');
 const selectorParse = require('css-what').parse;
 
-const cssParser = function (input) {
-  const options = {
-    silent: false,
+const helpers = require('./helpers.js');
+
+const cssParser = function (input, options) {
+  if (!input) {
+    helpers.throwError('Invalid CSS input.');
+    return;
+  }
+
+  const parseOptions = {
+    silent: !options.verbose,
     source: undefined
   };
-  const parsed = css.parse(input, options);
+  const parsed = css.parse(input, parseOptions);
 
   if (parsed && parsed.stylesheet && parsed.stylesheet.rules) {
     parsed.stylesheet.rules.forEach(function (rule) {
