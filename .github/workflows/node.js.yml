@@ -68,7 +68,7 @@ jobs:
         # console.log(BRANCH_NAME); // 'pull_27'
         echo $BRANCH_NAME
         # process.env.BRANCH = 'pull_27';
-        BRANCH=$(echo ${TOKENS[2]})" >> $GITHUB_ENV
+        BRANCH=$(echo ${BRANCH_NAME})" >> $GITHUB_ENV
     - if: ${{ matrix.node-version == '14.x' }}
       name: Create the Badge
       uses: schneegans/dynamic-badges-action@v1.0.0
