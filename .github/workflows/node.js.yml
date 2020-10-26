@@ -55,7 +55,7 @@ jobs:
         SUMMARY="$(npm test -- --coverageReporters='text-summary' | tail -2 | head -1)"
         TOKENS=($SUMMARY)
         # process.env.COVERAGE = '31.93%';
-        echo "::set-env name=COVERAGE::$(echo ${TOKENS[2]})"
+        COVERAGE=$(echo ${TOKENS[2]})" >> $GITHUB_ENV
 
         # var REF = 'refs/pull/27/merge.json';
         REF=${{ github.ref }}
