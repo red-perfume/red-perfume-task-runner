@@ -55,7 +55,7 @@ jobs:
         SUMMARY="$(npm test -- --coverageReporters='text-summary' | tail -2 | head -1)"
         TOKENS=($SUMMARY)
         # process.env.COVERAGE = '31.93%';
-        echo COVERAGE=$(echo ${TOKENS[2]})" >> $GITHUB_ENV
+        echo "COVERAGE=$(echo ${TOKENS[2]})" >> $GITHUB_ENV
 
         # var REF = 'refs/pull/27/merge.json';
         REF=${{ github.ref }}
@@ -68,7 +68,7 @@ jobs:
         # console.log(BRANCH_NAME); // 'pull_27'
         echo $BRANCH_NAME
         # process.env.BRANCH = 'pull_27';
-        echo BRANCH=$(echo ${BRANCH_NAME})" >> $GITHUB_ENV
+        echo "BRANCH=$(echo ${BRANCH_NAME})" >> $GITHUB_ENV
     - if: ${{ matrix.node-version == '14.x' }}
       name: Create the Badge
       uses: schneegans/dynamic-badges-action@v1.0.0
