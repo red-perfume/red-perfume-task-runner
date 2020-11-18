@@ -4,6 +4,7 @@ const selectorParse = require('css-what').parse;
 const helpers = require('./helpers.js');
 
 const cssParser = function (input, options) {
+  options = options || {};
   if (!input) {
     helpers.throwError('Invalid CSS input.');
     return;
