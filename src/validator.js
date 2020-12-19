@@ -20,7 +20,7 @@ const validator = {
    *
    * @param  {object}  options        The options object containing verbose and customLogger setting
    * @param  {string}  key            The value to validate, a string of a filepath
-   * @param  {array}   extensions     An array of strings for file extensions
+   * @param  {Array}   extensions     An array of strings for file extensions
    * @param  {boolean} checkIfExists  true = check for fs.existsSync(key)
    * @return {string}                 Returns a string or undefined if string was invalid
    */

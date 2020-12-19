@@ -1,4 +1,4 @@
-const validator = require('@/validation.js').validateOptions;
+const validator = require('@/validator.js').validateOptions;
 const cssParser = require('@/css-parser.js');
 
 describe('CSS parser', () => {
@@ -10,14 +10,14 @@ describe('CSS parser', () => {
 
   describe('Bad inputs', () => {
     test('Empty', () => {
-      expect(cssParser(undefined, options))
+      expect(cssParser(options, undefined))
         .toEqual(undefined);
     });
   });
 
   describe('Parses string to AST', () => {
     test('One rule, one selector, one declaration', () => {
-      expect(cssParser('.test { color: #F00 }', options))
+      expect(cssParser(options, '.test { color: #F00 }'))
         .toEqual({
           type: 'stylesheet',
           stylesheet: {
