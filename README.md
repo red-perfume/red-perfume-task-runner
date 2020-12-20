@@ -172,8 +172,8 @@ redPerfume.atomize({
 * 🌕🌕🌕🌑 Tested
 * 🌕🌕🌕🌕 Released
 
-Key                   | Status  |
-:--                   | :--     |
+Key                   | Status  | Details
+:--                   | :--     | :--
 `verbose`             | 🌕🌕🌑🌑 |
 `customLogger`        | 🌕🌕🌑🌑 |
 `tasks`               | 🌕🌑🌑🌑 |
