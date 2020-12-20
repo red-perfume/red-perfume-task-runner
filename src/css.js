@@ -3,7 +3,7 @@ const cssStringify = require('./css-stringify.js');
 const cssUglifier = require('./css-uglifier.js');
 const encodeClassName = require('./class-encoding.js');
 
-const css = function (options, input) {
+const css = function (options, input, uglify) {
   const parsed = cssParser(options, input);
 
   const output = {
@@ -125,9 +125,7 @@ const css = function (options, input) {
     });
   });
 
-  let uglificationSetting = true;
-
-  if (uglificationSetting) {
+  if (uglify) {
     let index = 0;
     Object.keys(newRules).forEach(function (key) {
       let result = cssUglifier(index);
