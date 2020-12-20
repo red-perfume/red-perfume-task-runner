@@ -97,7 +97,7 @@ This above example already works as a proof of concept with the current code. Ho
 
 ## API (subject to change before v1.0.0)
 
-This is my first draft of the API.
+### API Example
 
 ```js
 const redPerfume = require('red-perfume');
@@ -162,6 +162,39 @@ redPerfume.atomize({
 });
 ```
 
+
+### API Implementation Status
+
+* 🌑🌑🌑🌑 Not started
+* 🌕🌑🌑🌑 Validation in place
+* 🌕🌗🌑🌑 In Progress
+* 🌕🌕🌑🌑 Implemented
+* 🌕🌕🌕🌑 Tested
+* 🌕🌕🌕🌕 Released
+
+Key                   | Status  |
+:--                   | :--     |
+`verbose`             | 🌕🌕🌑🌑 |
+`customLogger`        | 🌕🌕🌑🌑 |
+`tasks`               | 🌕🌑🌑🌑 |
+`task.uglify`         | 🌕🌗🌑🌑 | [In progress](https://github.com/red-perfume/red-perfume/pull/40)
+`task.styles`         | 🌕🌑🌑🌑 |
+`task.markup`         | 🌕🌑🌑🌑 |
+`task.scripts`        | 🌕🌑🌑🌑 |
+`task.styles.in`      | 🌕🌑🌑🌑 |
+`task.styles.out`     | 🌕🌑🌑🌑 |
+`task.styles.data`    | 🌕🌕🌑🌑 |
+`task.styles.result`  | 🌕🌕🌑🌑 |
+`task.markup.in`      | 🌕🌑🌑🌑 |
+`task.markup.out`     | 🌕🌑🌑🌑 |
+`task.markup.data`    | 🌕🌕🌑🌑 |
+`task.markup.result`  | 🌕🌕🌑🌑 |
+`task.scripts.out`    | 🌕🌕🌑🌑 |
+`task.scripts.result` | 🌕🌕🌑🌑 |
+
+
+### API Documentation
+
 Key             | Type     | Allowed          | Default         | Description
 :--             | :--      | :--              | :--             | :--
 `verbose`       | Boolean  | `true`, `false`  | `true`          | If true, consoles out helpful warnings and errors using `customLogger` or `console.error`.
@@ -206,7 +239,7 @@ Key       | Type     | Default     | Description
 1. Install [Node.js](https://nodejs.org) & npm
 1. Download or fork or clone the repo
 1. `npm install`
-1. `node index.js`
+1. `node manual-testing.js`
 
 
 ## Why is it called "Red Perfume"
