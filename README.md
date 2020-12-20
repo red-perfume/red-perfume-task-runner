@@ -174,23 +174,23 @@ redPerfume.atomize({
 
 Key                   | Status  | Details
 :--                   | :--     | :--
-`verbose`             | 🌕🌕🌑🌑 |
-`customLogger`        | 🌕🌕🌑🌑 |
-`tasks`               | 🌕🌑🌑🌑 |
-`task.uglify`         | 🌕🌗🌑🌑 | [In progress](https://github.com/red-perfume/red-perfume/pull/40)
-`task.styles`         | 🌕🌑🌑🌑 |
-`task.markup`         | 🌕🌑🌑🌑 |
-`task.scripts`        | 🌕🌑🌑🌑 |
-`task.styles.in`      | 🌕🌑🌑🌑 |
-`task.styles.out`     | 🌕🌑🌑🌑 |
-`task.styles.data`    | 🌕🌕🌑🌑 |
-`task.styles.result`  | 🌕🌕🌑🌑 |
-`task.markup.in`      | 🌕🌑🌑🌑 |
-`task.markup.out`     | 🌕🌑🌑🌑 |
-`task.markup.data`    | 🌕🌕🌑🌑 |
-`task.markup.result`  | 🌕🌕🌑🌑 |
-`task.scripts.out`    | 🌕🌕🌑🌑 |
-`task.scripts.result` | 🌕🌕🌑🌑 |
+`verbose`             | 🌕🌕🌑🌑 | Implemented
+`customLogger`        | 🌕🌕🌑🌑 | Implemented
+`tasks`               | 🌕🌑🌑🌑 | API Validated
+`task.uglify`         | 🌕🌗🌑🌑 | Base functionality implemented, advanced features planned
+`task.styles`         | 🌕🌑🌑🌑 | API Validated
+`task.markup`         | 🌕🌑🌑🌑 | API Validated
+`task.scripts`        | 🌕🌑🌑🌑 | API Validated
+`task.styles.in`      | 🌕🌑🌑🌑 | API Validated
+`task.styles.out`     | 🌕🌑🌑🌑 | API Validated
+`task.styles.data`    | 🌕🌕🌑🌑 | Implemented
+`task.styles.result`  | 🌕🌕🌑🌑 | Implemented
+`task.markup.in`      | 🌕🌑🌑🌑 | API Validated
+`task.markup.out`     | 🌕🌑🌑🌑 | API Validated
+`task.markup.data`    | 🌕🌕🌑🌑 | Implemented
+`task.markup.result`  | 🌕🌕🌑🌑 | Implemented
+`task.scripts.out`    | 🌕🌕🌑🌑 | Implemented
+`task.scripts.result` | 🌕🌕🌑🌑 | Implemented
 
 
 ### API Documentation

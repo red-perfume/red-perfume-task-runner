@@ -12,7 +12,7 @@ const redPerfume = {
       let processedStyles = {};
       if (task.styles) {
         if (task.styles.data) {
-          processedStyles = css(options, task.styles.data);
+          processedStyles = css(options, task.styles.data, task.uglify);
         }
         if (task.styles.result) {
           task.styles.result(processedStyles.output, undefined);
