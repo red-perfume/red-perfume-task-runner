@@ -1,12 +1,11 @@
 /**
- * Increment the Uglifier index. Skips known bad
- * numbers when base 36 encoded.
+ * Increment the Uglifier index if it contains a known bad
+ * value when base 36 encoded.
  *
  * @param  {number} uglifierIndex  Initial value
- * @return {number}                Incremented value
+ * @return {number}                Incremented or original value (if good)
  */
-function incrementUglifier (uglifierIndex) {
-  uglifierIndex = uglifierIndex + 1;
+function incrementIfContainsBad (uglifierIndex) {
   let knownBad = [
     'ad' // adblockers may hide these elements
   ];
@@ -37,10 +36,11 @@ function cssUglifier (uglifierIndex) {
     uglifierIndex = 0;
   }
   uglifierIndex = Math.round(uglifierIndex);
+  uglifierIndex = incrementIfContainsBad(uglifierIndex);
 
   return {
     name: '.rp__' + uglifierIndex.toString(36),
-    index: incrementUglifier(uglifierIndex)
+    index: uglifierIndex + 1
   };
 }
 
