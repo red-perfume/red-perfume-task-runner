@@ -95,7 +95,7 @@ const css = function (options, input, uglify) {
       /* An encoded class name look like:
          .rp__padding__--COLON10px
       */
-      let encodedClassName = encodeClassName(declaration);
+      let encodedClassName = encodeClassName(options, declaration);
 
       /* A selector looks like:
          [{
@@ -114,8 +114,6 @@ const css = function (options, input, uglify) {
         classMap[originalSelectorName] = classMap[originalSelectorName] || [];
         classMap[originalSelectorName].push(encodedClassName);
       });
-
-
 
       newRules[encodedClassName] = {
         type: 'rule',
