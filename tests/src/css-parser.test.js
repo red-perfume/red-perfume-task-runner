@@ -1,11 +1,11 @@
-const validator = require('@/validator.js').validateOptions;
+const validator = require('@/validator.js');
 const cssParser = require('@/css-parser.js');
 
 describe('CSS parser', () => {
   let options;
 
   beforeEach(() => {
-    options = validator({});
+    options = validator.validateOptions({ verbose: false });
   });
 
   describe('Bad inputs', () => {
