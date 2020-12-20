@@ -1,7 +1,7 @@
 const cssParser = require('./css-parser.js');
 const cssStringify = require('./css-stringify.js');
 const cssUglifier = require('./css-uglifier.js');
-const encodeClassName = require('./class-encoding.js');
+const encodeClassName = require('./css-class-encoding.js');
 
 const css = function (options, input, uglify) {
   const parsed = cssParser(options, input);

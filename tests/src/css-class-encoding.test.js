@@ -1,4 +1,4 @@
-const classEncoding = require('@/class-encoding.js');
+const classEncoding = require('@/css-class-encoding.js');
 
 describe('Class encoding', () => {
   let options;
