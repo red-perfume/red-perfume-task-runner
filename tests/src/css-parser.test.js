@@ -13,6 +13,16 @@ describe('CSS parser', () => {
       expect(cssParser(options, undefined))
         .toEqual(undefined);
     });
+
+    test('Empty string', () => {
+      expect(cssParser(options, ''))
+        .toEqual(undefined);
+    });
+
+    test('HTML', () => {
+      expect(cssParser(options, '<h1>Bad</h1>').stylesheet.parsingErrors.length)
+        .toEqual(1);
+    });
   });
 
   describe('Parses string to AST', () => {
