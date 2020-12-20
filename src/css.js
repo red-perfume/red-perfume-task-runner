@@ -3,8 +3,8 @@ const cssStringify = require('./css-stringify.js');
 const cssUglifier = require('./css-uglifier.js');
 const encodeClassName = require('./class-encoding.js');
 
-const css = function (input) {
-  const parsed = cssParser(input);
+const css = function (options, input) {
+  const parsed = cssParser(options, input);
 
   const output = {
     type: 'stylesheet',
