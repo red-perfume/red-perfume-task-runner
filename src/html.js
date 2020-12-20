@@ -28,7 +28,7 @@ function cleanDocument (document) {
 }
 cleanDocument({});
 
-const html = function (input, processedStyles) {
+const html = function (input, classMap) {
   // String => Object
   const document = parse5.parse(input);
 
@@ -80,8 +80,8 @@ const html = function (input, processedStyles) {
     }
   }
 
-  Object.keys(processedStyles.classMap).forEach(function (semanticClass) {
-    let atomizedClasses = processedStyles.classMap[semanticClass];
+  Object.keys(classMap).forEach(function (semanticClass) {
+    let atomizedClasses = classMap[semanticClass];
     atomizedClasses = atomizedClasses.map(function (atomic) {
       return atomic.replace('.', '');
     });

@@ -1,23 +1,23 @@
-const validator = require('@/validation.js').validateOptions;
+const validator = require('@/validator.js');
 const cssParser = require('@/css-parser.js');
 
 describe('CSS parser', () => {
   let options;
 
   beforeEach(() => {
-    options = validator({});
+    options = validator.validateOptions({ verbose: false });
   });
 
   describe('Bad inputs', () => {
     test('Empty', () => {
-      expect(cssParser(undefined, options))
+      expect(cssParser(options, undefined))
         .toEqual(undefined);
     });
   });
 
   describe('Parses string to AST', () => {
     test('One rule, one selector, one declaration', () => {
-      expect(cssParser('.test { color: #F00 }', options))
+      expect(cssParser(options, '.test { color: #F00 }'))
         .toEqual({
           type: 'stylesheet',
           stylesheet: {

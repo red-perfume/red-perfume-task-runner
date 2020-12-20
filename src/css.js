@@ -2,8 +2,8 @@ const cssParser = require('./css-parser.js');
 const cssStringify = require('./css-stringify.js');
 const encodeClassName = require('./class-encoding.js');
 
-const css = function (input) {
-  const parsed = cssParser(input);
+const css = function (options, input) {
+  const parsed = cssParser(options, input);
 
   const output = {
     type: 'stylesheet',
