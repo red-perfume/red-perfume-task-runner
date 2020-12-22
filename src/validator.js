@@ -6,6 +6,9 @@ const validator = {
       key = undefined;
       helpers.throwError(options, message);
     }
+    if (!key) {
+      key = undefined;
+    }
     return key;
   },
   validateBoolean: function (key, value) {

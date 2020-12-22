@@ -39,7 +39,6 @@ describe('HTML', () => {
       expect(options.customLogger)
         .toHaveBeenCalledWith('Error parsing HTML', errorResponse);
     });
-
   });
 
   describe('Process HTML', () => {
@@ -127,7 +126,6 @@ describe('HTML', () => {
       expect(options.customLogger)
         .not.toHaveBeenCalled();
     });
-
 
     test('No matching classes in map', () => {
       let classMap = {
