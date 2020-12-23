@@ -334,10 +334,7 @@ describe('Validator', () => {
         });
 
       expect(options.customLogger)
-        .toHaveBeenCalledWith('Your task does not contain styles, markup, or scripts', undefined);
-
-      expect(options.customLogger)
-        .toHaveBeenCalledWith('No valid tasks found.', undefined);
+        .not.toHaveBeenCalled();
     });
   });
 

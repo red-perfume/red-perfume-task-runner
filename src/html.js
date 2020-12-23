@@ -18,8 +18,12 @@ function cleanDocument (document) {
    */
   function removeParentNodes (node) {
     delete node.parentNode;
+    // Coverage ignored because this function is only used during development.
+    /* istanbul ignore next */
     if (node.childNodes) {
+      /* istanbul ignore next */
       node.childNodes.forEach(function (child) {
+        /* istanbul ignore next */
         removeParentNodes(child);
       });
     }
