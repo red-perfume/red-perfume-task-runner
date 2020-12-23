@@ -310,6 +310,37 @@ describe('Validator', () => {
     });
   });
 
+  describe('validateTasks', () => {
+    test('All tasks valid', () => {
+      let result = jest.fn();
+      options.tasks = [{
+        styles: {
+          data: '.a{margin:1px}',
+          result
+        }
+      }];
+
+      expect(validator.validateTasks(options))
+        .toEqual({
+          verbose: true,
+          customLogger: options.customLogger,
+          tasks: [{
+            uglify: false,
+            styles: {
+              data: '.a{margin:1px}',
+              result
+            }
+          }]
+        });
+
+      expect(options.customLogger)
+        .toHaveBeenCalledWith('Your task does not contain styles, markup, or scripts', undefined);
+
+      expect(options.customLogger)
+        .toHaveBeenCalledWith('No valid tasks found.', undefined);
+    });
+  });
+
   describe('validateTask', () => {
     test('Empty object', () => {
       expect(validator.validateTask(options, {}))
@@ -547,6 +578,73 @@ describe('Validator', () => {
         .not.toHaveBeenCalled();
 
       mockfs.restore();
+    });
+  });
+
+  describe('validateOptions', () => {
+    test('No options', () => {
+      let consoleError = console.error;
+      console.error = jest.fn();
+      let result = {
+        verbose: true,
+        tasks: []
+      };
+
+      expect(validator.validateOptions([]))
+        .toEqual(result);
+
+      expect(console.error)
+        .toHaveBeenCalledWith('_________________________\nRed-Perfume:\noptions.tasks Must be an array of objects. See documentation for details.', undefined);
+
+      console.error = consoleError;
+      consoleError = undefined;
+    });
+
+    test('No tasks', () => {
+      let result = {
+        verbose: true,
+        customLogger: options.customLogger,
+        tasks: []
+      };
+
+      expect(validator.validateOptions(options))
+        .toEqual(result);
+
+      expect(options.customLogger)
+        .toHaveBeenCalledWith('options.tasks Must be an array of objects. See documentation for details.', undefined);
+    });
+
+    test('Empty tasks array', () => {
+      options.tasks = [];
+      let result = {
+        verbose: true,
+        customLogger: options.customLogger,
+        tasks: []
+      };
+
+      expect(validator.validateOptions(options))
+        .toEqual(result);
+
+      expect(options.customLogger)
+        .toHaveBeenCalledWith('options.tasks Must be an array of objects. See documentation for details.', undefined);
+    });
+
+    test('Tasks array empty object', () => {
+      options.tasks = [{}];
+      let result = {
+        verbose: true,
+        customLogger: options.customLogger,
+        tasks: []
+      };
+
+      expect(validator.validateOptions(options))
+        .toEqual(result);
+
+      expect(options.customLogger)
+        .toHaveBeenCalledWith('Your task does not contain styles, markup, or scripts', undefined);
+
+      expect(options.customLogger)
+        .toHaveBeenCalledWith('No valid tasks found.', undefined);
     });
   });
 });
