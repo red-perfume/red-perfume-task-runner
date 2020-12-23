@@ -166,7 +166,7 @@ describe('Validator', () => {
 
         expect(validator.validateFile(options, 'C:\\test\\file.css', ['.css', '.scss', '.sass'], true))
           .toEqual('C:\\test\\file.css');
-        
+
         expect(options.customLogger)
           .not.toHaveBeenCalled();
       });
@@ -178,7 +178,7 @@ describe('Validator', () => {
 
         expect(validator.validateFile(options, 'C:\\test\\file.css', ['.css', '.scss', '.sass'], true))
           .toEqual(undefined);
-        
+
         expect(options.customLogger)
           .toHaveBeenCalledWith('Could not find file: C:\\test\\file.css', undefined);
       });
@@ -259,6 +259,51 @@ describe('Validator', () => {
     test('String', () => {
       expect(validator.validateString(options, 'Test', 'message'))
         .toEqual('Test');
+
+      expect(options.customLogger)
+        .not.toHaveBeenCalled();
+    });
+  });
+
+  describe('validateCustomLogger', () => {
+    let consoleError;
+
+    beforeEach(() => {
+      consoleError = console.error;
+      console.error = jest.fn();
+    });
+
+    afterEach(() => {
+      console.error = consoleError;
+      consoleError = undefined;
+    });
+
+    test('Falsy', () => {
+      options.customLogger = false;
+
+      expect(validator.validateCustomLogger(options).hasOwnProperty('customLogger'))
+        .toEqual(false);
+
+      expect(console.error)
+        .not.toHaveBeenCalled();
+    });
+
+    test('Non-function', () => {
+      options.customLogger = {};
+
+      expect(validator.validateCustomLogger(options).hasOwnProperty('customLogger'))
+        .toEqual(false);
+
+      expect(console.error)
+        .toHaveBeenCalledWith('_________________________\nRed-Perfume:\nOptional customLogger must be a type of function.', undefined);
+    });
+
+    test('Function', () => {
+      expect(validator.validateCustomLogger(options).hasOwnProperty('customLogger'))
+        .toEqual(true);
+
+      expect(console.error)
+        .not.toHaveBeenCalled();
 
       expect(options.customLogger)
         .not.toHaveBeenCalled();
