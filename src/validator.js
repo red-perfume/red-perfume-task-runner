@@ -28,8 +28,10 @@ const validator = {
    * @return {string}                 Returns a string or undefined if string was invalid
    */
   validateFile: function (options, key, extensions, checkIfExists) {
-    this.validateString(options, key, 'File paths must be a string');
-    if (key) {
+    key = this.validateString(options, key, 'File paths must be a string');
+    extensions = this.validateArray(options, extensions, 'extensions argument must be an array of strings containing file extensions for validation');
+
+    if (key && extensions && extensions.length) {
       let valid = extensions.some((extension) => {
         return key.endsWith(extension);
       });
@@ -40,19 +42,21 @@ const validator = {
         } else if (extensions.length === 2) {
           extensionsMessage = extensions[0] + ' or ' + extensions[1];
         } else if (extensions.length > 2) {
-          extensionsMessage = 'one of these: ' + extensions.slice(0, -1).join(',') + ' or ' + extensions.slice(-1);
+          extensionsMessage = extensions.slice(0, -1).join(', ') + ', or ' + extensions.slice(-1);
         }
         helpers.throwError(options, 'Expected filepath (' + key + ') to end in ' + extensionsMessage);
         key = undefined;
       }
     }
+
     if (key && checkIfExists) {
       let fs = require('fs');
       if (!fs.existsSync(key)) {
-        key = undefined;
         helpers.throwError(options, 'Could not find file: ' + key);
+        key = undefined;
       }
     }
+
     return key;
   },
   validateFunction: function (options, key, message) {

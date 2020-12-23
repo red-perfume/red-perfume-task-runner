@@ -1,3 +1,4 @@
+const mockfs = require('mock-fs');
 const validator = require('@/validator.js');
 
 describe('Validator', () => {
@@ -99,6 +100,88 @@ describe('Validator', () => {
 
       expect(options.customLogger)
         .not.toHaveBeenCalled();
+    });
+  });
+
+  describe('validateFile', () => {
+    describe('extensions', () => {
+      test('No extensions array', () => {
+        expect(validator.validateFile(options, 'C:\\test', undefined, false))
+          .toEqual('C:\\test');
+
+        expect(options.customLogger)
+          .not.toHaveBeenCalled();
+      });
+
+      test('No extension', () => {
+        expect(validator.validateFile(options, 'C:\\test', [], false))
+          .toEqual('C:\\test');
+
+        expect(options.customLogger)
+          .not.toHaveBeenCalled();
+      });
+
+      test('Does not contain extension', () => {
+        expect(validator.validateFile(options, 'C:\\test', ['.fail'], false))
+          .toEqual(undefined);
+
+        expect(options.customLogger)
+          .toHaveBeenCalledWith('Expected filepath (C:\\test) to end in .fail', undefined);
+      });
+
+      test('Does not contain either extension', () => {
+        expect(validator.validateFile(options, 'C:\\test', ['.fail', '.notfound'], false))
+          .toEqual(undefined);
+
+        expect(options.customLogger)
+          .toHaveBeenCalledWith('Expected filepath (C:\\test) to end in .fail or .notfound', undefined);
+      });
+
+      test('Does not contain any extensions', () => {
+        expect(validator.validateFile(options, 'C:\\test', ['.fail', '.notfound', '.bad'], false))
+          .toEqual(undefined);
+
+        expect(options.customLogger)
+          .toHaveBeenCalledWith('Expected filepath (C:\\test) to end in .fail, .notfound, or .bad', undefined);
+      });
+
+      test('Contains extension', () => {
+        expect(validator.validateFile(options, 'C:\\test.sass', ['.css', '.scss', '.sass'], false))
+          .toEqual('C:\\test.sass');
+
+        expect(options.customLogger)
+          .not.toHaveBeenCalled();
+      });
+    });
+
+    describe('checkIfExists', () => {
+      afterEach(() => {
+        mockfs.restore();
+      });
+
+      test('checkIfExists', () => {
+        mockfs({
+          'C:\\test\\file.css': '.text { background: #F00; }'
+        });
+
+        expect(validator.validateFile(options, 'C:\\test\\file.css', ['.css', '.scss', '.sass'], true))
+          .toEqual('C:\\test\\file.css');
+        
+        expect(options.customLogger)
+          .not.toHaveBeenCalled();
+      });
+
+      test('checkIfExists', () => {
+        mockfs({
+          'C:\\test\\file.txt': 'text'
+        });
+
+        expect(validator.validateFile(options, 'C:\\test\\file.css', ['.css', '.scss', '.sass'], true))
+          .toEqual(undefined);
+        
+        expect(options.customLogger)
+          .toHaveBeenCalledWith('Could not find file: C:\\test\\file.css', undefined);
+      });
     });
   });
 });
