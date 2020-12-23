@@ -211,4 +211,31 @@ describe('Validator', () => {
         .not.toHaveBeenCalled();
     });
   });
+
+  describe('validateObject', () => {
+    test('Falsy', () => {
+      expect(validator.validateObject(options, false, 'message'))
+        .toEqual(undefined);
+
+      expect(options.customLogger)
+        .not.toHaveBeenCalled();
+    });
+
+    test('Non-object', () => {
+      expect(validator.validateObject(options, 'key', 'message'))
+        .toEqual(undefined);
+
+      expect(options.customLogger)
+        .toHaveBeenCalledWith('message', undefined);
+    });
+
+    test('Object', () => {
+      const obj = {};
+      expect(validator.validateObject(options, obj, 'message'))
+        .toEqual(obj);
+
+      expect(options.customLogger)
+        .not.toHaveBeenCalled();
+    });
+  });
 });

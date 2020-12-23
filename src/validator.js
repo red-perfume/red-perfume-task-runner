@@ -80,6 +80,9 @@ const validator = {
       key = undefined;
       helpers.throwError(options, message);
     }
+    if (!key) {
+      key = undefined;
+    }
     return key;
   },
   validateString: function (options, key, message) {
