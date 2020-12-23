@@ -184,4 +184,31 @@ describe('Validator', () => {
       });
     });
   });
+
+  describe('validateFunction', () => {
+    test('Falsy', () => {
+      expect(validator.validateFunction(options, false, 'message'))
+        .toEqual(undefined);
+
+      expect(options.customLogger)
+        .not.toHaveBeenCalled();
+    });
+
+    test('Not a function', () => {
+      expect(validator.validateFunction(options, 'key', 'message'))
+        .toEqual(undefined);
+
+      expect(options.customLogger)
+        .toHaveBeenCalledWith('message', undefined);
+    });
+
+    test('Function', () => {
+      const fn = function () {};
+      expect(validator.validateFunction(options, fn, 'message'))
+        .toEqual(fn);
+
+      expect(options.customLogger)
+        .not.toHaveBeenCalled();
+    });
+  });
 });
