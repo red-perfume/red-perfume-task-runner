@@ -309,4 +309,103 @@ describe('Validator', () => {
         .not.toHaveBeenCalled();
     });
   });
+
+  describe('validateTask', () => {
+    test('Empty object', () => {
+      expect(validator.validateTask(options, {}))
+        .toEqual(undefined);
+
+      expect(options.customLogger)
+        .toHaveBeenCalledWith('Your task does not contain styles, markup, or scripts', undefined);
+    });
+
+    test('Uglify true', () => {
+      expect(validator.validateTask(options, { uglify: true }))
+        .toEqual(undefined);
+
+      expect(options.customLogger)
+        .toHaveBeenCalledWith('Your task does not contain styles, markup, or scripts', undefined);
+    });
+
+    test('Styles, data, no result', () => {
+      expect(validator.validateTask(options, { styles: { data: '.test { margin: 1px; }' } }))
+        .toEqual({
+          uglify: false,
+          styles: {
+            data: '.test { margin: 1px; }'
+          }
+        });
+
+      expect(options.customLogger)
+        .toHaveBeenCalledWith('Task did not contain a task.styles.out or a task.style.result', undefined);
+    });
+
+    test('Styles, data, result', () => {
+      let result = jest.fn();
+
+      expect(validator.validateTask(options, { styles: { data: '.test { margin: 1px; }', result } }))
+        .toEqual({
+          uglify: false,
+          styles: {
+            data: '.test { margin: 1px; }',
+            result
+          }
+        });
+
+      expect(options.customLogger)
+        .not.toHaveBeenCalled();
+    });
+
+    test('Styles, data, out', () => {
+      expect(validator.validateTask(options, { styles: { data: '.test { margin: 1px; }', out: 'C:\\file.css' } }))
+        .toEqual({
+          uglify: false,
+          styles: {
+            data: '.test { margin: 1px; }',
+            out: 'C:\\file.css'
+          }
+        });
+
+      expect(options.customLogger)
+        .not.toHaveBeenCalled();
+    });
+
+    test('Each section is empty object', () => {
+      expect(validator.validateTask(options, { styles: {}, markup: [], scripts: {} }))
+        .toEqual({ uglify: false });
+
+      expect(options.customLogger)
+        .toHaveBeenCalledWith('Task did not contain a task.styles.in or a task.style.data', undefined);
+
+      expect(options.customLogger)
+        .toHaveBeenCalledWith('Task did not contain a task.styles.out or a task.style.result', undefined);
+
+      expect(options.customLogger)
+        .toHaveBeenCalledWith('Task did not contain a task.scripts.out or a task.scripts.result', undefined);
+    });
+
+    test('Each section is valid', () => {
+      let task = {
+        styles: {
+          data: '.test { color: #F00; }',
+          result: jest.fn()
+        },
+        markup: [
+          {
+            data: '<div class="test">Hi</div>',
+            result: jest.fn()
+          }
+        ],
+        scripts: {
+          result: jest.fn()
+        }
+      };
+
+      expect(validator.validateTask(options, task))
+        .toEqual({ uglify: false, ...task });
+
+      expect(options.customLogger)
+        .not.toHaveBeenCalled();
+    });
+  });
 });
