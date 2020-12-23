@@ -159,7 +159,7 @@ describe('Validator', () => {
         mockfs.restore();
       });
 
-      test('checkIfExists', () => {
+      test('File exists', () => {
         mockfs({
           'C:\\test\\file.css': '.text { background: #F00; }'
         });
@@ -171,7 +171,7 @@ describe('Validator', () => {
           .not.toHaveBeenCalled();
       });
 
-      test('checkIfExists', () => {
+      test('File does not exist', () => {
         mockfs({
           'C:\\test\\file.txt': 'text'
         });
