@@ -517,4 +517,36 @@ describe('Validator', () => {
         .not.toHaveBeenCalled();
     });
   });
+
+  describe('validateTaskScripts', () => {
+    test('Empty', () => {
+      expect(validator.validateTaskScripts(options, undefined))
+        .toEqual(undefined);
+
+      expect(options.customLogger)
+        .toHaveBeenCalledWith('Task did not contain a task.scripts.out or a task.scripts.result', undefined);
+    });
+
+    test('Empty object', () => {
+      expect(validator.validateTaskScripts(options, {}))
+        .toEqual(undefined);
+
+      expect(options.customLogger)
+        .toHaveBeenCalledWith('Task did not contain a task.scripts.out or a task.scripts.result', undefined);
+    });
+
+    test('Out', () => {
+      mockfs({
+        'C:\\file.json': 'Text'
+      });
+
+      expect(validator.validateTaskScripts(options, { out: 'C:\\file.json' }))
+        .toEqual({ out: 'C:\\file.json' });
+
+      expect(options.customLogger)
+        .not.toHaveBeenCalled();
+
+      mockfs.restore();
+    });
+  });
 });

@@ -257,6 +257,7 @@ const validator = {
     return data;
   },
   validateTaskScripts: function (options, scripts) {
+    scripts = scripts || {};
     scripts.out = this.validateString(options, scripts.out, 'Optional task.scripts.out must be a string or undefined.');
     scripts.result = this.validateFunction(options, scripts.result, 'Optional task.scripts.result must be a function or undefined.');
     if (!scripts.out) {
