@@ -498,4 +498,23 @@ describe('Validator', () => {
       mockfs.restore();
     });
   });
+
+  describe('validateTaskMarkupData', () => {
+    test('Invalid HTML', () => {
+      expect(validator.validateTaskMarkupData(options, 'Hi'))
+        .toEqual(undefined);
+
+      expect(options.customLogger)
+        .toHaveBeenCalledWith('Optional task.markup.data must be a string that begins with \'<\' or undefined.', undefined);
+    });
+
+    test('Valid HTML', () => {
+      let data = '<div class="test">Hi</div>';
+      expect(validator.validateTaskMarkupData(options, data))
+        .toEqual(data);
+
+      expect(options.customLogger)
+        .not.toHaveBeenCalled();
+    });
+  });
 });
