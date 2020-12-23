@@ -41,7 +41,7 @@ const validator = {
           extensionsMessage = extensions[0];
         } else if (extensions.length === 2) {
           extensionsMessage = extensions[0] + ' or ' + extensions[1];
-        } else if (extensions.length > 2) {
+        } else {
           extensionsMessage = extensions.slice(0, -1).join(', ') + ', or ' + extensions.slice(-1);
         }
         helpers.throwError(options, 'Expected filepath (' + key + ') to end in ' + extensionsMessage);

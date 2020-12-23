@@ -370,6 +370,20 @@ describe('Validator', () => {
         .not.toHaveBeenCalled();
     });
 
+    test('Markup, data, result', () => {
+      let data = '<h1 class="test">Hi</h1>';
+      let result = jest.fn();
+
+      expect(validator.validateTask(options, { markup: [{ data, result }] }))
+        .toEqual({
+          uglify: false,
+          markup: [{ data, result }]
+        });
+
+      expect(options.customLogger)
+        .not.toHaveBeenCalled();
+    });
+
     test('Each section is empty object', () => {
       expect(validator.validateTask(options, { styles: {}, markup: [], scripts: {} }))
         .toEqual({ uglify: false });
@@ -406,6 +420,82 @@ describe('Validator', () => {
 
       expect(options.customLogger)
         .not.toHaveBeenCalled();
+    });
+  });
+
+  describe('validateTaskStyles', () => {
+    test('Empty object', () => {
+      expect(validator.validateTaskStyles(options, {}))
+        .toEqual(undefined);
+
+      expect(options.customLogger)
+        .toHaveBeenCalledWith('Task did not contain a task.styles.in or a task.style.data', undefined);
+
+      expect(options.customLogger)
+        .toHaveBeenCalledWith('Task did not contain a task.styles.out or a task.style.result', undefined);
+    });
+
+    test('In and out', () => {
+      mockfs({
+        'C:\\app.css': '.app { background: #F00; }',
+        'C:\\vendor.css': '.vendor { margin: 10px; }'
+      });
+
+      let styles = {
+        in: [
+          'C:\\app.css',
+          'C:\\vendor.css'
+        ],
+        out: 'C:\\out.css'
+      };
+
+      expect(validator.validateTaskStyles(options, styles))
+        .toEqual(styles);
+
+      expect(options.customLogger)
+        .not.toHaveBeenCalled();
+
+      mockfs.restore();
+    });
+  });
+
+  describe('validateTaskMarkup', () => {
+    test('Empty array', () => {
+      expect(validator.validateTaskMarkup(options, []))
+        .toEqual(undefined);
+
+      expect(options.customLogger)
+        .not.toHaveBeenCalled();
+    });
+
+    test('Empty object', () => {
+      expect(validator.validateTaskMarkup(options, [{}]))
+        .toEqual(undefined);
+
+      expect(options.customLogger)
+        .toHaveBeenCalledWith('Task did not contain a task.markup.in or a task.markup.data', undefined);
+
+      expect(options.customLogger)
+        .toHaveBeenCalledWith('Task did not contain a task.markup.out or a task.markup.result', undefined);
+    });
+
+    test('In out', () => {
+      mockfs({
+        'C:\\in.html': '<h1 class="test">Hi</h1>'
+      });
+
+      let markup = [{
+        in: 'C:\\in.html',
+        out: 'C:\\out.html'
+      }];
+
+      expect(validator.validateTaskMarkup(options, markup))
+        .toEqual(markup);
+
+      expect(options.customLogger)
+        .not.toHaveBeenCalled();
+
+      mockfs.restore();
     });
   });
 });
