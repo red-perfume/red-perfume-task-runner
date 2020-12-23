@@ -238,4 +238,30 @@ describe('Validator', () => {
         .not.toHaveBeenCalled();
     });
   });
+
+  describe('validateString', () => {
+    test('Falsy', () => {
+      expect(validator.validateString(options, false, 'message'))
+        .toEqual(undefined);
+
+      expect(options.customLogger)
+        .not.toHaveBeenCalled();
+    });
+
+    test('Non-string', () => {
+      expect(validator.validateString(options, {}, 'message'))
+        .toEqual(undefined);
+
+      expect(options.customLogger)
+        .toHaveBeenCalledWith('message', undefined);
+    });
+
+    test('String', () => {
+      expect(validator.validateString(options, 'Test', 'message'))
+        .toEqual('Test');
+
+      expect(options.customLogger)
+        .not.toHaveBeenCalled();
+    });
+  });
 });
