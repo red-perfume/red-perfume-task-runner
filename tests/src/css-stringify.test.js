@@ -42,7 +42,6 @@ describe('CSS stringify', () => {
         .toEqual('');
     });
 
-
     test('1 rule', () => {
       const AST = {
         type: 'stylesheet',

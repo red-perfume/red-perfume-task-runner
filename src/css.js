@@ -1,10 +1,26 @@
 const cssParser = require('./css-parser.js');
 const cssStringify = require('./css-stringify.js');
 const cssUglifier = require('./css-uglifier.js');
-const encodeClassName = require('./class-encoding.js');
+const encodeClassName = require('./css-class-encoding.js');
+const helpers = require('./helpers.js');
 
 const css = function (options, input, uglify) {
-  const parsed = cssParser(options, input);
+  options = options || {};
+  input = input || '';
+  uglify = uglify || false;
+  let parsed;
+  try {
+    parsed = cssParser(options, input);
+  } catch (err) {
+    helpers.throwError(options, 'Error parsing CSS', err);
+  }
+  if (!parsed) {
+    helpers.throwError(options, 'Error parsing CSS', input);
+    return {
+      classMap: {},
+      output: ''
+    };
+  }
 
   const output = {
     type: 'stylesheet',
@@ -95,7 +111,7 @@ const css = function (options, input, uglify) {
       /* An encoded class name look like:
          .rp__padding__--COLON10px
       */
-      let encodedClassName = encodeClassName(declaration);
+      let encodedClassName = encodeClassName(options, declaration);
 
       /* A selector looks like:
          [{
@@ -114,8 +130,6 @@ const css = function (options, input, uglify) {
         classMap[originalSelectorName] = classMap[originalSelectorName] || [];
         classMap[originalSelectorName].push(encodedClassName);
       });
-
-
 
       newRules[encodedClassName] = {
         type: 'rule',

@@ -1,17 +1,38 @@
-const validator = require('@/validator.js');
 const cssParser = require('@/css-parser.js');
 
 describe('CSS parser', () => {
   let options;
 
   beforeEach(() => {
-    options = validator.validateOptions({ verbose: false });
+    options = {
+      verbose: false,
+      customLogger: jest.fn()
+    };
   });
 
   describe('Bad inputs', () => {
     test('Empty', () => {
       expect(cssParser(options, undefined))
         .toEqual(undefined);
+
+      expect(options.customLogger)
+        .not.toHaveBeenCalled();
+    });
+
+    test('Empty string', () => {
+      expect(cssParser(options, ''))
+        .toEqual(undefined);
+
+      expect(options.customLogger)
+        .not.toHaveBeenCalled();
+    });
+
+    test('HTML', () => {
+      expect(cssParser(options, '<h1>Bad</h1>').stylesheet.parsingErrors.length)
+        .toEqual(1);
+
+      expect(options.customLogger)
+        .not.toHaveBeenCalled();
     });
   });
 
@@ -72,6 +93,9 @@ describe('CSS parser', () => {
             parsingErrors: []
           }
         });
+
+      expect(options.customLogger)
+        .not.toHaveBeenCalled();
     });
   });
 });

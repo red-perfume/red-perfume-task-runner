@@ -6,6 +6,9 @@ const validator = {
       key = undefined;
       helpers.throwError(options, message);
     }
+    if (!key) {
+      key = undefined;
+    }
     return key;
   },
   validateBoolean: function (key, value) {
@@ -25,8 +28,10 @@ const validator = {
    * @return {string}                 Returns a string or undefined if string was invalid
    */
   validateFile: function (options, key, extensions, checkIfExists) {
-    this.validateString(options, key, 'File paths must be a string');
-    if (key) {
+    key = this.validateString(options, key, 'File paths must be a string');
+    extensions = this.validateArray(options, extensions, 'extensions argument must be an array of strings containing file extensions for validation');
+
+    if (key && extensions && extensions.length) {
       let valid = extensions.some((extension) => {
         return key.endsWith(extension);
       });
@@ -36,26 +41,31 @@ const validator = {
           extensionsMessage = extensions[0];
         } else if (extensions.length === 2) {
           extensionsMessage = extensions[0] + ' or ' + extensions[1];
-        } else if (extensions.length > 2) {
-          extensionsMessage = 'one of these: ' + extensions.slice(0, -1).join(',') + ' or ' + extensions.slice(-1);
+        } else {
+          extensionsMessage = extensions.slice(0, -1).join(', ') + ', or ' + extensions.slice(-1);
         }
         helpers.throwError(options, 'Expected filepath (' + key + ') to end in ' + extensionsMessage);
         key = undefined;
       }
     }
+
     if (key && checkIfExists) {
       let fs = require('fs');
       if (!fs.existsSync(key)) {
-        key = undefined;
         helpers.throwError(options, 'Could not find file: ' + key);
+        key = undefined;
       }
     }
+
     return key;
   },
   validateFunction: function (options, key, message) {
     if (key && typeof(key) !== 'function') {
       key = undefined;
       helpers.throwError(options, message);
+    }
+    if (!key) {
+      key = undefined;
     }
     return key;
   },
@@ -70,12 +80,18 @@ const validator = {
       key = undefined;
       helpers.throwError(options, message);
     }
+    if (!key) {
+      key = undefined;
+    }
     return key;
   },
   validateString: function (options, key, message) {
     if (key === '' || (key && typeof(key) !== 'string')) {
       key = undefined;
       helpers.throwError(options, message);
+    }
+    if (!key) {
+      key = undefined;
     }
     return key;
   },
@@ -241,6 +257,7 @@ const validator = {
     return data;
   },
   validateTaskScripts: function (options, scripts) {
+    scripts = scripts || {};
     scripts.out = this.validateString(options, scripts.out, 'Optional task.scripts.out must be a string or undefined.');
     scripts.result = this.validateFunction(options, scripts.result, 'Optional task.scripts.result must be a function or undefined.');
     if (!scripts.out) {

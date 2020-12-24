@@ -22,7 +22,7 @@ const redPerfume = {
         task.markup.forEach((item) => {
           let processedMarkup;
           if (item.data) {
-            processedMarkup = html(item.data, processedStyles.classMap);
+            processedMarkup = html(options, item.data, processedStyles.classMap);
           }
           if (item.result) {
             item.result(processedMarkup, undefined);

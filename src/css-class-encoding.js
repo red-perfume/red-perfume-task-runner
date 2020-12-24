@@ -1,3 +1,5 @@
+const helpers = require('./helpers.js');
+
 // Initially I thought this too verbose, but there is literally no limit on class lengths other than the machine's memory/CPU.
 // Firefox actually let me create and reference a classname with 100,000,000 characters. It was slow, but it worked fine.
 const propertyValueEncodingMap = {
@@ -68,10 +70,33 @@ const prefix = 'rp__';
 /**
  * Encodes propter/value pairs as valid, decodable classnames.
  *
+ * @param  {object} options      User's passed in options, containing verbose/customLoger
  * @param  {object} declaration  Contains the Property and Value strings
  * @return {string}              A classname starting with . and a prefix
  */
-function encodeClassName (declaration) {
+function encodeClassName (options, declaration) {
+  if (!declaration || declaration.property === undefined || declaration.value === undefined) {
+    let message = [
+      'A rule declaration was missing details,',
+      'such as property or value.',
+      'This may result in a classname like',
+      '.rp__width__--COLONundefined,',
+      '.rp__undefined__--COLON100px,',
+      'or',
+      '.rp__undefined__--COLONundefined.',
+      'If there are multiples of these,',
+      'they may replace the previous.',
+      'Please report this error to',
+      'github.com/red-perfume/red-perfume/issues',
+      'because I have no idea how to',
+      'reproduce it with actual CSS input.',
+      'This was just meant for a safety check.',
+      'Honestly, if you actually got this',
+      'error, I\'m kind of impressed.'
+    ].join(' ');
+    helpers.throwError(options, message);
+  }
+  declaration = declaration || {};
   let newName = declaration.property + ':' + declaration.value;
   let nameArray = newName.split('');
   let encoded = nameArray.map(function (character) {
@@ -84,4 +109,6 @@ function encodeClassName (declaration) {
   return '.' + prefix + encoded.join('');
 }
 
+// This is exported out too for a unit test
+encodeClassName.propertyValueEncodingMap = propertyValueEncodingMap;
 module.exports = encodeClassName;
