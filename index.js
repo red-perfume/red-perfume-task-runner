@@ -11,17 +11,17 @@ const redPerfume = {
   atomize: function (options) {
     options = this.validate(options);
     options.tasks.forEach((task) => {
-      let styleData = '';
       let processedStyles = {};
-      let errors = [];
       if (task.styles) {
+        let styleData = '';
+        let styleErrors = [];
         if (task.styles.in) {
           task.styles.in.forEach((file) => {
             try {
               styleData = styleData + String(fs.readFileSync(file));
             } catch (err) {
               helpers.throwError('Error reading style file: ' + file, err);
-              errors.push(err);
+              styleErrors.push(err);
             }
           });
         }
@@ -39,28 +39,28 @@ const redPerfume = {
             fs.writeFileSync(task.styles.out, processedStyles.output);
           } catch (err) {
             helpers.throwError('Error writing CSS file: ' + task.styles.out, err);
-            errors.push(err);
+            styleErrors.push(err);
           }
         }
         if (task.styles.result) {
-          if (!errors.length) {
-            errors = undefined;
+          if (!styleErrors.length) {
+            styleErrors = undefined;
           }
-          task.styles.result(processedStyles.output, errors);
+          task.styles.result(processedStyles.output, styleErrors);
         }
       }
       if (task.markup) {
         task.markup.forEach((item) => {
           let processedMarkup;
           let markupData = '';
-          let errors = [];
+          let markupErrors = [];
 
           if (item.in) {
             try {
               markupData = markupData + String(fs.readFileSync(item.in));
             } catch (err) {
               helpers.throwError('Error reading markup file: ' + item.in, err);
-              errors.push(err);
+              markupErrors.push(err);
             }
           }
           if (item.data) {
@@ -69,8 +69,19 @@ const redPerfume = {
           if (item.in || item.data) {
             processedMarkup = html(options, markupData, processedStyles.classMap);
           }
+          if (item.out) {
+            try {
+              fs.writeFileSync(item.out, processedMarkup);
+            } catch (err) {
+              helpers.throwError('Error writing markup file: ' + item.out, err);
+              markupErrors.push(err);
+            }
+          }
           if (item.result) {
-            item.result(processedMarkup, undefined);
+            if (!markupErrors.length) {
+              markupErrors = undefined;
+            }
+            item.result(processedMarkup, markupErrors);
           }
         });
       }
@@ -78,7 +89,7 @@ const redPerfume = {
         let scriptErrors;
         if (task.scripts.out) {
           try {
-            fs.writeFileSync(task.scripts.out, processedStyles.classMap);
+            fs.writeFileSync(task.scripts.out, JSON.stringify(processedStyles.classMap, null, 2));
           } catch (scriptErr) {
             helpers.throwError('Error writing script file: ' + task.scripts.out, scriptErr);
             scriptErrors = scriptErr;
