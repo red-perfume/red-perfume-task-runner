@@ -1,5 +1,5 @@
-// const mockfs = require('mock-fs');
-// const fs = require('fs');
+const mockfs = require('mock-fs');
+const fs = require('fs');
 const redPerfume = require('../index.js');
 
 describe('Red Perfume', () => {
@@ -10,6 +10,10 @@ describe('Red Perfume', () => {
       verbose: true,
       customLogger: jest.fn()
     };
+  });
+
+  afterEach(() => {
+    mockfs.restore();
   });
 
   describe('Atomize', () => {
@@ -27,7 +31,6 @@ describe('Red Perfume', () => {
       consoleError = undefined;
     });
 
-    /*
     test('Valid options with tasks using file system', async () => {
       mockfs({
         'C:\\app.css': '.a{margin:0px;}',
@@ -38,35 +41,41 @@ describe('Red Perfume', () => {
 
       options.tasks = [{
         uglify: true,
-        style: {
+        styles: {
           in: [
             'C:\\app.css',
             'C:\\vendor.css'
           ],
           out: 'C:\\out.css',
           result: function () {
-            try {
-              expect(fs.readFileSync('C:\\out.css'))
-                .toEqual('asdf');
-
-              done();
-            } catch (err) {
-              done(err);
-            }
+            expect(String(fs.readFileSync('C:\\out.css')))
+              .toEqual('.rp__0 {\n  margin: 0px;\n}\n.rp__1 {\n  padding: 0px;\n}');
           }
         },
         markup: [
           {
             in: 'C:\\home.html',
-            out: 'C:\\home.out.html'
+            out: 'C:\\home.out.html',
+            result: function () {
+              expect(String(fs.readFileSync('C:\\home.out.html')))
+                .toEqual('<html><head></head><body><h1 class="rp__0">Hi</h1></body></html>');
+            }
           },
           {
             in: 'C:\\about.html',
-            out: 'C:\\about.out.html'
+            out: 'C:\\about.out.html',
+            result: function () {
+              expect(String(fs.readFileSync('C:\\about.out.html')))
+                .toEqual('<html><head></head><body><h2 class="rp__1">Yo</h2></body></html>');
+            }
           }
         ],
         scripts: {
-          out: 'C:\\out.json'
+          out: 'C:\\out.json',
+          result: function () {
+            expect(String(fs.readFileSync('C:\\out.json')))
+              .toEqual('{\n  ".a": [\n    ".rp__0"\n  ],\n  ".b": [\n    ".rp__1"\n  ]\n}');
+          }
         }
       }];
 
@@ -77,7 +86,6 @@ describe('Red Perfume', () => {
 
       mockfs.restore();
     });
-    */
 
     test('Valid options with tasks using data and result', () => {
       options = {
