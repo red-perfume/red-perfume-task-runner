@@ -174,8 +174,8 @@ redPerfume.atomize({
 
 Key                   | Status  | Details
 :--                   | :--     | :--
-`verbose`             | 🌕🌕🌑🌑 | Implemented
-`customLogger`        | 🌕🌕🌑🌑 | Implemented
+`verbose`             | 🌕🌕🌕🌑 | Tested
+`customLogger`        | 🌕🌕🌕🌑 | Tested
 `tasks`               | 🌕🌑🌑🌑 | API Validated
 `task.uglify`         | 🌕🌗🌑🌑 | Base functionality implemented, advanced features planned
 `task.styles`         | 🌕🌑🌑🌑 | API Validated
@@ -183,14 +183,14 @@ Key                   | Status  | Details
 `task.scripts`        | 🌕🌑🌑🌑 | API Validated
 `task.styles.in`      | 🌕🌑🌑🌑 | API Validated
 `task.styles.out`     | 🌕🌑🌑🌑 | API Validated
-`task.styles.data`    | 🌕🌕🌑🌑 | Implemented
-`task.styles.result`  | 🌕🌕🌑🌑 | Implemented
+`task.styles.data`    | 🌕🌕🌕🌑 | Tested
+`task.styles.result`  | 🌕🌕🌕🌑 | Tested
 `task.markup.in`      | 🌕🌑🌑🌑 | API Validated
 `task.markup.out`     | 🌕🌑🌑🌑 | API Validated
-`task.markup.data`    | 🌕🌕🌑🌑 | Implemented
-`task.markup.result`  | 🌕🌕🌑🌑 | Implemented
-`task.scripts.out`    | 🌕🌕🌑🌑 | Implemented
-`task.scripts.result` | 🌕🌕🌑🌑 | Implemented
+`task.markup.data`    | 🌕🌕🌕🌑 | Tested
+`task.markup.result`  | 🌕🌕🌕🌑 | Tested
+`task.scripts.out`    | 🌕🌕🌕🌑 | Tested
+`task.scripts.result` | 🌕🌕🌕🌑 | Tested
 
 
 ### API Documentation
