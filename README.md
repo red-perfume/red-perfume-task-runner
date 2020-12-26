@@ -163,34 +163,9 @@ redPerfume.atomize({
 ```
 
 
-### API Implementation Status
+### API Implementation Status: ALPHA
 
-* 🌑🌑🌑🌑 Not started
-* 🌕🌑🌑🌑 Validation in place
-* 🌕🌗🌑🌑 In Progress
-* 🌕🌕🌑🌑 Implemented
-* 🌕🌕🌕🌑 Tested
-* 🌕🌕🌕🌕 Released
-
-Key                   | Status  | Details
-:--                   | :--     | :--
-`verbose`             | 🌕🌕🌕🌑 | Tested
-`customLogger`        | 🌕🌕🌕🌑 | Tested
-`tasks`               | 🌕🌑🌑🌑 | API Validated
-`task.uglify`         | 🌕🌗🌑🌑 | Base functionality implemented, advanced features planned
-`task.styles`         | 🌕🌑🌑🌑 | API Validated
-`task.markup`         | 🌕🌑🌑🌑 | API Validated
-`task.scripts`        | 🌕🌑🌑🌑 | API Validated
-`task.styles.in`      | 🌕🌑🌑🌑 | API Validated
-`task.styles.out`     | 🌕🌑🌑🌑 | API Validated
-`task.styles.data`    | 🌕🌕🌕🌑 | Tested
-`task.styles.result`  | 🌕🌕🌕🌑 | Tested
-`task.markup.in`      | 🌕🌑🌑🌑 | API Validated
-`task.markup.out`     | 🌕🌑🌑🌑 | API Validated
-`task.markup.data`    | 🌕🌕🌕🌑 | Tested
-`task.markup.result`  | 🌕🌕🌕🌑 | Tested
-`task.scripts.out`    | 🌕🌕🌕🌑 | Tested
-`task.scripts.result` | 🌕🌕🌕🌑 | Tested
+The documented API is fully implemented and tested. Though there are many edge cases that have not been covered yet (see: [issues](https://github.com/red-perfume/red-perfume/issues)), and some more advanced parts of the features yet to be implemented (also: [issues](https://github.com/red-perfume/red-perfume/issues)).
 
 
 ### API Documentation
