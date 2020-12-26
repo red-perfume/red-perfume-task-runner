@@ -89,6 +89,68 @@ describe('Red Perfume', () => {
       mockfs.restore();
     });
 
+    test('Valid options with tasks using file system but all files are empty', async () => {
+      mockfs({
+        'C:\\app.css': '',
+        'C:\\vendor.css': '',
+        'C:\\home.html': '',
+        'C:\\about.html': ''
+      });
+
+      options.tasks = [{
+        uglify: true,
+        styles: {
+          in: [
+            'C:\\app.css',
+            'C:\\vendor.css'
+          ],
+          out: 'C:\\out.css',
+          result: function () {
+            expect(String(fs.readFileSync('C:\\out.css')))
+              .toEqual('');
+          }
+        },
+        markup: [
+          {
+            in: 'C:\\home.html',
+            out: 'C:\\home.out.html',
+            result: function () {
+              expect(String(fs.readFileSync('C:\\home.out.html')))
+                .toEqual('<html><head></head><body></body></html>');
+            }
+          },
+          {
+            in: 'C:\\about.html',
+            out: 'C:\\about.out.html',
+            result: function () {
+              expect(String(fs.readFileSync('C:\\about.out.html')))
+                .toEqual('<html><head></head><body></body></html>');
+            }
+          }
+        ],
+        scripts: {
+          out: 'C:\\out.json',
+          result: function () {
+            expect(String(fs.readFileSync('C:\\out.json')))
+              .toEqual('{}');
+          }
+        }
+      }];
+
+      redPerfume.atomize(options);
+
+      expect(options.customLogger)
+        .toHaveBeenCalledWith('Error parsing CSS', '');
+
+      expect(options.customLogger)
+        .toHaveBeenCalledWith('Error parsing HTML', '<html><head></head><body></body></html>');
+
+      expect(options.customLogger)
+        .toHaveBeenCalledWith('Error parsing HTML', '<html><head></head><body></body></html>');
+
+      mockfs.restore();
+    });
+
     test('Fails to read CSS file', async () => {
       mockfs({
         'C:\\app.css': mockfs.file({
