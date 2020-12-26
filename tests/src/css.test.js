@@ -14,6 +14,29 @@ describe('CSS', () => {
     };
   });
 
+  describe('removeIdenticalProperties', () => {
+    test('Removes dupes', () => {
+      expect(css.removeIdenticalProperties({
+        '.duplicates': [
+          '.rp__display__--COLONnone',
+          '.rp__display__--COLONblock',
+          '.rp__display__--COLONnone',
+          '.rp__display__--COLONinline-block',
+          '.rp__display__--COLONnone',
+          '.rp__display__--COLONflex'
+        ]
+      }))
+        .toEqual({
+          '.duplicates': [
+            '.rp__display__--COLONblock',
+            '.rp__display__--COLONinline-block',
+            '.rp__display__--COLONnone',
+            '.rp__display__--COLONflex'
+          ]
+        });
+    });
+  });
+
   describe('Bad inputs', () => {
     test('Empty', () => {
       expect(css())

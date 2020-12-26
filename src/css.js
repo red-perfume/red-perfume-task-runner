@@ -4,6 +4,23 @@ const cssUglifier = require('./css-uglifier.js');
 const encodeClassName = require('./css-class-encoding.js');
 const helpers = require('./helpers.js');
 
+/**
+ * Remove duplicate property/value pairs that are duplicates.
+ * `display: none; display: none;` becomes `display:none;`
+ * `display: block; display: none;` is unchanged because they
+ * are not identical.
+ *
+ * @param  {object} classMap  The class map object used by the HTML/JSON
+ * @return {object}           Returns the classMap object
+ */
+function removeIdenticalProperties (classMap) {
+  // Remove identical properties
+  Object.keys(classMap).forEach(function (selector) {
+    classMap[selector] = Array.from(new Set(classMap[selector].reverse())).reverse();
+  });
+  return classMap;
+}
+
 const css = function (options, input, uglify) {
   options = options || {};
   input = input || '';
@@ -30,7 +47,7 @@ const css = function (options, input, uglify) {
     }
   };
 
-  const classMap = {};
+  let classMap = {};
   const newRules = {};
 
   /* A rule looks like:
@@ -139,6 +156,8 @@ const css = function (options, input, uglify) {
     });
   });
 
+  classMap = removeIdenticalProperties(classMap);
+
   if (uglify) {
     let index = 0;
     Object.keys(newRules).forEach(function (key) {
@@ -176,4 +195,5 @@ const css = function (options, input, uglify) {
   };
 };
 
+css.removeIdenticalProperties = removeIdenticalProperties;
 module.exports = css;
