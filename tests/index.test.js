@@ -2,6 +2,8 @@ const mockfs = require('mock-fs');
 const fs = require('fs');
 const redPerfume = require('../index.js');
 
+const testHelpers = require('@@/testHelpers.js');
+
 describe('Red Perfume', () => {
   let options;
 
@@ -102,34 +104,25 @@ describe('Red Perfume', () => {
             'C:\\app.css'
           ],
           result: function (data, err) {
-            err = JSON.parse(JSON.stringify(err));
-            delete err[0].errno;
-
             expect(data)
               .toEqual('');
 
-            expect(err)
-              .toEqual([
-                {
-                  syscall: 'open',
-                  code: 'EACCES',
-                  path:'C:\\app.css'
-                }
-              ]);
+            expect(testHelpers.removeErrno(err))
+              .toEqual({
+                syscall: 'open',
+                code: 'EACCES',
+                path:'C:\\app.css'
+              });
           }
         }
       }];
 
       redPerfume.atomize(options);
 
-      let message = options.customLogger.mock.calls[0][0];
-      let err = JSON.parse(JSON.stringify(options.customLogger.mock.calls[0][1]));
-      delete err.errno;
-
-      expect(message)
+      expect(options.customLogger.mock.calls[0][0])
         .toEqual('Error reading style file: C:\\app.css');
 
-      expect(err)
+      expect(testHelpers.removeErrno(options.customLogger.mock.calls[0][1]))
         .toEqual({
           code: 'EACCES',
           path: 'C:\\app.css',
@@ -159,34 +152,25 @@ describe('Red Perfume', () => {
           ],
           out: 'C:\\out.css',
           result: function (data, err) {
-            err = JSON.parse(JSON.stringify(err));
-            delete err[0].errno;
-
             expect(data)
               .toEqual('.rp__0 {\n  margin: 0px;\n}');
 
-            expect(err)
-              .toEqual([
-                {
-                  code: 'EACCES',
-                  path: 'C:\\out.css',
-                  syscall: 'open'
-                }
-              ]);
+            expect(testHelpers.removeErrno(err))
+              .toEqual({
+                code: 'EACCES',
+                path: 'C:\\out.css',
+                syscall: 'open'
+              });
           }
         }
       }];
 
       redPerfume.atomize(options);
 
-      let message = options.customLogger.mock.calls[0][0];
-      let err = JSON.parse(JSON.stringify(options.customLogger.mock.calls[0][1]));
-      delete err.errno;
-
-      expect(message)
+      expect(options.customLogger.mock.calls[0][0])
         .toEqual('Error writing CSS file: C:\\out.css');
 
-      expect(err)
+      expect(testHelpers.removeErrno(options.customLogger.mock.calls[0][1]))
         .toEqual({
           code: 'EACCES',
           path: 'C:\\out.css',
@@ -211,20 +195,15 @@ describe('Red Perfume', () => {
             in: 'C:\\home.html',
             out: 'C:\\home.dist.html',
             result: function (data, err) {
-              err = JSON.parse(JSON.stringify(err));
-              delete err[0].errno;
-
               expect(data)
                 .toEqual('<html><head></head><body></body></html>');
 
-              expect(err)
-                .toEqual([
-                  {
-                    syscall: 'open',
-                    code: 'EACCES',
-                    path:'C:\\home.html'
-                  }
-                ]);
+              expect(testHelpers.removeErrno(err))
+                .toEqual({
+                  syscall: 'open',
+                  code: 'EACCES',
+                  path:'C:\\home.html'
+                });
             }
           }
         ]
@@ -232,14 +211,10 @@ describe('Red Perfume', () => {
 
       redPerfume.atomize(options);
 
-      let message = options.customLogger.mock.calls[0][0];
-      let err = JSON.parse(JSON.stringify(options.customLogger.mock.calls[0][1]));
-      delete err.errno;
-
-      expect(message)
+      expect(options.customLogger.mock.calls[0][0])
         .toEqual('Error reading markup file: C:\\home.html');
 
-      expect(err)
+      expect(testHelpers.removeErrno(options.customLogger.mock.calls[0][1]))
         .toEqual({
           code: 'EACCES',
           path: 'C:\\home.html',
@@ -268,20 +243,15 @@ describe('Red Perfume', () => {
             in: 'C:\\home.html',
             out: 'C:\\home.out.html',
             result: function (data, err) {
-              err = JSON.parse(JSON.stringify(err));
-              delete err[0].errno;
-
               expect(data)
                 .toEqual('<html><head></head><body><h1 class="a">Hi</h1></body></html>');
 
-              expect(err)
-                .toEqual([
-                  {
-                    code: 'EACCES',
-                    path: 'C:\\home.out.html',
-                    syscall: 'open'
-                  }
-                ]);
+              expect(testHelpers.removeErrno(err))
+                .toEqual({
+                  code: 'EACCES',
+                  path: 'C:\\home.out.html',
+                  syscall: 'open'
+                });
             }
           }
         ]
@@ -289,14 +259,10 @@ describe('Red Perfume', () => {
 
       redPerfume.atomize(options);
 
-      let message = options.customLogger.mock.calls[0][0];
-      let err = JSON.parse(JSON.stringify(options.customLogger.mock.calls[0][1]));
-      delete err.errno;
-
-      expect(message)
+      expect(options.customLogger.mock.calls[0][0])
         .toEqual('Error writing markup file: C:\\home.out.html');
 
-      expect(err)
+      expect(testHelpers.removeErrno(options.customLogger.mock.calls[0][1]))
         .toEqual({
           code: 'EACCES',
           path: 'C:\\home.out.html',
@@ -328,16 +294,13 @@ describe('Red Perfume', () => {
         scripts: {
           out: 'C:\\out.json',
           result: function (data, err) {
-            err = JSON.parse(JSON.stringify(err));
-            delete err.errno;
-
             expect(data)
               .toEqual({
                 '.a': ['.rp__0'],
                 '.b': ['.rp__1']
               });
 
-            expect(err)
+            expect(testHelpers.removeErrno(err))
               .toEqual({
                 code: 'EACCES',
                 path: 'C:\\out.json',
@@ -349,14 +312,10 @@ describe('Red Perfume', () => {
 
       redPerfume.atomize(options);
 
-      let message = options.customLogger.mock.calls[0][0];
-      let err = JSON.parse(JSON.stringify(options.customLogger.mock.calls[0][1]));
-      delete err.errno;
-
-      expect(message)
+      expect(options.customLogger.mock.calls[0][0])
         .toEqual('Error writing script file: C:\\out.json');
 
-      expect(err)
+      expect(testHelpers.removeErrno(options.customLogger.mock.calls[0][1]))
         .toEqual({
           code: 'EACCES',
           path: 'C:\\out.json',
