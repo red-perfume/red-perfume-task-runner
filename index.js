@@ -36,7 +36,7 @@ const redPerfume = {
         }
         if (task.styles.out) {
           try {
-            fs.writeFileSync(task.styles.out, processedStyles.output);
+            fs.writeFileSync(task.styles.out, processedStyles.output + '\n');
           } catch (err) {
             helpers.throwError(options, 'Error writing CSS file: ' + task.styles.out, err);
             styleErrors.push(err);
@@ -71,7 +71,7 @@ const redPerfume = {
           }
           if (item.out) {
             try {
-              fs.writeFileSync(item.out, processedMarkup);
+              fs.writeFileSync(item.out, processedMarkup + '\n');
             } catch (err) {
               helpers.throwError(options, 'Error writing markup file: ' + item.out, err);
               markupErrors.push(err);
@@ -89,7 +89,7 @@ const redPerfume = {
         let scriptErrors;
         if (task.scripts.out) {
           try {
-            fs.writeFileSync(task.scripts.out, JSON.stringify(processedStyles.classMap, null, 2));
+            fs.writeFileSync(task.scripts.out, JSON.stringify(processedStyles.classMap, null, 2) + '\n');
           } catch (scriptErr) {
             helpers.throwError(options, 'Error writing script file: ' + task.scripts.out, scriptErr);
             scriptErrors = scriptErr;

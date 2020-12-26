@@ -51,7 +51,7 @@ describe('Red Perfume', () => {
           out: 'C:\\out.css',
           result: function () {
             expect(String(fs.readFileSync('C:\\out.css')))
-              .toEqual('.rp__0 {\n  margin: 0px;\n}\n.rp__1 {\n  padding: 0px;\n}');
+              .toEqual('.rp__0 {\n  margin: 0px;\n}\n.rp__1 {\n  padding: 0px;\n}\n');
           }
         },
         markup: [
@@ -60,7 +60,7 @@ describe('Red Perfume', () => {
             out: 'C:\\home.out.html',
             result: function () {
               expect(String(fs.readFileSync('C:\\home.out.html')))
-                .toEqual('<html><head></head><body><h1 class="rp__0">Hi</h1></body></html>');
+                .toEqual('<html><head></head><body><h1 class="rp__0">Hi</h1></body></html>\n');
             }
           },
           {
@@ -68,7 +68,7 @@ describe('Red Perfume', () => {
             out: 'C:\\about.out.html',
             result: function () {
               expect(String(fs.readFileSync('C:\\about.out.html')))
-                .toEqual('<html><head></head><body><h2 class="rp__1">Yo</h2></body></html>');
+                .toEqual('<html><head></head><body><h2 class="rp__1">Yo</h2></body></html>\n');
             }
           }
         ],
@@ -76,7 +76,7 @@ describe('Red Perfume', () => {
           out: 'C:\\out.json',
           result: function () {
             expect(String(fs.readFileSync('C:\\out.json')))
-              .toEqual('{\n  ".a": [\n    ".rp__0"\n  ],\n  ".b": [\n    ".rp__1"\n  ]\n}');
+              .toEqual('{\n  ".a": [\n    ".rp__0"\n  ],\n  ".b": [\n    ".rp__1"\n  ]\n}\n');
           }
         }
       }];
@@ -107,7 +107,7 @@ describe('Red Perfume', () => {
           out: 'C:\\out.css',
           result: function () {
             expect(String(fs.readFileSync('C:\\out.css')))
-              .toEqual('');
+              .toEqual('\n');
           }
         },
         markup: [
@@ -116,7 +116,7 @@ describe('Red Perfume', () => {
             out: 'C:\\home.out.html',
             result: function () {
               expect(String(fs.readFileSync('C:\\home.out.html')))
-                .toEqual('<html><head></head><body></body></html>');
+                .toEqual('<html><head></head><body></body></html>\n');
             }
           },
           {
@@ -124,7 +124,7 @@ describe('Red Perfume', () => {
             out: 'C:\\about.out.html',
             result: function () {
               expect(String(fs.readFileSync('C:\\about.out.html')))
-                .toEqual('<html><head></head><body></body></html>');
+                .toEqual('<html><head></head><body></body></html>\n');
             }
           }
         ],
@@ -132,7 +132,7 @@ describe('Red Perfume', () => {
           out: 'C:\\out.json',
           result: function () {
             expect(String(fs.readFileSync('C:\\out.json')))
-              .toEqual('{}');
+              .toEqual('{}\n');
           }
         }
       }];
