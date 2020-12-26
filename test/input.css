@@ -1,4 +1,19 @@
-.cow {
+.moo {
     padding: 10px;
     margin: 5px;
+}
+
+.all-bootstrap-properties {
+    font-family: sans-serif;
+    -webkit-text-size-adjust:100%;
+    margin:0;
+    display:block;
+    display:inline-block;
+    vertical-align:baseline;
+    display:none;
+    height:0;
+    display:none;
+    background:transparent;
+    outline:0;
+    border-bottom:1px dotted;
 }

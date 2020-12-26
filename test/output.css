@@ -1,4 +1,48 @@
-.cow {
-    padding: 10px;
-    margin: 5px;
+.rp__padding__--COLON10px {
+  padding: 10px;
+}
+.rp__margin__--COLON5px {
+  margin: 5px;
+}
+.rp__font-family__--COLONsans-serif {
+  font-family: sans-serif;
+}
+.rp__-webkit-text-size-adjust__--COLON100__--PERCENT {
+  -webkit-text-size-adjust: 100%;
+}
+.rp__margin__--COLON0 {
+  margin: 0;
+}
+.rp__display__--COLONblock {
+  display: block;
+}
+.rp__display__--COLONinline-block {
+  display: inline-block;
+}
+.rp__vertical-align__--COLONbaseline {
+  vertical-align: baseline;
+}
+.rp__display__--COLONnone {
+  display: none;
+}
+.rp__height__--COLON0 {
+  height: 0;
+}
+.rp__background__--COLONtransparent {
+  background: transparent;
+}
+.rp__outline__--COLON0 {
+  outline: 0;
+}
+.rp__border-bottom__--COLON1px_____-dotted {
+  border-bottom: 1px dotted;
+}
+.rp__font-size__--COLON12px {
+  font-size: 12px;
+}
+.rp__padding__--COLON8px {
+  padding: 8px;
+}
+.rp__background__--COLON__--OCTOTHORPF00 {
+  background: #F00;
 }
