@@ -87,6 +87,105 @@ describe('Red Perfume', () => {
       mockfs.restore();
     });
 
+    test('Fails to read CSS file', async () => {
+      mockfs({
+        'C:\\app.css': mockfs.file({
+          content: 'Fail',
+          mode: parseInt('0000', 8)
+        })
+      });
+
+      options.tasks = [{
+        uglify: true,
+        styles: {
+          in: [
+            'C:\\app.css'
+          ],
+          result: function (data, err) {
+            expect(data)
+              .toEqual('');
+
+            expect(JSON.parse(JSON.stringify(err)))
+              .toEqual([
+                {
+                  syscall: 'open',
+                  code: 'EACCES',
+                  errno: -4092,
+                  path:'C:\\app.css'
+                }
+              ]);
+          }
+        }
+      }];
+
+      redPerfume.atomize(options);
+
+      expect(options.customLogger.mock.calls[0][0])
+        .toEqual('Error reading style file: C:\\app.css');
+
+      expect(JSON.parse(JSON.stringify(options.customLogger.mock.calls[0][1])))
+        .toEqual({
+          code: 'EACCES',
+          errno: -4092,
+          path: 'C:\\app.css',
+          syscall: 'open'
+        });
+
+      expect(options.customLogger)
+        .toHaveBeenCalledWith('Error parsing CSS', '');
+
+      mockfs.restore();
+    });
+
+    test('Fails to write CSS file', async () => {
+      mockfs({
+        'C:\\app.css': '.a{margin:0px;}',
+        'C:\\out.css': mockfs.file({
+          content: 'Fail',
+          mode: parseInt('0000', 8)
+        })
+      });
+
+      options.tasks = [{
+        uglify: true,
+        styles: {
+          in: [
+            'C:\\app.css'
+          ],
+          out: 'C:\\out.css',
+          result: function (data, err) {
+            expect(data)
+              .toEqual('.rp__0 {\n  margin: 0px;\n}');
+
+            expect(JSON.parse(JSON.stringify(err)))
+              .toEqual([
+                {
+                  code: 'EACCES',
+                  errno: -4092,
+                  path: 'C:\\out.css',
+                  syscall: 'open'
+                }
+              ]);
+          }
+        }
+      }];
+
+      redPerfume.atomize(options);
+
+      expect(options.customLogger.mock.calls[0][0])
+        .toEqual('Error writing CSS file: C:\\out.css');
+
+      expect(JSON.parse(JSON.stringify(options.customLogger.mock.calls[0][1])))
+        .toEqual({
+          code: 'EACCES',
+          errno: -4092,
+          path: 'C:\\out.css',
+          syscall: 'open'
+        });
+
+      mockfs.restore();
+    });
+
     test('Valid options with tasks using data and result', () => {
       options = {
         verbose: true,

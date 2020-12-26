@@ -20,7 +20,7 @@ const redPerfume = {
             try {
               styleData = styleData + String(fs.readFileSync(file));
             } catch (err) {
-              helpers.throwError('Error reading style file: ' + file, err);
+              helpers.throwError(options, 'Error reading style file: ' + file, err);
               styleErrors.push(err);
             }
           });
@@ -38,7 +38,7 @@ const redPerfume = {
           try {
             fs.writeFileSync(task.styles.out, processedStyles.output);
           } catch (err) {
-            helpers.throwError('Error writing CSS file: ' + task.styles.out, err);
+            helpers.throwError(options, 'Error writing CSS file: ' + task.styles.out, err);
             styleErrors.push(err);
           }
         }
@@ -59,7 +59,7 @@ const redPerfume = {
             try {
               markupData = markupData + String(fs.readFileSync(item.in));
             } catch (err) {
-              helpers.throwError('Error reading markup file: ' + item.in, err);
+              helpers.throwError(options, 'Error reading markup file: ' + item.in, err);
               markupErrors.push(err);
             }
           }
@@ -73,7 +73,7 @@ const redPerfume = {
             try {
               fs.writeFileSync(item.out, processedMarkup);
             } catch (err) {
-              helpers.throwError('Error writing markup file: ' + item.out, err);
+              helpers.throwError(options, 'Error writing markup file: ' + item.out, err);
               markupErrors.push(err);
             }
           }
@@ -91,7 +91,7 @@ const redPerfume = {
           try {
             fs.writeFileSync(task.scripts.out, JSON.stringify(processedStyles.classMap, null, 2));
           } catch (scriptErr) {
-            helpers.throwError('Error writing script file: ' + task.scripts.out, scriptErr);
+            helpers.throwError(options, 'Error writing script file: ' + task.scripts.out, scriptErr);
             scriptErrors = scriptErr;
           }
         }
