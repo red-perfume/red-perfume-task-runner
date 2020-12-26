@@ -1,0 +1,33 @@
+{
+  ".moo": [
+    ".rp__padding__--COLON10px",
+    ".rp__margin__--COLON5px"
+  ],
+  ".a-few-bootstrap-properties": [
+    ".rp__font-family__--COLONsans-serif",
+    ".rp__-webkit-text-size-adjust__--COLON100__--PERCENT",
+    ".rp__margin__--COLON0",
+    ".rp__display__--COLONblock",
+    ".rp__display__--COLONinline-block",
+    ".rp__vertical-align__--COLONbaseline",
+    ".rp__display__--COLONnone",
+    ".rp__height__--COLON0",
+    ".rp__display__--COLONnone",
+    ".rp__background__--COLONtransparent",
+    ".rp__outline__--COLON0",
+    ".rp__border-bottom__--COLON1px_____-dotted"
+  ],
+  ".cow": [
+    ".rp__font-size__--COLON12px",
+    ".rp__padding__--COLON8px"
+  ],
+  ".cat": [
+    ".rp__font-size__--COLON12px",
+    ".rp__padding__--COLON8px"
+  ],
+  ".dog": [
+    ".rp__font-size__--COLON12px",
+    ".rp__background__--COLON__--OCTOTHORPF00",
+    ".rp__padding__--COLON8px"
+  ]
+}

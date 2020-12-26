@@ -49,12 +49,14 @@ redPerfume.atomize({
               </body>
             </html>
           `,
+          out: './test/out.html',
           result: function (result, err) {
             console.log(result, err);
           }
         }
       ],
       scripts: {
+        out: './test/out.json',
         result: function (result, err) {
           console.log(result, err);
         }
