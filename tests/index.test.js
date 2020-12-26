@@ -186,6 +186,162 @@ describe('Red Perfume', () => {
       mockfs.restore();
     });
 
+    test('Fails to read HTML file', async () => {
+      mockfs({
+        'C:\\home.html': mockfs.file({
+          content: 'Fail',
+          mode: parseInt('0000', 8)
+        })
+      });
+
+      options.tasks = [{
+        uglify: true,
+        markup: [
+          {
+            in: 'C:\\home.html',
+            out: 'C:\\home.dist.html',
+            result: function (data, err) {
+              expect(data)
+                .toEqual('<html><head></head><body></body></html>');
+
+              expect(JSON.parse(JSON.stringify(err)))
+                .toEqual([
+                  {
+                    syscall: 'open',
+                    code: 'EACCES',
+                    errno: -4092,
+                    path:'C:\\home.html'
+                  }
+                ]);
+            }
+          }
+        ]
+      }];
+
+      redPerfume.atomize(options);
+
+      expect(options.customLogger.mock.calls[0][0])
+        .toEqual('Error reading markup file: C:\\home.html');
+
+      expect(JSON.parse(JSON.stringify(options.customLogger.mock.calls[0][1])))
+        .toEqual({
+          code: 'EACCES',
+          errno: -4092,
+          path: 'C:\\home.html',
+          syscall: 'open'
+        });
+
+      expect(options.customLogger)
+        .toHaveBeenCalledWith('Error parsing HTML', '<html><head></head><body></body></html>');
+
+      mockfs.restore();
+    });
+
+    test('Fails to write HTML file', async () => {
+      mockfs({
+        'C:\\home.html': '<h1 class="a">Hi</h1>',
+        'C:\\home.out.html': mockfs.file({
+          content: 'Fail',
+          mode: parseInt('0000', 8)
+        })
+      });
+
+      options.tasks = [{
+        uglify: true,
+        markup: [
+          {
+            in: 'C:\\home.html',
+            out: 'C:\\home.out.html',
+            result: function (data, err) {
+              expect(data)
+                .toEqual('<html><head></head><body><h1 class="a">Hi</h1></body></html>');
+
+              expect(JSON.parse(JSON.stringify(err)))
+                .toEqual([
+                  {
+                    code: 'EACCES',
+                    errno: -4092,
+                    path: 'C:\\home.out.html',
+                    syscall: 'open'
+                  }
+                ]);
+            }
+          }
+        ]
+      }];
+
+      redPerfume.atomize(options);
+
+      expect(options.customLogger.mock.calls[0][0])
+        .toEqual('Error writing markup file: C:\\home.out.html');
+
+      expect(JSON.parse(JSON.stringify(options.customLogger.mock.calls[0][1])))
+        .toEqual({
+          code: 'EACCES',
+          errno: -4092,
+          path: 'C:\\home.out.html',
+          syscall: 'open'
+        });
+
+      mockfs.restore();
+    });
+
+    test('Fails to write JSON file', async () => {
+      mockfs({
+        'C:\\app.css': '.a{margin:0px;}',
+        'C:\\vendor.css': '.b{padding:0px}',
+        'C:\\out.json': mockfs.file({
+          content: 'Fail',
+          mode: parseInt('0000', 8)
+        })
+      });
+
+      options.tasks = [{
+        uglify: true,
+        styles: {
+          in: [
+            'C:\\app.css',
+            'C:\\vendor.css'
+          ],
+          out: 'C:\\out.css'
+        },
+        scripts: {
+          out: 'C:\\out.json',
+          result: function (data, err) {
+            expect(data)
+              .toEqual({
+                '.a': ['.rp__0'],
+                '.b': ['.rp__1']
+              });
+
+            expect(JSON.parse(JSON.stringify(err)))
+              .toEqual({
+                code: 'EACCES',
+                errno: -4092,
+                path: 'C:\\out.json',
+                syscall: 'open'
+              });
+          }
+        }
+      }];
+
+      redPerfume.atomize(options);
+
+      expect(options.customLogger.mock.calls[0][0])
+        .toEqual('Error writing script file: C:\\out.json');
+
+      expect(JSON.parse(JSON.stringify(options.customLogger.mock.calls[0][1])))
+        .toEqual({
+          code: 'EACCES',
+          errno: -4092,
+          path: 'C:\\out.json',
+          syscall: 'open'
+        });
+
+      mockfs.restore();
+    });
+
+
     test('Valid options with tasks using data and result', () => {
       options = {
         verbose: true,
