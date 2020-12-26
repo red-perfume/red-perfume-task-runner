@@ -3,8 +3,12 @@ const redPerfume = require('./index.js');
 redPerfume.atomize({
   tasks: [
     {
-      uglify: true,
+      uglify: false,
       styles: {
+        in: [
+          './test/input.css'
+        ],
+        out: './test/output.css',
         data: `
           .cow,
           .cat {
@@ -45,12 +49,14 @@ redPerfume.atomize({
               </body>
             </html>
           `,
+          out: './test/out.html',
           result: function (result, err) {
             console.log(result, err);
           }
         }
       ],
       scripts: {
+        out: './test/out.json',
         result: function (result, err) {
           console.log(result, err);
         }

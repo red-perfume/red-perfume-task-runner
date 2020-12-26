@@ -1,6 +1,8 @@
-// const mockfs = require('mock-fs');
-// const fs = require('fs');
+const mockfs = require('mock-fs');
+const fs = require('fs');
 const redPerfume = require('../index.js');
+
+const testHelpers = require('@@/testHelpers.js');
 
 describe('Red Perfume', () => {
   let options;
@@ -10,6 +12,10 @@ describe('Red Perfume', () => {
       verbose: true,
       customLogger: jest.fn()
     };
+  });
+
+  afterEach(() => {
+    mockfs.restore();
   });
 
   describe('Atomize', () => {
@@ -27,7 +33,6 @@ describe('Red Perfume', () => {
       consoleError = undefined;
     });
 
-    /*
     test('Valid options with tasks using file system', async () => {
       mockfs({
         'C:\\app.css': '.a{margin:0px;}',
@@ -38,35 +43,41 @@ describe('Red Perfume', () => {
 
       options.tasks = [{
         uglify: true,
-        style: {
+        styles: {
           in: [
             'C:\\app.css',
             'C:\\vendor.css'
           ],
           out: 'C:\\out.css',
           result: function () {
-            try {
-              expect(fs.readFileSync('C:\\out.css'))
-                .toEqual('asdf');
-
-              done();
-            } catch (err) {
-              done(err);
-            }
+            expect(String(fs.readFileSync('C:\\out.css')))
+              .toEqual('.rp__0 {\n  margin: 0px;\n}\n.rp__1 {\n  padding: 0px;\n}\n');
           }
         },
         markup: [
           {
             in: 'C:\\home.html',
-            out: 'C:\\home.out.html'
+            out: 'C:\\home.out.html',
+            result: function () {
+              expect(String(fs.readFileSync('C:\\home.out.html')))
+                .toEqual('<html><head></head><body><h1 class="rp__0">Hi</h1></body></html>\n');
+            }
           },
           {
             in: 'C:\\about.html',
-            out: 'C:\\about.out.html'
+            out: 'C:\\about.out.html',
+            result: function () {
+              expect(String(fs.readFileSync('C:\\about.out.html')))
+                .toEqual('<html><head></head><body><h2 class="rp__1">Yo</h2></body></html>\n');
+            }
           }
         ],
         scripts: {
-          out: 'C:\\out.json'
+          out: 'C:\\out.json',
+          result: function () {
+            expect(String(fs.readFileSync('C:\\out.json')))
+              .toEqual('{\n  ".a": [\n    ".rp__0"\n  ],\n  ".b": [\n    ".rp__1"\n  ]\n}\n');
+          }
         }
       }];
 
@@ -77,7 +88,304 @@ describe('Red Perfume', () => {
 
       mockfs.restore();
     });
-    */
+
+    test('Valid options with tasks using file system but all files are empty', async () => {
+      mockfs({
+        'C:\\app.css': '',
+        'C:\\vendor.css': '',
+        'C:\\home.html': '',
+        'C:\\about.html': ''
+      });
+
+      options.tasks = [{
+        uglify: true,
+        styles: {
+          in: [
+            'C:\\app.css',
+            'C:\\vendor.css'
+          ],
+          out: 'C:\\out.css',
+          result: function () {
+            expect(String(fs.readFileSync('C:\\out.css')))
+              .toEqual('\n');
+          }
+        },
+        markup: [
+          {
+            in: 'C:\\home.html',
+            out: 'C:\\home.out.html',
+            result: function () {
+              expect(String(fs.readFileSync('C:\\home.out.html')))
+                .toEqual('<html><head></head><body></body></html>\n');
+            }
+          },
+          {
+            in: 'C:\\about.html',
+            out: 'C:\\about.out.html',
+            result: function () {
+              expect(String(fs.readFileSync('C:\\about.out.html')))
+                .toEqual('<html><head></head><body></body></html>\n');
+            }
+          }
+        ],
+        scripts: {
+          out: 'C:\\out.json',
+          result: function () {
+            expect(String(fs.readFileSync('C:\\out.json')))
+              .toEqual('{}\n');
+          }
+        }
+      }];
+
+      redPerfume.atomize(options);
+
+      expect(options.customLogger)
+        .toHaveBeenCalledWith('Error parsing CSS', '');
+
+      expect(options.customLogger)
+        .toHaveBeenCalledWith('Error parsing HTML', '<html><head></head><body></body></html>');
+
+      expect(options.customLogger)
+        .toHaveBeenCalledWith('Error parsing HTML', '<html><head></head><body></body></html>');
+
+      mockfs.restore();
+    });
+
+    test('Fails to read CSS file', async () => {
+      mockfs({
+        'C:\\app.css': mockfs.file({
+          content: 'Fail',
+          mode: parseInt('0000', 8)
+        })
+      });
+
+      options.tasks = [{
+        uglify: true,
+        styles: {
+          in: [
+            'C:\\app.css'
+          ],
+          result: function (data, err) {
+            expect(data)
+              .toEqual('');
+
+            expect(testHelpers.removeErrno(err))
+              .toEqual({
+                syscall: 'open',
+                code: 'EACCES',
+                path:'C:\\app.css'
+              });
+          }
+        }
+      }];
+
+      redPerfume.atomize(options);
+
+      expect(options.customLogger.mock.calls[0][0])
+        .toEqual('Error reading style file: C:\\app.css');
+
+      expect(testHelpers.removeErrno(options.customLogger.mock.calls[0][1]))
+        .toEqual({
+          code: 'EACCES',
+          path: 'C:\\app.css',
+          syscall: 'open'
+        });
+
+      expect(options.customLogger)
+        .toHaveBeenCalledWith('Error parsing CSS', '');
+
+      mockfs.restore();
+    });
+
+    test('Fails to write CSS file', async () => {
+      mockfs({
+        'C:\\app.css': '.a{margin:0px;}',
+        'C:\\out.css': mockfs.file({
+          content: 'Fail',
+          mode: parseInt('0000', 8)
+        })
+      });
+
+      options.tasks = [{
+        uglify: true,
+        styles: {
+          in: [
+            'C:\\app.css'
+          ],
+          out: 'C:\\out.css',
+          result: function (data, err) {
+            expect(data)
+              .toEqual('.rp__0 {\n  margin: 0px;\n}');
+
+            expect(testHelpers.removeErrno(err))
+              .toEqual({
+                code: 'EACCES',
+                path: 'C:\\out.css',
+                syscall: 'open'
+              });
+          }
+        }
+      }];
+
+      redPerfume.atomize(options);
+
+      expect(options.customLogger.mock.calls[0][0])
+        .toEqual('Error writing CSS file: C:\\out.css');
+
+      expect(testHelpers.removeErrno(options.customLogger.mock.calls[0][1]))
+        .toEqual({
+          code: 'EACCES',
+          path: 'C:\\out.css',
+          syscall: 'open'
+        });
+
+      mockfs.restore();
+    });
+
+    test('Fails to read HTML file', async () => {
+      mockfs({
+        'C:\\home.html': mockfs.file({
+          content: 'Fail',
+          mode: parseInt('0000', 8)
+        })
+      });
+
+      options.tasks = [{
+        uglify: true,
+        markup: [
+          {
+            in: 'C:\\home.html',
+            out: 'C:\\home.dist.html',
+            result: function (data, err) {
+              expect(data)
+                .toEqual('<html><head></head><body></body></html>');
+
+              expect(testHelpers.removeErrno(err))
+                .toEqual({
+                  syscall: 'open',
+                  code: 'EACCES',
+                  path:'C:\\home.html'
+                });
+            }
+          }
+        ]
+      }];
+
+      redPerfume.atomize(options);
+
+      expect(options.customLogger.mock.calls[0][0])
+        .toEqual('Error reading markup file: C:\\home.html');
+
+      expect(testHelpers.removeErrno(options.customLogger.mock.calls[0][1]))
+        .toEqual({
+          code: 'EACCES',
+          path: 'C:\\home.html',
+          syscall: 'open'
+        });
+
+      expect(options.customLogger)
+        .toHaveBeenCalledWith('Error parsing HTML', '<html><head></head><body></body></html>');
+
+      mockfs.restore();
+    });
+
+    test('Fails to write HTML file', async () => {
+      mockfs({
+        'C:\\home.html': '<h1 class="a">Hi</h1>',
+        'C:\\home.out.html': mockfs.file({
+          content: 'Fail',
+          mode: parseInt('0000', 8)
+        })
+      });
+
+      options.tasks = [{
+        uglify: true,
+        markup: [
+          {
+            in: 'C:\\home.html',
+            out: 'C:\\home.out.html',
+            result: function (data, err) {
+              expect(data)
+                .toEqual('<html><head></head><body><h1 class="a">Hi</h1></body></html>');
+
+              expect(testHelpers.removeErrno(err))
+                .toEqual({
+                  code: 'EACCES',
+                  path: 'C:\\home.out.html',
+                  syscall: 'open'
+                });
+            }
+          }
+        ]
+      }];
+
+      redPerfume.atomize(options);
+
+      expect(options.customLogger.mock.calls[0][0])
+        .toEqual('Error writing markup file: C:\\home.out.html');
+
+      expect(testHelpers.removeErrno(options.customLogger.mock.calls[0][1]))
+        .toEqual({
+          code: 'EACCES',
+          path: 'C:\\home.out.html',
+          syscall: 'open'
+        });
+
+      mockfs.restore();
+    });
+
+    test('Fails to write JSON file', async () => {
+      mockfs({
+        'C:\\app.css': '.a{margin:0px;}',
+        'C:\\vendor.css': '.b{padding:0px}',
+        'C:\\out.json': mockfs.file({
+          content: 'Fail',
+          mode: parseInt('0000', 8)
+        })
+      });
+
+      options.tasks = [{
+        uglify: true,
+        styles: {
+          in: [
+            'C:\\app.css',
+            'C:\\vendor.css'
+          ],
+          out: 'C:\\out.css'
+        },
+        scripts: {
+          out: 'C:\\out.json',
+          result: function (data, err) {
+            expect(data)
+              .toEqual({
+                '.a': ['.rp__0'],
+                '.b': ['.rp__1']
+              });
+
+            expect(testHelpers.removeErrno(err))
+              .toEqual({
+                code: 'EACCES',
+                path: 'C:\\out.json',
+                syscall: 'open'
+              });
+          }
+        }
+      }];
+
+      redPerfume.atomize(options);
+
+      expect(options.customLogger.mock.calls[0][0])
+        .toEqual('Error writing script file: C:\\out.json');
+
+      expect(testHelpers.removeErrno(options.customLogger.mock.calls[0][1]))
+        .toEqual({
+          code: 'EACCES',
+          path: 'C:\\out.json',
+          syscall: 'open'
+        });
+
+      mockfs.restore();
+    });
 
     test('Valid options with tasks using data and result', () => {
       options = {
