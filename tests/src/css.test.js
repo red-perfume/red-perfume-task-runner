@@ -107,5 +107,48 @@ describe('CSS', () => {
       expect(options.customLogger)
         .not.toHaveBeenCalled();
     });
+
+    test('Handle non-classes', () => {
+      let input = `
+        h1 {
+          background: #F00;
+          border: 1px solid #00F;
+        }
+        h2.qualifying-element {
+          padding: 10px;
+          line-height: 2;
+        }
+        .example {
+          display: block;
+          text-align: center
+        }
+        #specificity-overkill {
+          color: #FF0;
+          z-index: 2;
+        }
+      `;
+
+      expect(css(options, input, false).output)
+        .toEqual(`
+h1 {
+  background: #F00;
+  border: 1px solid #00F;
+}
+h2.qualifying-element {
+  padding: 10px;
+  line-height: 2;
+}
+.rp__display__--COLONblock {
+  display: block;
+}
+.rp__text-align__--COLONcenter {
+  text-align: center;
+}
+#specificity-overkill {
+  color: #FF0;
+  z-index: 2;
+}
+        `.trim());
+    });
   });
 });
