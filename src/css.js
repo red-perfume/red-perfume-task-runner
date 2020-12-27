@@ -44,6 +44,22 @@ function removeIdenticalProperties (classMap) {
   return classMap;
 }
 
+/**
+ * Ensure that non-classes are not atomized,
+ * but still included in the output.
+ *
+ * @param  {object} rule     Parsed CSS Rule
+ * @param  {object} newRules Object containing all unique rules
+ */
+function handleNonClasses (rule, newRules) {
+  let originalSelectorName = rule.selectors[0][0].original;
+  newRules[originalSelectorName] = {
+    type: 'rule',
+    selectors: [[originalSelectorName]],
+    declarations: rule.declarations
+  };
+}
+
 const css = function (options, input, uglify) {
   options = options || {};
   input = input || '';
@@ -136,15 +152,11 @@ const css = function (options, input, uglify) {
   parsed.stylesheet.rules.forEach(function (rule) {
     recursivelyRemovePosition(rule);
     // console.log(JSON.stringify(rule, null, 2));
+
     let type = rule.selectors[0][0].type;
     let name = rule.selectors[0][0].name;
     if (type === 'tag' || (type === 'attribute' && name !== 'class')) {
-      let originalSelectorName = rule.selectors[0][0].original;
-      newRules[originalSelectorName] = {
-        type: 'rule',
-        selectors: [[originalSelectorName]],
-        declarations: rule.declarations
-      };
+      handleNonClasses(rule, newRules);
     } else {
       /* A declaration looks like:
         {
