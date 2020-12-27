@@ -1,8 +1,30 @@
+h1 {
+  background: #F00;
+  border: 1px solid #00F;
+}
+[attr] {
+  text-transform: small-caps;
+  overflow: hidden;
+}
+[attr="123"] {
+  position: absolute;
+  border-radius: 2px;
+}
+#specificity-overkill {
+  color: #FF0;
+  z-index: 2;
+}
 .rp__padding__--COLON10px {
   padding: 10px;
 }
 .rp__margin__--COLON5px {
   margin: 5px;
+}
+.rp__display__--COLONblock {
+  display: block;
+}
+.rp__text-align__--COLONcenter {
+  text-align: center;
 }
 .rp__font-family__--COLONsans-serif {
   font-family: sans-serif;
@@ -12,9 +34,6 @@
 }
 .rp__margin__--COLON0 {
   margin: 0;
-}
-.rp__display__--COLONblock {
-  display: block;
 }
 .rp__display__--COLONinline-block {
   display: inline-block;

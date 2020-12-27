@@ -1,8 +1,29 @@
+h1 {
+    background: #F00;
+    border: 1px solid #00F;
+}
+[attr] {
+    text-transform: small-caps;
+    overflow: hidden;
+}
+[attr="123"] {
+    position: absolute;
+    border-radius: 2px;
+}
+#specificity-overkill {
+    color: #FF0;
+    z-index: 2;
+}
 .moo {
     padding: 10px;
     margin: 5px;
 }
-
+.rp__display__--COLONblock {
+    display: block;
+}
+.rp__text-align__--COLONcenter {
+    text-align: center;
+}
 .a-few-bootstrap-properties {
     font-family: sans-serif;
     -webkit-text-size-adjust:100%;
