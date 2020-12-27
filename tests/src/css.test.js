@@ -1,5 +1,7 @@
 const css = require('@/css.js');
 
+const testHelpers = require('@@/testHelpers.js');
+
 describe('CSS', () => {
   let options;
   const errorResponse = {
@@ -106,6 +108,57 @@ describe('CSS', () => {
 
       expect(options.customLogger)
         .not.toHaveBeenCalled();
+    });
+
+    test('Handle non-classes', () => {
+      let input = `
+        h1 {
+          background: #F00;
+          border: 1px solid #00F;
+        }
+        [attr] {
+          text-transform: small-caps;
+          overflow: hidden;
+        }
+        [attr="123"] {
+          position: absolute;
+          border-radius: 2px;
+        }
+        .example {
+          display: block;
+          text-align: center
+        }
+        #specificity-overkill {
+          color: #FF0;
+          z-index: 2;
+        }
+      `;
+
+      expect(css(options, input, false).output)
+        .toEqual(testHelpers.trimIndentation(`
+          h1 {
+            background: #F00;
+            border: 1px solid #00F;
+          }
+          [attr] {
+            text-transform: small-caps;
+            overflow: hidden;
+          }
+          [attr="123"] {
+            position: absolute;
+            border-radius: 2px;
+          }
+          .rp__display__--COLONblock {
+            display: block;
+          }
+          .rp__text-align__--COLONcenter {
+            text-align: center;
+          }
+          #specificity-overkill {
+            color: #FF0;
+            z-index: 2;
+          }
+        `, 10));
     });
   });
 });

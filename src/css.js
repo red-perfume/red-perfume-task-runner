@@ -5,6 +5,29 @@ const encodeClassName = require('./css-class-encoding.js');
 const helpers = require('./helpers.js');
 
 /**
+ * Rrecursively remove position. Parsed CSS contains position
+ * data that is not of use for us and just clouds up the console
+ * logs during development.
+ *
+ * @param  {any} item  Parsed CSS or a portion of it
+ */
+function recursivelyRemovePosition (item) {
+  if (Array.isArray(item)) {
+    item.forEach(function (subItem) {
+      recursivelyRemovePosition(subItem);
+    });
+  }
+  if (item && typeof(item) === 'object' && !Array.isArray(item)) {
+    if (item.hasOwnProperty('position')) {
+      delete item.position;
+    }
+    Object.keys(item).forEach(function (key) {
+      recursivelyRemovePosition(item[key]);
+    });
+  }
+}
+
+/**
  * Remove duplicate property/value pairs that are duplicates.
  * `display: none; display: none;` becomes `display:none;`
  * `display: block; display: none;` is unchanged because they
@@ -19,6 +42,22 @@ function removeIdenticalProperties (classMap) {
     classMap[selector] = Array.from(new Set(classMap[selector].reverse())).reverse();
   });
   return classMap;
+}
+
+/**
+ * Ensure that non-classes are not atomized,
+ * but still included in the output.
+ *
+ * @param  {object} rule     Parsed CSS Rule
+ * @param  {object} newRules Object containing all unique rules
+ */
+function handleNonClasses (rule, newRules) {
+  let originalSelectorName = rule.selectors[0][0].original;
+  newRules[originalSelectorName] = {
+    type: 'rule',
+    selectors: [[originalSelectorName]],
+    declarations: rule.declarations
+  };
 }
 
 const css = function (options, input, uglify) {
@@ -110,52 +149,62 @@ const css = function (options, input, uglify) {
        }
      }
   */
-
   parsed.stylesheet.rules.forEach(function (rule) {
-    /* A declaration looks like:
-       {
-         type: 'declaration',
-         property: 'padding',
-         value: '10px',
-         position: Position {
-           start: { line: 1, column: 48 },
-           end: { line: 1, column: 61 },
-           source: undefined
-         }
-       }
-    */
-    rule.declarations.forEach(function (declaration) {
-      /* An encoded class name look like:
-         .rp__padding__--COLON10px
+    recursivelyRemovePosition(rule);
+    // console.log(JSON.stringify(rule, null, 2));
+
+    let type = rule.selectors[0][0].type;
+    let name = rule.selectors[0][0].name;
+    if (type === 'tag' || (type === 'attribute' && name !== 'class')) {
+      handleNonClasses(rule, newRules);
+    } else {
+      /* A declaration looks like:
+        {
+          type: 'declaration',
+          property: 'padding',
+          value: '10px',
+          position: Position {
+            start: { line: 1, column: 48 },
+            end: { line: 1, column: 61 },
+            source: undefined
+          }
+        }
       */
-      let encodedClassName = encodeClassName(options, declaration);
-
-      /* A selector looks like:
-         [{
-           type: 'attribute',
-           name: 'class',
-           action: 'element',
-           value: 'cow',
-           ignoreCase: false,
-           namespace: null,
-           original: '.cow'
-          }]
+      rule.declarations.forEach(function (declaration) {
+        /* An encoded class name look like:
+          .rp__padding__--COLON10px
         */
-      rule.selectors.forEach(function (selector) {
-        let originalSelectorName = selector[0].original;
+        let encodedClassName = encodeClassName(options, declaration);
 
-        classMap[originalSelectorName] = classMap[originalSelectorName] || [];
-        classMap[originalSelectorName].push(encodedClassName);
+        /* A selector looks like:
+          [{
+            type: 'attribute',
+            name: 'class',
+            action: 'element',
+            value: 'cow',
+            ignoreCase: false,
+            namespace: null,
+            original: '.cow'
+            }]
+          */
+        rule.selectors.forEach(function (selector) {
+          let originalSelectorName = selector[0].original;
+
+          classMap[originalSelectorName] = classMap[originalSelectorName] || [];
+          classMap[originalSelectorName].push(encodedClassName);
+        });
+
+        newRules[encodedClassName] = {
+          type: 'rule',
+          selectors: [[encodedClassName]],
+          declarations: [declaration]
+        };
       });
-
-      newRules[encodedClassName] = {
-        type: 'rule',
-        selectors: [[encodedClassName]],
-        declarations: [declaration]
-      };
-    });
+    }
   });
 
+  recursivelyRemovePosition(newRules);
+  // console.log(JSON.stringify(newRules, null, 2));
   classMap = removeIdenticalProperties(classMap);
 
   if (uglify) {
