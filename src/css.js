@@ -110,52 +110,65 @@ const css = function (options, input, uglify) {
        }
      }
   */
-
   parsed.stylesheet.rules.forEach(function (rule) {
-    /* A declaration looks like:
-       {
-         type: 'declaration',
-         property: 'padding',
-         value: '10px',
-         position: Position {
-           start: { line: 1, column: 48 },
-           end: { line: 1, column: 61 },
-           source: undefined
-         }
-       }
-    */
-    rule.declarations.forEach(function (declaration) {
-      /* An encoded class name look like:
-         .rp__padding__--COLON10px
+    console.log(rule);
+    if (rule.selectors[0][0].type === 'tag') {
+      let originalSelectorName = rule.selectors[0][0].original;
+      newRules[originalSelectorName] =  {
+          type: 'rule',
+          selectors: [[originalSelectorName]],
+          declarations: [rule.declarations]
+        };
+    } else {
+      /* A declaration looks like:
+        {
+          type: 'declaration',
+          property: 'padding',
+          value: '10px',
+          position: Position {
+            start: { line: 1, column: 48 },
+            end: { line: 1, column: 61 },
+            source: undefined
+          }
+        }
       */
-      let encodedClassName = encodeClassName(options, declaration);
-
-      /* A selector looks like:
-         [{
-           type: 'attribute',
-           name: 'class',
-           action: 'element',
-           value: 'cow',
-           ignoreCase: false,
-           namespace: null,
-           original: '.cow'
-          }]
+      rule.declarations.forEach(function (declaration) {
+        /* An encoded class name look like:
+          .rp__padding__--COLON10px
         */
-      rule.selectors.forEach(function (selector) {
-        let originalSelectorName = selector[0].original;
+        let encodedClassName = encodeClassName(options, declaration);
 
-        classMap[originalSelectorName] = classMap[originalSelectorName] || [];
-        classMap[originalSelectorName].push(encodedClassName);
+        /* A selector looks like:
+          [{
+            type: 'attribute',
+            name: 'class',
+            action: 'element',
+            value: 'cow',
+            ignoreCase: false,
+            namespace: null,
+            original: '.cow'
+            }]
+          */
+        rule.selectors.forEach(function (selector) {
+          let originalSelectorName = selector[0].original;
+
+          classMap[originalSelectorName] = classMap[originalSelectorName] || [];
+          classMap[originalSelectorName].push(encodedClassName);
+        });
+
+        newRules[encodedClassName] = {
+          type: 'rule',
+          selectors: [[encodedClassName]],
+          declarations: [declaration]
+        };
       });
-
-      newRules[encodedClassName] = {
-        type: 'rule',
-        selectors: [[encodedClassName]],
-        declarations: [declaration]
-      };
-    });
+    }
   });
 
+  Object.keys(newRules).forEach(function (rule) {
+    delete newRules[rule].position;
+  });
+  console.log(JSON.stringify(newRules, null, 2));
   classMap = removeIdenticalProperties(classMap);
 
   if (uglify) {

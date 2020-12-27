@@ -114,10 +114,6 @@ describe('CSS', () => {
           background: #F00;
           border: 1px solid #00F;
         }
-        h2.qualifying-element {
-          padding: 10px;
-          line-height: 2;
-        }
         .example {
           display: block;
           text-align: center
@@ -133,10 +129,6 @@ describe('CSS', () => {
 h1 {
   background: #F00;
   border: 1px solid #00F;
-}
-h2.qualifying-element {
-  padding: 10px;
-  line-height: 2;
 }
 .rp__display__--COLONblock {
   display: block;
