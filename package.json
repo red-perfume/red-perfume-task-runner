@@ -1,6 +1,6 @@
 {
   "name": "red-perfume",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "CSS Atomizer",
   "main": "index.js",
   "scripts": {
@@ -22,10 +22,10 @@
   },
   "devDependencies": {
     "babel-eslint": "^10.1.0",
-    "eslint": "^7.11.0",
+    "eslint": "^7.16.0",
     "eslint-config-tjw-base": "^1.0.0",
     "eslint-config-tjw-jest": "^1.0.0",
-    "eslint-plugin-jsdoc": "^30.6.5",
+    "eslint-plugin-jsdoc": "^30.7.9",
     "jest": "24.9.0",
     "mock-fs": "^4.13.0"
   },
