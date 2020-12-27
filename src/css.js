@@ -5,6 +5,29 @@ const encodeClassName = require('./css-class-encoding.js');
 const helpers = require('./helpers.js');
 
 /**
+ * Rrecursively remove position. Parsed CSS contains position
+ * data that is not of use for us and just clouds up the console
+ * logs during development.
+ *
+ * @param  {any} item  Parsed CSS or a portion of it
+ */
+function recursivelyRemovePosition (item) {
+  if (Array.isArray(item)) {
+    item.forEach(function (subItem) {
+      recursivelyRemovePosition(subItem);
+    });
+  }
+  if (item && typeof(item) === 'object' && !Array.isArray(item)) {
+    if (item.hasOwnProperty('position')) {
+      delete item.position;
+    }
+    Object.keys(item).forEach(function (key) {
+      recursivelyRemovePosition(item[key]);
+    });
+  }
+}
+
+/**
  * Remove duplicate property/value pairs that are duplicates.
  * `display: none; display: none;` becomes `display:none;`
  * `display: block; display: none;` is unchanged because they
@@ -111,14 +134,17 @@ const css = function (options, input, uglify) {
      }
   */
   parsed.stylesheet.rules.forEach(function (rule) {
-    console.log(rule);
-    if (rule.selectors[0][0].type === 'tag') {
+    recursivelyRemovePosition(rule);
+    // console.log(JSON.stringify(rule, null, 2));
+    let type = rule.selectors[0][0].type;
+    let name = rule.selectors[0][0].name;
+    if (type === 'tag' || (type === 'attribute' && name !== 'class')) {
       let originalSelectorName = rule.selectors[0][0].original;
-      newRules[originalSelectorName] =  {
-          type: 'rule',
-          selectors: [[originalSelectorName]],
-          declarations: [rule.declarations]
-        };
+      newRules[originalSelectorName] = {
+        type: 'rule',
+        selectors: [[originalSelectorName]],
+        declarations: rule.declarations
+      };
     } else {
       /* A declaration looks like:
         {
@@ -165,10 +191,8 @@ const css = function (options, input, uglify) {
     }
   });
 
-  Object.keys(newRules).forEach(function (rule) {
-    delete newRules[rule].position;
-  });
-  console.log(JSON.stringify(newRules, null, 2));
+  recursivelyRemovePosition(newRules);
+  // console.log(JSON.stringify(newRules, null, 2));
   classMap = removeIdenticalProperties(classMap);
 
   if (uglify) {

@@ -16,6 +16,25 @@ const testHelpers = {
     }
     delete err.errno;
     return err;
+  },
+  /**
+   * Removes a set amount of spaces from the start of every line passed in.
+   * Used to make test expectations more readable.
+   *
+   * @param  {string} value   The text to change
+   * @param  {number} amount  How much indentation to remove from each line
+   * @return {string}         The changed text
+   */
+  trimIndentation: function (value, amount) {
+    value = value || '';
+    amount = amount || 2;
+    let spaces = new Array(amount).fill(' ').join('');
+    let lines = value.split('\n');
+    lines = lines.map(function (line) {
+      return line.replace(spaces, '');
+    });
+    value = lines.join('\n');
+    return value.trim();
   }
 };
 
