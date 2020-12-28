@@ -43,7 +43,7 @@ redPerfume.atomize({
                 <h1 class="cool cat nice wow">
                   Meow
                 </h1>
-                <h2 class="dog">
+                <h2 class="dog hover">
                   Woof
                 </h2>
               </body>

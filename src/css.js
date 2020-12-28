@@ -45,6 +45,35 @@ function removeIdenticalProperties (classMap) {
 }
 
 /**
+ * Updats the map of selectors to their atomized classes.
+ *
+ * @param  {object} classMap          The class map object used by the HTML/JSON
+ * @param  {Array}  selectors         Parsed CSS selectors
+ * @param  {string} encodedClassName  Encoded class name
+ * @return {object}                   Returns the classMap object
+ */
+function updateClassMap (classMap, selectors, encodedClassName) {
+  /* A selector looks like:
+    [{
+      type: 'attribute',
+      name: 'class',
+      action: 'element',
+      value: 'cow',
+      ignoreCase: false,
+      namespace: null,
+      original: '.cow'
+      }]
+    */
+  selectors.forEach(function (selector) {
+    let originalSelectorName = selector[0].original;
+
+    classMap[originalSelectorName] = classMap[originalSelectorName] || [];
+    classMap[originalSelectorName].push(encodedClassName);
+  });
+  return classMap;
+}
+
+/**
  * Ensure that non-classes are not atomized,
  * but still included in the output.
  *
@@ -176,23 +205,14 @@ const css = function (options, input, uglify) {
         */
         let encodedClassName = encodeClassName(options, declaration);
 
-        /* A selector looks like:
-          [{
-            type: 'attribute',
-            name: 'class',
-            action: 'element',
-            value: 'cow',
-            ignoreCase: false,
-            namespace: null,
-            original: '.cow'
-            }]
-          */
-        rule.selectors.forEach(function (selector) {
-          let originalSelectorName = selector[0].original;
+        if (rule.selectors[0][1] && rule.selectors[0][1].type && rule.selectors[0][1].type === 'pseudo') {
+          let pseudoName = rule.selectors[0][1].name;
+          // .rp__display__--COLONblock___-HOVER:hover
+          let pseudoClassName = encodedClassName + '___-' + pseudoName.toUpperCase() + ':' + pseudoName;
+          encodedClassName = pseudoClassName;
+        }
 
-          classMap[originalSelectorName] = classMap[originalSelectorName] || [];
-          classMap[originalSelectorName].push(encodedClassName);
-        });
+        classMap = updateClassMap(classMap, rule.selectors, encodedClassName);
 
         newRules[encodedClassName] = {
           type: 'rule',
@@ -210,21 +230,29 @@ const css = function (options, input, uglify) {
   if (uglify) {
     let index = 0;
     Object.keys(newRules).forEach(function (key) {
-      let result = cssUglifier(index);
-
-      index = result.index;
-
-      let uglifiedName = result.name;
-      newRules[uglifiedName] = newRules[key];
-      newRules[uglifiedName].selectors[0][0] = uglifiedName;
-      delete newRules[key];
-
-      Object.keys(classMap).forEach(function (mapKey) {
-        let indexOfKey = classMap[mapKey].indexOf(key);
-        if (indexOfKey !== -1) {
-          classMap[mapKey][indexOfKey] = uglifiedName;
+      if (key.startsWith('.')) {
+        let pseudo = '';
+        if (key.includes(':')) {
+          let split = key.split(':');
+          split.shift(0);
+          pseudo = ':' + split.join(':');
         }
-      });
+        let result = cssUglifier(index);
+
+        index = result.index;
+
+        let uglifiedName = result.name + pseudo;
+        newRules[uglifiedName] = newRules[key];
+        newRules[uglifiedName].selectors[0][0] = uglifiedName;
+        delete newRules[key];
+
+        Object.keys(classMap).forEach(function (mapKey) {
+          let indexOfKey = classMap[mapKey].indexOf(key);
+          if (indexOfKey !== -1) {
+            classMap[mapKey][indexOfKey] = uglifiedName;
+          }
+        });
+      }
     });
   }
 

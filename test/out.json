@@ -1,4 +1,10 @@
 {
+  ".hover": [
+    ".rp__color__--COLON__--OCTOTHORP00F"
+  ],
+  ".hover:hover": [
+    ".rp__color__--COLON__--OCTOTHORPF00___-HOVER:hover"
+  ],
   ".moo": [
     ".rp__padding__--COLON10px",
     ".rp__margin__--COLON5px"

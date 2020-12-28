@@ -2,6 +2,9 @@ h1 {
     background: #F00;
     border: 1px solid #00F;
 }
+h1:hover {
+    background: #00F;
+}
 [attr] {
     text-transform: small-caps;
     overflow: hidden;
@@ -13,6 +16,12 @@ h1 {
 #specificity-overkill {
     color: #FF0;
     z-index: 2;
+}
+.hover {
+    color: #00F;
+}
+.hover:hover {
+    color: #F00;
 }
 .moo {
     padding: 10px;

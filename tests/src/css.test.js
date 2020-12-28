@@ -159,6 +159,129 @@ describe('CSS', () => {
             z-index: 2;
           }
         `, 10));
+
+      expect(css(options, input, true).output)
+        .toEqual(testHelpers.trimIndentation(`
+          h1 {
+            background: #F00;
+            border: 1px solid #00F;
+          }
+          [attr] {
+            text-transform: small-caps;
+            overflow: hidden;
+          }
+          [attr="123"] {
+            position: absolute;
+            border-radius: 2px;
+          }
+          #specificity-overkill {
+            color: #FF0;
+            z-index: 2;
+          }
+          .rp__0 {
+            display: block;
+          }
+          .rp__1 {
+            text-align: center;
+          }
+        `, 10));
+    });
+
+    test('Handle pseudo-classes', () => {
+      let input = `
+        .example {
+          display: inline-block;
+          text-align: right;
+        }
+        .example:hover {
+          display: block;
+          text-align: center
+        }
+        .example:active {
+          color: #F00;
+        }
+        .example:visited {
+          color: #00F;
+        }
+        h1:hover {
+          color: #F00;
+        }
+        .cow {
+          background: #F00;
+          color: #00F;
+        }
+        .cow:hover {
+          background: #0F0;
+        }
+      `;
+
+      expect(css(options, input, false).output)
+        .toEqual(testHelpers.trimIndentation(`
+          .rp__display__--COLONinline-block {
+            display: inline-block;
+          }
+          .rp__text-align__--COLONright {
+            text-align: right;
+          }
+          .rp__display__--COLONblock___-HOVER:hover {
+            display: block;
+          }
+          .rp__text-align__--COLONcenter___-HOVER:hover {
+            text-align: center;
+          }
+          .rp__color__--COLON__--OCTOTHORPF00___-ACTIVE:active {
+            color: #F00;
+          }
+          .rp__color__--COLON__--OCTOTHORP00F___-VISITED:visited {
+            color: #00F;
+          }
+          h1:hover {
+            color: #F00;
+          }
+          .rp__background__--COLON__--OCTOTHORPF00 {
+            background: #F00;
+          }
+          .rp__color__--COLON__--OCTOTHORP00F {
+            color: #00F;
+          }
+          .rp__background__--COLON__--OCTOTHORP0F0___-HOVER:hover {
+            background: #0F0;
+          }
+        `, 10));
+
+      expect(css(options, input, true).output)
+        .toEqual(testHelpers.trimIndentation(`
+          h1:hover {
+            color: #F00;
+          }
+          .rp__0 {
+            display: inline-block;
+          }
+          .rp__1 {
+            text-align: right;
+          }
+          .rp__2:hover {
+            display: block;
+          }
+          .rp__3:hover {
+            text-align: center;
+          }
+          .rp__4:active {
+            color: #F00;
+          }
+          .rp__5:visited {
+            color: #00F;
+          }
+          .rp__6 {
+            background: #F00;
+          }
+          .rp__7 {
+            color: #00F;
+          }
+          .rp__8:hover {
+            background: #0F0;
+          }
+        `, 10));
     });
   });
 });
