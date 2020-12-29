@@ -535,10 +535,27 @@ describe('Red Perfume', () => {
               },
               markup: [
                 {
-                  data: '<!DOCTYPE html><html><body><div class="simple pseudo"></div></body></html>',
+                  data: testHelpers.trimIndentation(`
+                    <!DOCTYPE html>
+                    <html>
+                      <body>
+                        <div class="simple pseudo"></div>
+                        <div class="after">
+                          <div class="nested"></div>
+                        </div>
+                      </body>
+                    </html>
+                  `, 20),
                   result: function (result, err) {
-                    expect(result)
-                      .toEqual('<!DOCTYPE html><html><head></head><body><div class="rp__0 rp__1 rp__2 rp__3 rp__4 rp__5"></div></body></html>');
+                    expect(testHelpers.trimIndentation(result))
+                      .toEqual(testHelpers.trimIndentation(`
+                        <!DOCTYPE html><html><head></head><body>
+                          <div class="rp__0 rp__1 rp__2 rp__3 rp__4 rp__5"></div>
+                          <div class="after">
+                            <div class="nested"></div>
+                          </div>
+                        </body></html>
+                      `, 24));
 
                     expect(err)
                       .toEqual(undefined);

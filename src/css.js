@@ -66,6 +66,7 @@ function updateClassMap (classMap, selectors, encodedClassName) {
     */
   selectors.forEach(function (selector) {
     let originalSelectorName = selector[0].original;
+    originalSelectorName = originalSelectorName.split(':')[0];
 
     classMap[originalSelectorName] = classMap[originalSelectorName] || [];
     classMap[originalSelectorName].push(encodedClassName);
@@ -249,7 +250,7 @@ const css = function (options, input, uglify) {
         Object.keys(classMap).forEach(function (mapKey) {
           let indexOfKey = classMap[mapKey].indexOf(key);
           if (indexOfKey !== -1) {
-            classMap[mapKey][indexOfKey] = uglifiedName;
+            classMap[mapKey][indexOfKey] = result.name;
           }
         });
       }
