@@ -482,114 +482,206 @@ describe('Red Perfume', () => {
           .not.toHaveBeenCalled();
       });
 
-      test('Every type of CSS', () => {
-        options = {
-          verbose: true,
-          customLogger: jest.fn(),
-          tasks: [
-            {
-              uglify: true,
-              styles: {
-                data: `
-                  .simple {
-                    padding: 10px;
-                    margin: 10px;
-                  }
-                  .pseudo {
-                    color: #F00;
-                    text-decoration: none;
-                  }
-                  .pseudo:hover {
-                    color: #A00;
-                    text-decoration: underline;
-                  }
-                `,
-                result: function (result, err) {
-                  let expectation = testHelpers.trimIndentation(`
-                    .rp__0 {
-                      padding: 10px;
-                    }
-                    .rp__1 {
-                      margin: 10px;
-                    }
-                    .rp__2 {
-                      color: #F00;
-                    }
-                    .rp__3 {
-                      text-decoration: none;
-                    }
-                    .rp__4:hover {
-                      color: #A00;
-                    }
-                    .rp__5:hover {
-                      text-decoration: underline;
-                    }
-                  `, 20);
+      describe('Every type of CSS', () => {
+        const inputCSS = `
+          .simple {
+            padding: 10px;
+            margin: 10px;
+          }
+          .pseudo {
+            color: #F00;
+            text-decoration: none;
+          }
+          .pseudo:hover {
+            color: #A00;
+            text-decoration: underline;
+          }
+        `;
+        const inputMarkup = testHelpers.trimIndentation(`
+          <!DOCTYPE html>
+          <html>
+            <body>
+              <div class="simple pseudo"></div>
+              <div class="after">
+                <div class="nested"></div>
+              </div>
+            </body>
+          </html>
+        `, 10);
 
-                  expect(result)
-                    .toEqual(expectation, undefined);
-
-                  expect(err)
-                    .toEqual(undefined);
-                }
-              },
-              markup: [
-                {
-                  data: testHelpers.trimIndentation(`
-                    <!DOCTYPE html>
-                    <html>
-                      <body>
-                        <div class="simple pseudo"></div>
-                        <div class="after">
-                          <div class="nested"></div>
-                        </div>
-                      </body>
-                    </html>
-                  `, 20),
+        test('Normal', () => {
+          options = {
+            verbose: true,
+            customLogger: jest.fn(),
+            tasks: [
+              {
+                uglify: false,
+                styles: {
+                  data: inputCSS,
                   result: function (result, err) {
-                    expect(testHelpers.trimIndentation(result))
-                      .toEqual(testHelpers.trimIndentation(`
-                        <!DOCTYPE html><html><head></head><body>
-                          <div class="rp__0 rp__1 rp__2 rp__3 rp__4 rp__5"></div>
-                          <div class="after">
-                            <div class="nested"></div>
-                          </div>
-                        </body></html>
-                      `, 24));
+                    const expectation = testHelpers.trimIndentation(`
+                      .rp__padding__--COLON10px {
+                        padding: 10px;
+                      }
+                      .rp__margin__--COLON10px {
+                        margin: 10px;
+                      }
+                      .rp__color__--COLON__--OCTOTHORPF00 {
+                        color: #F00;
+                      }
+                      .rp__text-decoration__--COLONnone {
+                        text-decoration: none;
+                      }
+                      .rp__color__--COLON__--OCTOTHORPA00___-HOVER:hover {
+                        color: #A00;
+                      }
+                      .rp__text-decoration__--COLONunderline___-HOVER:hover {
+                        text-decoration: underline;
+                      }
+                    `, 22);
+
+                    expect(result)
+                      .toEqual(expectation, undefined);
+
+                    expect(err)
+                      .toEqual(undefined);
+                  }
+                },
+                markup: [
+                  {
+                    data: inputMarkup,
+                    result: function (result, err) {
+                      expect(testHelpers.trimIndentation(result))
+                        .toEqual(testHelpers.trimIndentation(`
+                          <!DOCTYPE html><html><head></head><body>
+                            <div class="rp__padding__--COLON10px rp__margin__--COLON10px rp__color__--COLON__--OCTOTHORPF00 rp__text-decoration__--COLONnone rp__color__--COLON__--OCTOTHORPA00___-HOVER rp__text-decoration__--COLONunderline___-HOVER"></div>
+                            <div class="after">
+                              <div class="nested"></div>
+                            </div>
+                          </body></html>
+                        `, 26));
+
+                      expect(err)
+                        .toEqual(undefined);
+                    }
+                  }
+                ],
+                scripts: {
+                  result: function (result, err) {
+                    expect(result)
+                      .toEqual({
+                        '.simple': [
+                          '.rp__padding__--COLON10px',
+                          '.rp__margin__--COLON10px'
+                        ],
+                        '.pseudo': [
+                          '.rp__color__--COLON__--OCTOTHORPF00',
+                          '.rp__text-decoration__--COLONnone',
+                          '.rp__color__--COLON__--OCTOTHORPA00___-HOVER',
+                          '.rp__text-decoration__--COLONunderline___-HOVER'
+                        ]
+                      });
 
                     expect(err)
                       .toEqual(undefined);
                   }
                 }
-              ],
-              scripts: {
-                result: function (result, err) {
-                  expect(result)
-                    .toEqual({
-                      '.simple': [
-                        '.rp__0',
-                        '.rp__1'
-                      ],
-                      '.pseudo': [
-                        '.rp__2',
-                        '.rp__3',
-                        '.rp__4',
-                        '.rp__5'
-                      ]
-                    });
+              }
+            ]
+          };
 
-                  expect(err)
-                    .toEqual(undefined);
+          redPerfume.atomize(options);
+
+          expect(options.customLogger)
+            .not.toHaveBeenCalled();
+        });
+
+        test('Uglify', () => {
+          options = {
+            verbose: true,
+            customLogger: jest.fn(),
+            tasks: [
+              {
+                uglify: true,
+                styles: {
+                  data: inputCSS,
+                  result: function (result, err) {
+                    const expectation = testHelpers.trimIndentation(`
+                      .rp__0 {
+                        padding: 10px;
+                      }
+                      .rp__1 {
+                        margin: 10px;
+                      }
+                      .rp__2 {
+                        color: #F00;
+                      }
+                      .rp__3 {
+                        text-decoration: none;
+                      }
+                      .rp__4:hover {
+                        color: #A00;
+                      }
+                      .rp__5:hover {
+                        text-decoration: underline;
+                      }
+                    `, 22);
+
+                    expect(result)
+                      .toEqual(expectation, undefined);
+
+                    expect(err)
+                      .toEqual(undefined);
+                  }
+                },
+                markup: [
+                  {
+                    data: inputMarkup,
+                    result: function (result, err) {
+                      expect(testHelpers.trimIndentation(result))
+                        .toEqual(testHelpers.trimIndentation(`
+                          <!DOCTYPE html><html><head></head><body>
+                            <div class="rp__0 rp__1 rp__2 rp__3 rp__4 rp__5"></div>
+                            <div class="after">
+                              <div class="nested"></div>
+                            </div>
+                          </body></html>
+                        `, 26));
+
+                      expect(err)
+                        .toEqual(undefined);
+                    }
+                  }
+                ],
+                scripts: {
+                  result: function (result, err) {
+                    expect(result)
+                      .toEqual({
+                        '.simple': [
+                          '.rp__0',
+                          '.rp__1'
+                        ],
+                        '.pseudo': [
+                          '.rp__2',
+                          '.rp__3',
+                          '.rp__4',
+                          '.rp__5'
+                        ]
+                      });
+
+                    expect(err)
+                      .toEqual(undefined);
+                  }
                 }
               }
-            }
-          ]
-        };
+            ]
+          };
 
-        redPerfume.atomize(options);
+          redPerfume.atomize(options);
 
-        expect(options.customLogger)
-          .not.toHaveBeenCalled();
+          expect(options.customLogger)
+            .not.toHaveBeenCalled();
+        });
       });
     });
   });
