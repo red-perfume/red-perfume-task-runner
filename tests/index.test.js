@@ -481,6 +481,99 @@ describe('Red Perfume', () => {
         expect(options.customLogger)
           .not.toHaveBeenCalled();
       });
+
+      test('Every type of CSS', () => {
+        options = {
+          verbose: true,
+          customLogger: jest.fn(),
+          tasks: [
+            {
+              uglify: true,
+              styles: {
+                data: `
+                  .simple {
+                    padding: 10px;
+                    margin: 10px;
+                  }
+                  .pseudo {
+                    color: #F00;
+                    text-decoration: none;
+                  }
+                  .pseudo:hover {
+                    color: #A00;
+                    text-decoration: underline;
+                  }
+                `,
+                result: function (result, err) {
+                  let expectation = testHelpers.trimIndentation(`
+                    .rp__0 {
+                      padding: 10px;
+                    }
+                    .rp__1 {
+                      margin: 10px;
+                    }
+                    .rp__2 {
+                      color: #F00;
+                    }
+                    .rp__3 {
+                      text-decoration: none;
+                    }
+                    .rp__4:hover {
+                      color: #A00;
+                    }
+                    .rp__5:hover {
+                      text-decoration: underline;
+                    }
+                  `, 20);
+
+                  expect(result)
+                    .toEqual(expectation, undefined);
+
+                  expect(err)
+                    .toEqual(undefined);
+                }
+              },
+              markup: [
+                {
+                  data: '<!DOCTYPE html><html><body><div class="simple pseudo"></div></body></html>',
+                  result: function (result, err) {
+                    expect(result)
+                      .toEqual('<!DOCTYPE html><html><head></head><body><div class="rp__0 rp__1 rp__2 rp__3 rp__4 rp__5"></div></body></html>');
+
+                    expect(err)
+                      .toEqual(undefined);
+                  }
+                }
+              ],
+              scripts: {
+                result: function (result, err) {
+                  expect(result)
+                    .toEqual({
+                      '.simple': [
+                        '.rp__0',
+                        '.rp__1'
+                      ],
+                      '.pseudo': [
+                        '.rp__2',
+                        '.rp__3',
+                        '.rp__4',
+                        '.rp__5'
+                      ]
+                    });
+
+                  expect(err)
+                    .toEqual(undefined);
+                }
+              }
+            }
+          ]
+        };
+
+        redPerfume.atomize(options);
+
+        expect(options.customLogger)
+          .not.toHaveBeenCalled();
+      });
     });
   });
 });
