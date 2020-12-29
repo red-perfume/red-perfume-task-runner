@@ -27,13 +27,17 @@ describe('Red Perfume', () => {
         .toEqual(undefined);
 
       expect(console.error)
-        .toHaveBeenCalledWith('_________________________\nRed-Perfume:\noptions.tasks Must be an array of objects. See documentation for details.', undefined);
+        .toHaveBeenCalledWith(testHelpers.trimIndentation(`
+          _________________________
+          Red-Perfume:
+          options.tasks Must be an array of objects. See documentation for details.
+        `, 10), undefined);
 
       console.error = consoleError;
       consoleError = undefined;
     });
 
-    test('Valid options with tasks using file system', async () => {
+    test('Valid options with tasks using file system', () => {
       mockfs({
         'C:\\app.css': '.a{margin:0px;}',
         'C:\\vendor.css': '.b{padding:0px}',
@@ -50,8 +54,17 @@ describe('Red Perfume', () => {
           ],
           out: 'C:\\out.css',
           result: function () {
+            let expectation = testHelpers.trimIndentation(`
+              .rp__0 {
+                margin: 0px;
+              }
+              .rp__1 {
+                padding: 0px;
+              }
+            `, 14);
+
             expect(String(fs.readFileSync('C:\\out.css')))
-              .toEqual('.rp__0 {\n  margin: 0px;\n}\n.rp__1 {\n  padding: 0px;\n}\n');
+              .toEqual(expectation + '\n');
           }
         },
         markup: [
@@ -75,8 +88,19 @@ describe('Red Perfume', () => {
         scripts: {
           out: 'C:\\out.json',
           result: function () {
+            let expectation = testHelpers.trimIndentation(`
+              {
+                ".a": [
+                  ".rp__0"
+                ],
+                ".b": [
+                  ".rp__1"
+                ]
+              }
+            `, 14);
+
             expect(String(fs.readFileSync('C:\\out.json')))
-              .toEqual('{\n  ".a": [\n    ".rp__0"\n  ],\n  ".b": [\n    ".rp__1"\n  ]\n}\n');
+              .toEqual(expectation + '\n');
           }
         }
       }];
@@ -89,7 +113,7 @@ describe('Red Perfume', () => {
       mockfs.restore();
     });
 
-    test('Valid options with tasks using file system but all files are empty', async () => {
+    test('Valid options with tasks using file system but all files are empty', () => {
       mockfs({
         'C:\\app.css': '',
         'C:\\vendor.css': '',
@@ -151,7 +175,7 @@ describe('Red Perfume', () => {
       mockfs.restore();
     });
 
-    test('Fails to read CSS file', async () => {
+    test('Fails to read CSS file', () => {
       mockfs({
         'C:\\app.css': mockfs.file({
           content: 'Fail',
@@ -197,7 +221,7 @@ describe('Red Perfume', () => {
       mockfs.restore();
     });
 
-    test('Fails to write CSS file', async () => {
+    test('Fails to write CSS file', () => {
       mockfs({
         'C:\\app.css': '.a{margin:0px;}',
         'C:\\out.css': mockfs.file({
@@ -214,8 +238,14 @@ describe('Red Perfume', () => {
           ],
           out: 'C:\\out.css',
           result: function (data, err) {
+            let expectation = testHelpers.trimIndentation(`
+              .rp__0 {
+                margin: 0px;
+              }
+            `, 14);
+
             expect(data)
-              .toEqual('.rp__0 {\n  margin: 0px;\n}');
+              .toEqual(expectation);
 
             expect(testHelpers.removeErrno(err))
               .toEqual({
@@ -242,7 +272,7 @@ describe('Red Perfume', () => {
       mockfs.restore();
     });
 
-    test('Fails to read HTML file', async () => {
+    test('Fails to read HTML file', () => {
       mockfs({
         'C:\\home.html': mockfs.file({
           content: 'Fail',
@@ -289,7 +319,7 @@ describe('Red Perfume', () => {
       mockfs.restore();
     });
 
-    test('Fails to write HTML file', async () => {
+    test('Fails to write HTML file', () => {
       mockfs({
         'C:\\home.html': '<h1 class="a">Hi</h1>',
         'C:\\home.out.html': mockfs.file({
@@ -334,7 +364,7 @@ describe('Red Perfume', () => {
       mockfs.restore();
     });
 
-    test('Fails to write JSON file', async () => {
+    test('Fails to write JSON file', () => {
       mockfs({
         'C:\\app.css': '.a{margin:0px;}',
         'C:\\vendor.css': '.b{padding:0px}',
@@ -397,8 +427,17 @@ describe('Red Perfume', () => {
             styles: {
               data: '.example { padding: 10px; margin: 10px; }',
               result: function (result, err) {
+                let expectation = testHelpers.trimIndentation(`
+                  .rp__0 {
+                    padding: 10px;
+                  }
+                  .rp__1 {
+                    margin: 10px;
+                  }
+                `, 18);
+
                 expect(result)
-                  .toEqual('.rp__0 {\n  padding: 10px;\n}\n.rp__1 {\n  margin: 10px;\n}', undefined);
+                  .toEqual(expectation, undefined);
 
                 expect(err)
                   .toEqual(undefined);

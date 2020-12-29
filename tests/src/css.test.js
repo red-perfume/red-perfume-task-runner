@@ -81,6 +81,12 @@ describe('CSS', () => {
 
   describe('Process CSS', () => {
     test('One rule', () => {
+      let output = testHelpers.trimIndentation(`
+        .rp__background__--COLON__--OCTOTHORPF00 {
+          background: #F00;
+        }
+      `, 8);
+
       expect(css(options, '.test { background: #F00; }', false))
         .toEqual({
           classMap: {
@@ -88,7 +94,7 @@ describe('CSS', () => {
               '.rp__background__--COLON__--OCTOTHORPF00'
             ]
           },
-          output: '.rp__background__--COLON__--OCTOTHORPF00 {\n  background: #F00;\n}'
+          output
         });
 
       expect(options.customLogger)
@@ -96,6 +102,12 @@ describe('CSS', () => {
     });
 
     test('One rule uglified', () => {
+      let output = testHelpers.trimIndentation(`
+        .rp__0 {
+          background: #F00;
+        }
+      `, 8);
+
       expect(css(options, '.test { background: #F00; }', true))
         .toEqual({
           classMap: {
@@ -103,7 +115,7 @@ describe('CSS', () => {
               '.rp__0'
             ]
           },
-          output: '.rp__0 {\n  background: #F00;\n}'
+          output
         });
 
       expect(options.customLogger)
