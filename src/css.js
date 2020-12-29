@@ -69,7 +69,7 @@ function updateClassMap (classMap, selectors, encodedClassName) {
     originalSelectorName = originalSelectorName.split(':')[0];
 
     classMap[originalSelectorName] = classMap[originalSelectorName] || [];
-    classMap[originalSelectorName].push(encodedClassName);
+    classMap[originalSelectorName].push(encodedClassName.split(':')[0]);
   });
   return classMap;
 }
@@ -248,6 +248,7 @@ const css = function (options, input, uglify) {
         delete newRules[key];
 
         Object.keys(classMap).forEach(function (mapKey) {
+          key = key.split(':')[0];
           let indexOfKey = classMap[mapKey].indexOf(key);
           if (indexOfKey !== -1) {
             classMap[mapKey][indexOfKey] = result.name;
