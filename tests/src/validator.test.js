@@ -1,6 +1,8 @@
 const mockfs = require('mock-fs');
 const validator = require('@/validator.js');
 
+const testHelpers = require('@@/testHelpers.js');
+
 describe('Validator', () => {
   let options;
 
@@ -204,6 +206,7 @@ describe('Validator', () => {
 
     test('Function', () => {
       const fn = function () {};
+
       expect(validator.validateFunction(options, fn, 'message'))
         .toEqual(fn);
 
@@ -231,6 +234,7 @@ describe('Validator', () => {
 
     test('Object', () => {
       const obj = {};
+
       expect(validator.validateObject(options, obj, 'message'))
         .toEqual(obj);
 
@@ -295,7 +299,11 @@ describe('Validator', () => {
         .toEqual(false);
 
       expect(console.error)
-        .toHaveBeenCalledWith('_________________________\nRed-Perfume:\nOptional customLogger must be a type of function.', undefined);
+        .toHaveBeenCalledWith(testHelpers.trimIndentation(`
+          _________________________
+          Red-Perfume:
+          Optional customLogger must be a type of function.
+        `, 10), undefined);
     });
 
     test('Function', () => {
@@ -538,6 +546,7 @@ describe('Validator', () => {
 
     test('Valid HTML', () => {
       let data = '<div class="test">Hi</div>';
+
       expect(validator.validateTaskMarkupData(options, data))
         .toEqual(data);
 
@@ -569,7 +578,9 @@ describe('Validator', () => {
       });
 
       expect(validator.validateTaskScripts(options, { out: 'C:\\file.json' }))
-        .toEqual({ out: 'C:\\file.json' });
+        .toEqual({
+          out: 'C:\\file.json'
+        });
 
       expect(options.customLogger)
         .not.toHaveBeenCalled();
@@ -591,7 +602,11 @@ describe('Validator', () => {
         .toEqual(result);
 
       expect(console.error)
-        .toHaveBeenCalledWith('_________________________\nRed-Perfume:\noptions.tasks Must be an array of objects. See documentation for details.', undefined);
+        .toHaveBeenCalledWith(testHelpers.trimIndentation(`
+          _________________________
+          Red-Perfume:
+          options.tasks Must be an array of objects. See documentation for details.
+        `, 10), undefined);
 
       console.error = consoleError;
       consoleError = undefined;

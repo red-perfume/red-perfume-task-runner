@@ -2,6 +2,9 @@ h1 {
   background: #F00;
   border: 1px solid #00F;
 }
+h1:hover {
+  background: #00F;
+}
 [attr] {
   text-transform: small-caps;
   overflow: hidden;
@@ -13,6 +16,12 @@ h1 {
 #specificity-overkill {
   color: #FF0;
   z-index: 2;
+}
+.rp__color__--COLON__--OCTOTHORP00F {
+  color: #00F;
+}
+.rp__color__--COLON__--OCTOTHORPF00___-HOVER:hover {
+  color: #F00;
 }
 .rp__padding__--COLON10px {
   padding: 10px;

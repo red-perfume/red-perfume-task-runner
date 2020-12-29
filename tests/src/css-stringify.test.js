@@ -1,5 +1,7 @@
 const cssStringify = require('@/css-stringify.js');
 
+const testHelpers = require('@@/testHelpers.js');
+
 describe('CSS stringify', () => {
   describe('Bad inputs', () => {
     test('Empty', () => {
@@ -88,7 +90,11 @@ describe('CSS stringify', () => {
       };
 
       expect(cssStringify(AST))
-        .toEqual('.test {\n  background: #F00;\n}');
+        .toEqual(testHelpers.trimIndentation(`
+          .test {
+            background: #F00;
+          }
+        `, 10));
     });
 
     test('2 rules', () => {
@@ -172,7 +178,14 @@ describe('CSS stringify', () => {
       };
 
       expect(cssStringify(AST))
-        .toEqual('.test {\n  background: #F00;\n}\n.example {\n  margin: 1px;\n}');
+        .toEqual(testHelpers.trimIndentation(`
+          .test {
+            background: #F00;
+          }
+          .example {
+            margin: 1px;
+          }
+        `, 10));
     });
   });
 });

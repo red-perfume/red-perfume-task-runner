@@ -28,12 +28,17 @@ const testHelpers = {
   trimIndentation: function (value, amount) {
     value = value || '';
     amount = amount || 2;
+    let output = [];
+
     let spaces = new Array(amount).fill(' ').join('');
     let lines = value.split('\n');
-    lines = lines.map(function (line) {
-      return line.replace(spaces, '');
+    lines.forEach(function (line) {
+      if (line.trim() !== '') {
+        output.push(line.replace(spaces, ''));
+      }
     });
-    value = lines.join('\n');
+
+    value = output.join('\n');
     return value.trim();
   }
 };
