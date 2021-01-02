@@ -496,11 +496,17 @@ describe('Red Perfume', () => {
             color: #A00;
             text-decoration: underline;
           }
+          .qualifying {
+            border: 1px solid #000;
+            padding: 10px;
+            line-height: 1.4;
+          }
         `;
         const inputMarkup = testHelpers.trimIndentation(`
           <!DOCTYPE html>
           <html>
             <body>
+              <h1 class="qualifying"></h1>
               <div class="simple pseudo"></div>
               <div class="after">
                 <div class="nested"></div>
@@ -538,6 +544,15 @@ describe('Red Perfume', () => {
                       .rp__text-decoration__--COLONunderline___-HOVER:hover {
                         text-decoration: underline;
                       }
+                      h1.rp__border__--COLON1px_____-solid_____-__--OCTOTHORP000 {
+                        border: 1px solid #000;
+                      }
+                      h1.rp__padding__--COLON10px {
+                        padding: 10px;
+                      }
+                      h1.rp__line-height__--COLON1__--DOT4 {
+                        line-height: 1.4;
+                      }
                     `, 22);
 
                     expect(result)
@@ -554,6 +569,7 @@ describe('Red Perfume', () => {
                       expect(testHelpers.trimIndentation(result))
                         .toEqual(testHelpers.trimIndentation(`
                           <!DOCTYPE html><html><head></head><body>
+                            <h1 class="rp__border__--COLON1px_____-solid_____-__--OCTOTHORP000 rp__padding__--COLON10px rp__line-height__--COLON1__--DOT4"></h1>
                             <div class="rp__padding__--COLON10px rp__margin__--COLON10px rp__color__--COLON__--OCTOTHORPF00 rp__text-decoration__--COLONnone rp__color__--COLON__--OCTOTHORPA00___-HOVER rp__text-decoration__--COLONunderline___-HOVER"></div>
                             <div class="after">
                               <div class="nested"></div>
@@ -579,6 +595,11 @@ describe('Red Perfume', () => {
                           '.rp__text-decoration__--COLONnone',
                           '.rp__color__--COLON__--OCTOTHORPA00___-HOVER',
                           '.rp__text-decoration__--COLONunderline___-HOVER'
+                        ],
+                        '.qualifying': [
+                          '.rp__border__--COLON1px_____-solid_____-__--OCTOTHORP000',
+                          '.rp__padding__--COLON10px',
+                          '.rp__line-height__--COLON1__--DOT4'
                         ]
                       });
 
@@ -625,6 +646,15 @@ describe('Red Perfume', () => {
                       .rp__5:hover {
                         text-decoration: underline;
                       }
+                      h1.rp__6 {
+                        border: 1px solid #000;
+                      }
+                      h1.rp__0 {
+                        padding: 10px;
+                      }
+                      h1.rp__7 {
+                        line-height: 1.4;
+                      }
                     `, 22);
 
                     expect(result)
@@ -641,6 +671,7 @@ describe('Red Perfume', () => {
                       expect(testHelpers.trimIndentation(result))
                         .toEqual(testHelpers.trimIndentation(`
                           <!DOCTYPE html><html><head></head><body>
+                            <h1 class="rp__6 rp__0 rp__7"></h1>
                             <div class="rp__0 rp__1 rp__2 rp__3 rp__4 rp__5"></div>
                             <div class="after">
                               <div class="nested"></div>
@@ -666,6 +697,11 @@ describe('Red Perfume', () => {
                           '.rp__3',
                           '.rp__4',
                           '.rp__5'
+                        ],
+                        '.qualifying': [
+                          '.rp__6',
+                          '.rp__0',
+                          '.rp__7'
                         ]
                       });
 
