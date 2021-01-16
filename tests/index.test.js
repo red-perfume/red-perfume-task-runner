@@ -537,6 +537,7 @@ describe('Red Perfume', () => {
                         expect(testHelpers.trimIndentation(result))
                           .toEqual(testHelpers.trimIndentation(`
                             <!DOCTYPE html><html><head></head><body>
+                              <h1 class="qualifying"></h1>
                               <div class="pseudo rp__padding__--COLON10px rp__margin__--COLON10px"></div>
                               <div class="after">
                                 <div class="nested"></div>
@@ -606,6 +607,7 @@ describe('Red Perfume', () => {
                         expect(testHelpers.trimIndentation(result))
                           .toEqual(testHelpers.trimIndentation(`
                             <!DOCTYPE html><html><head></head><body>
+                              <h1 class="qualifying"></h1>
                               <div class="pseudo rp__0 rp__1"></div>
                               <div class="after">
                                 <div class="nested"></div>
@@ -694,6 +696,7 @@ describe('Red Perfume', () => {
                         expect(testHelpers.trimIndentation(result))
                           .toEqual(testHelpers.trimIndentation(`
                             <!DOCTYPE html><html><head></head><body>
+                              <h1 class="qualifying"></h1>
                               <div class="simple rp__color__--COLON__--OCTOTHORPF00 rp__text-decoration__--COLONnone rp__color__--COLON__--OCTOTHORPA00___-HOVER rp__text-decoration__--COLONunderline___-HOVER"></div>
                               <div class="after">
                                 <div class="nested"></div>
@@ -771,6 +774,7 @@ describe('Red Perfume', () => {
                         expect(testHelpers.trimIndentation(result))
                           .toEqual(testHelpers.trimIndentation(`
                             <!DOCTYPE html><html><head></head><body>
+                              <h1 class="qualifying"></h1>
                               <div class="simple rp__0 rp__1 rp__2 rp__3"></div>
                               <div class="after">
                                 <div class="nested"></div>
@@ -827,7 +831,7 @@ describe('Red Perfume', () => {
                 {
                   uglify: false,
                   styles: {
-                    data: simpleCSS,
+                    data: qualifyingCSS,
                     result: function (result, err) {
                       const expectation = testHelpers.trimIndentation(`
                         h1.rp__border__--COLON1px_____-solid_____-__--OCTOTHORP000 {
@@ -901,7 +905,7 @@ describe('Red Perfume', () => {
                 {
                   uglify: true,
                   styles: {
-                    data: simpleCSS,
+                    data: qualifyingCSS,
                     result: function (result, err) {
                       const expectation = testHelpers.trimIndentation(`
                         h1.rp__0 {
