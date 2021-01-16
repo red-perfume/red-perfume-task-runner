@@ -96,7 +96,7 @@ Then `red-perfume` atomizes the styling into atomic classes, and replaces the re
 </html>
 ```
 
-This output isn't as pretty to read, but it's a build step, *not* your source code, so it doesn't really matter. **Note:** [Uglification of classnames](https://github.com/red-perfume/red-perfume/issues/5) is on the TODO list.
+This output isn't as pretty to read, but it's a build step, *not* your source code, so it doesn't really matter. **Note:** The class names can be uglified as well (`.rp__0`, `.rp__1`, etc.).
 
 This above example already works as a proof of concept with the current code. However, the library needs a lot more work to be usable in most projects. Look at the **issues** page to see what work is left to be done and how you can help!
 
