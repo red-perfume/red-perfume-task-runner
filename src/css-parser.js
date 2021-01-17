@@ -8,7 +8,7 @@ const helpers = require('./helpers.js');
  * data that is not of use for us and just clouds up the console
  * logs during development.
  *
- * @param  {any} item  Parsed CSS or a portion of it
+ * @param  {any} rule  Parsed CSS or a portion of it
  */
 function recursivelyRemovePosition (rule) {
   if (Array.isArray(rule)) {
