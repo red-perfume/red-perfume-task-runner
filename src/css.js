@@ -55,16 +55,18 @@ function updateClassMap (classMap, selectors, encodedClassName) {
  * Ensure that non-classes are not atomized,
  * but still included in the output.
  *
- * @param  {object} rule     Parsed CSS Rule
- * @param  {object} newRules Object containing all unique rules
+ * @param {object} rule     Parsed CSS Rule
+ * @param {object} newRules Object containing all unique rules
+ * @param newRule
  */
-function handleNonClasses (rule, newRules) {
+function handleNonClasses (rule) {
   let originalSelectorName = rule.selectors[0][0].original;
-  newRules[originalSelectorName] = {
+  const newRule = {
     type: 'rule',
-    selectors: [[originalSelectorName]],
+    selectors: [[{ original: originalSelectorName }]],
     declarations: rule.declarations
   };
+  return newRule;
 }
 
 const css = function (options, input, uglify) {
@@ -156,15 +158,39 @@ const css = function (options, input, uglify) {
        }
      }
   */
+  // console.log(JSON.stringify(parsed.stylesheet.rules[0].declarations, null, '\t'));
+
+  // parsed.stylesheet.rules[0].selectors:
+  // [
+  //   [
+  //     {
+  //       "type": "tag",
+  //       "name": "h1",
+  //       "namespace": null,
+  //       "original": "h1.qualifying"
+  //     },
+  //     {
+  //       "type": "attribute",
+  //       "name": "class",
+  //       "action": "element",
+  //       "value": "qualifying",
+  //       "ignoreCase": false,
+  //       "namespace": null
+  //     }
+  //   ]
+  // ]
+
   parsed.stylesheet.rules.forEach(function (rule) {
     // console.log(JSON.stringify(rule, null, 2));
 
     let type = rule.selectors[0][0].type;
     let name = rule.selectors[0][0].name;
     if (type === 'tag' || (type === 'attribute' && name !== 'class')) {
-      handleNonClasses(rule, newRules);
-    } else {
-      /* A declaration looks like:
+      // handleNonClasses(rule, newRules);
+      rule = handleNonClasses(rule);
+    } 
+    // console.log(JSON.stringify(rule, null, '\t'));
+    /* A declaration looks like:
         {
           type: 'declaration',
           property: 'padding',
@@ -176,28 +202,31 @@ const css = function (options, input, uglify) {
           }
         }
       */
-      rule.declarations.forEach(function (declaration) {
-        /* An encoded class name look like:
+    rule.declarations.forEach(function (declaration) {
+      /* An encoded class name look like:
           .rp__padding__--COLON10px
         */
-        let encodedClassName = encodeClassName(options, declaration);
+      let encodedClassName = encodeClassName(options, declaration);
+      let encodedName = '';
+      if (type === 'tag') {
+        encodedName = name + encodedClassName;
+      }
 
-        if (rule.selectors[0][1] && rule.selectors[0][1].type && rule.selectors[0][1].type === 'pseudo') {
-          let pseudoName = rule.selectors[0][1].name;
-          // .rp__display__--COLONblock___-HOVER:hover
-          let pseudoClassName = encodedClassName + '___-' + pseudoName.toUpperCase() + ':' + pseudoName;
-          encodedClassName = pseudoClassName;
-        }
+      // if (rule.selectors[0][1] && rule.selectors[0][1].type && rule.selectors[0][1].type === 'pseudo') {
+      //   let pseudoName = rule.selectors[0][1].name;
+      //   // .rp__display__--COLONblock___-HOVER:hover
+      //   let pseudoClassName = encodedClassName + '___-' + pseudoName.toUpperCase() + ':' + pseudoName;
+      //   encodedClassName = pseudoClassName;
+      // }
 
-        classMap = updateClassMap(classMap, rule.selectors, encodedClassName);
+      classMap = updateClassMap(classMap, rule.selectors, encodedClassName);
 
-        newRules[encodedClassName] = {
-          type: 'rule',
-          selectors: [[encodedClassName]],
-          declarations: [declaration]
-        };
-      });
-    }
+      newRules[encodedClassName] = {
+        type: 'rule',
+        selectors: [[encodedName || encodedClassName]],
+        declarations: [declaration]
+      };
+    });
   });
 
   // console.log(JSON.stringify(newRules, null, 2));
