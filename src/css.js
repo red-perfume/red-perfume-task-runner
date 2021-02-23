@@ -206,10 +206,18 @@ const css = function (options, input, uglify) {
       /* An encoded class name look like:
           .rp__padding__--COLON10px
         */
-      let encodedClassName = encodeClassName(options, declaration);
+      const isClass = rule.selectors[0].find((selector) => {
+        return selector.name === 'class';
+      });
+      let encodedClassName = '';
       let encodedName = '';
-      if (type === 'tag') {
-        encodedName = name + encodedClassName;
+      if (!isClass) {
+        encodedName = rule.selectors[0][0].original;
+      } else {
+        encodedClassName = encodeClassName(options, declaration);
+        if (type === 'tag') {
+          encodedName = name + encodedClassName;
+        }
       }
 
       if (rule.selectors[0][1] && rule.selectors[0][1].type && rule.selectors[0][1].type === 'pseudo') {
