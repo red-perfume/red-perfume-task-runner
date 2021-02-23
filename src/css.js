@@ -212,12 +212,12 @@ const css = function (options, input, uglify) {
         encodedName = name + encodedClassName;
       }
 
-      // if (rule.selectors[0][1] && rule.selectors[0][1].type && rule.selectors[0][1].type === 'pseudo') {
-      //   let pseudoName = rule.selectors[0][1].name;
-      //   // .rp__display__--COLONblock___-HOVER:hover
-      //   let pseudoClassName = encodedClassName + '___-' + pseudoName.toUpperCase() + ':' + pseudoName;
-      //   encodedClassName = pseudoClassName;
-      // }
+      if (rule.selectors[0][1] && rule.selectors[0][1].type && rule.selectors[0][1].type === 'pseudo') {
+        let pseudoName = rule.selectors[0][1].name;
+        // .rp__display__--COLONblock___-HOVER:hover
+        let pseudoClassName = encodedClassName + '___-' + pseudoName.toUpperCase() + ':' + pseudoName;
+        encodedClassName = pseudoClassName;
+      }
 
       classMap = updateClassMap(classMap, rule.selectors, encodedClassName);
 
