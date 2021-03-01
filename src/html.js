@@ -75,11 +75,10 @@ const html = function (options, input, classMap) {
    * Replaces all instances of a class name in class attributes in the DOM
    * with its atomized representation of class names.
    *
-   * @param {object} node            An HTML AST node
-   * @param {string} classToReplace  A string to find and replace
-   * @param {Array} newClasses      Array of strings that will replace the given class
-   * @param hasTag
-   * @param tag
+   * @param {object}     node            An HTML AST node
+   * @param {string}     classToReplace  A string to find and replace
+   * @param {Array}      newClasses      Array of strings that will replace the given class
+   * @param {string}     tag             HTML tag name ('h1', 'section', 'footer', etc)
    * @return {undefined}                 Just mutates the AST. Nothing returned
    */
   function replaceSemanticClassWithAtomizedClasses (node, classToReplace, newClasses, tag) {

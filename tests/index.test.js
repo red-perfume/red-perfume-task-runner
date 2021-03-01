@@ -1,3 +1,5 @@
+/* eslint-disable max-lines-per-function */
+
 const mockfs = require('mock-fs');
 const fs = require('fs');
 const redPerfume = require('../index.js');

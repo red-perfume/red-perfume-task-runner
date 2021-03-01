@@ -1,3 +1,5 @@
+/* eslint-disable max-lines-per-function */
+
 const cssParser = require('@/css-parser.js');
 
 describe('CSS parser', () => {
@@ -64,8 +66,7 @@ describe('CSS parser', () => {
                     type: 'declaration',
                     value: '#F00'
                   }
-                ],
-
+                ]
               }
             ],
             source: undefined,

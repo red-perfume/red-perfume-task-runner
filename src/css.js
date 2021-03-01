@@ -55,9 +55,8 @@ function updateClassMap (classMap, selectors, encodedClassName) {
  * Ensure that non-classes are not atomized,
  * but still included in the output.
  *
- * @param {object} rule     Parsed CSS Rule
- * @param {object} newRules Object containing all unique rules
- * @param newRule
+ * @param  {object} rule     Parsed CSS Rule
+ * @return {object} newRule  A CSS AST rule
  */
 function handleNonClasses (rule) {
   let originalSelectorName = rule.selectors[0][0].original;
@@ -164,18 +163,18 @@ const css = function (options, input, uglify) {
   // [
   //   [
   //     {
-  //       "type": "tag",
-  //       "name": "h1",
-  //       "namespace": null,
-  //       "original": "h1.qualifying"
+  //       type: 'tag',
+  //       name: 'h1',
+  //       namespace: null,
+  //       original: 'h1.qualifying'
   //     },
   //     {
-  //       "type": "attribute",
-  //       "name": "class",
-  //       "action": "element",
-  //       "value": "qualifying",
-  //       "ignoreCase": false,
-  //       "namespace": null
+  //       type: 'attribute',
+  //       name: 'class',
+  //       action: 'element',
+  //       value: 'qualifying',
+  //       ignoreCase: false,
+  //       namespace: null
   //     }
   //   ]
   // ]
@@ -188,24 +187,24 @@ const css = function (options, input, uglify) {
     if (type === 'tag' || (type === 'attribute' && name !== 'class')) {
       // handleNonClasses(rule, newRules);
       rule = handleNonClasses(rule);
-    } 
+    }
     // console.log(JSON.stringify(rule, null, '\t'));
     /* A declaration looks like:
-        {
-          type: 'declaration',
-          property: 'padding',
-          value: '10px',
-          position: Position {
-            start: { line: 1, column: 48 },
-            end: { line: 1, column: 61 },
-            source: undefined
-          }
+      {
+        type: 'declaration',
+        property: 'padding',
+        value: '10px',
+        position: Position {
+          start: { line: 1, column: 48 },
+          end: { line: 1, column: 61 },
+          source: undefined
         }
-      */
+      }
+    */
     rule.declarations.forEach(function (declaration) {
       /* An encoded class name look like:
-          .rp__padding__--COLON10px
-        */
+        .rp__padding__--COLON10px
+      */
       const isClass = rule.selectors[0].find((selector) => {
         return selector.name === 'class';
       });

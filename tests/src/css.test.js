@@ -1,3 +1,5 @@
+/* eslint-disable max-lines-per-function */
+
 const css = require('@/css.js');
 
 const testHelpers = require('@@/testHelpers.js');
