@@ -1,7 +1,7 @@
 const fs = require('fs');
-const css = require('./src/css.js');
-const html = require('./src/html.js');
-const helpers = require('./src/helpers.js');
+const css = require('./css.js');
+const html = require('./html.js');
+const helpers = require('./helpers.js');
 
 const atomize = {
   processStyles: function (options, task, processedStyles) {
