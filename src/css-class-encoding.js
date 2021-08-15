@@ -56,6 +56,7 @@ const propertyValueEncodingMap = {
  *
  * @param  {string} character  A single character string
  * @return {string}            The original ASCII char or '__--U' + charCode
+ * @example
  */
 function unicodeEndocing (character) {
   let code = character.charCodeAt();
@@ -73,6 +74,7 @@ const prefix = 'rp__';
  * @param  {object} options      User's passed in options, containing verbose/customLoger
  * @param  {object} declaration  Contains the Property and Value strings
  * @return {string}              A classname starting with . and a prefix
+ * @example
  */
 function encodeClassName (options, declaration) {
   if (!declaration || declaration.property === undefined || declaration.value === undefined) {

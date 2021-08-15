@@ -9,7 +9,8 @@ const helpers = require('./helpers.js');
  * data that is not of use for us and just clouds up the console
  * logs during development.
  *
- * @param  {any} item  Parsed CSS or a portion of it
+ * @param {any} item  Parsed CSS or a portion of it
+ * @example
  */
 function recursivelyRemovePosition (item) {
   if (Array.isArray(item)) {
@@ -35,6 +36,7 @@ function recursivelyRemovePosition (item) {
  *
  * @param  {object} classMap  The class map object used by the HTML/JSON
  * @return {object}           Returns the classMap object
+ * @example
  */
 function removeIdenticalProperties (classMap) {
   // Remove identical properties
@@ -51,6 +53,7 @@ function removeIdenticalProperties (classMap) {
  * @param  {Array}  selectors         Parsed CSS selectors
  * @param  {string} encodedClassName  Encoded class name
  * @return {object}                   Returns the classMap object
+ * @example
  */
 function updateClassMap (classMap, selectors, encodedClassName) {
   /* A selector looks like:
@@ -78,8 +81,9 @@ function updateClassMap (classMap, selectors, encodedClassName) {
  * Ensure that non-classes are not atomized,
  * but still included in the output.
  *
- * @param  {object} rule     Parsed CSS Rule
- * @param  {object} newRules Object containing all unique rules
+ * @param {object} rule      Parsed CSS Rule
+ * @param {object} newRules  Object containing all unique rules
+ * @example
  */
 function handleNonClasses (rule, newRules) {
   let originalSelectorName = rule.selectors[0][0].original;
@@ -90,6 +94,12 @@ function handleNonClasses (rule, newRules) {
   };
 }
 
+/**
+ * @param  options
+ * @param  input
+ * @param  uglify
+ * @example
+ */
 const css = function (options, input, uglify) {
   options = options || {};
   input = input || '';

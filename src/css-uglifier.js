@@ -4,6 +4,7 @@
  *
  * @param  {number} uglifierIndex  Initial value
  * @return {number}                Incremented or original value (if good)
+ * @example
  */
 function incrementIfContainsBad (uglifierIndex) {
   let knownBad = [
@@ -14,6 +15,7 @@ function incrementIfContainsBad (uglifierIndex) {
    *
    * @param  {string}  value  A string of text we want to avoid occuring in uglified class names
    * @return {boolean}        true = contains bad word, false = no bad word found
+   * @example
    */
   function containsBad (value) {
     return uglifierIndex.toString(36).includes(value);
@@ -29,6 +31,7 @@ function incrementIfContainsBad (uglifierIndex) {
  *
  * @param  {number} uglifierIndex  A starting value
  * @return {object}                The class "name" and the incremented "index" number
+ * @example
  */
 function cssUglifier (uglifierIndex) {
   uglifierIndex = uglifierIndex || 0;

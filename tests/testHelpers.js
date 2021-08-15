@@ -8,6 +8,7 @@ const testHelpers = {
    *
    * @param  {Error}  err  An Error object, or an array of Error objects
    * @return {object}      Just a plain object, with errno removed
+   * @example
    */
   removeErrno: function (err) {
     err = JSON.parse(JSON.stringify(err));
@@ -24,6 +25,7 @@ const testHelpers = {
    * @param  {string} value   The text to change
    * @param  {number} amount  How much indentation to remove from each line
    * @return {string}         The changed text
+   * @example
    */
   trimIndentation: function (value, amount) {
     value = value || '';

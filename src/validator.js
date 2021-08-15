@@ -1,6 +1,12 @@
 const helpers = require('./helpers.js');
 
 const validator = {
+  /**
+   * @param  options
+   * @param  key
+   * @param  message
+   * @example
+   */
   validateArray: function (options, key, message) {
     if (key && !Array.isArray(key)) {
       key = undefined;
@@ -11,6 +17,11 @@ const validator = {
     }
     return key;
   },
+  /**
+   * @param  key
+   * @param  value
+   * @example
+   */
   validateBoolean: function (key, value) {
     if (typeof(key) !== 'boolean') {
       key = value;
@@ -26,6 +37,7 @@ const validator = {
    * @param  {Array}   extensions     An array of strings for file extensions
    * @param  {boolean} checkIfExists  true = check for fs.existsSync(key)
    * @return {string}                 Returns a string or undefined if string was invalid
+   * @example
    */
   validateFile: function (options, key, extensions, checkIfExists) {
     key = this.validateString(options, key, 'File paths must be a string');
@@ -59,6 +71,12 @@ const validator = {
 
     return key;
   },
+  /**
+   * @param  options
+   * @param  key
+   * @param  message
+   * @example
+   */
   validateFunction: function (options, key, message) {
     if (key && typeof(key) !== 'function') {
       key = undefined;
@@ -69,6 +87,12 @@ const validator = {
     }
     return key;
   },
+  /**
+   * @param  options
+   * @param  key
+   * @param  message
+   * @example
+   */
   validateObject: function (options, key, message) {
     if (
       key &&
@@ -85,6 +109,12 @@ const validator = {
     }
     return key;
   },
+  /**
+   * @param  options
+   * @param  key
+   * @param  message
+   * @example
+   */
   validateString: function (options, key, message) {
     if (key === '' || (key && typeof(key) !== 'string')) {
       key = undefined;
@@ -96,6 +126,10 @@ const validator = {
     return key;
   },
 
+  /**
+   * @param  options
+   * @example
+   */
   validateCustomLogger: function (options) {
     if (!options.customLogger) {
       delete options.customLogger;
@@ -110,6 +144,7 @@ const validator = {
    *
    * @param  {object} options  The options object passed in by the user.
    * @return {object}          Returns an object that will always contain a valid or empty tasks array.
+   * @example
    */
   validateTasks: function (options) {
     if (
@@ -133,6 +168,11 @@ const validator = {
 
     return options;
   },
+  /**
+   * @param  options
+   * @param  task
+   * @example
+   */
   validateTask: function (options, task) {
     task.uglify = this.validateBoolean(task.uglify, false);
     task.styles = this.validateObject(options, task.styles, 'Optional task.styles must be a type of object or be undefined.');
@@ -170,6 +210,11 @@ const validator = {
 
     return task;
   },
+  /**
+   * @param  options
+   * @param  styles
+   * @example
+   */
   validateTaskStyles: function (options, styles) {
     styles.in = this.validateTaskStylesIn(options, styles.in);
     styles.out = this.validateFile(options, styles.out, ['.css'], false);
@@ -200,6 +245,11 @@ const validator = {
     }
     return styles;
   },
+  /**
+   * @param  options
+   * @param  stylesIn
+   * @example
+   */
   validateTaskStylesIn: function (options, stylesIn) {
     stylesIn = this.validateArray(options, stylesIn, 'Optional task.styles.in must be an array or undefined.');
     if (stylesIn) {
@@ -209,6 +259,11 @@ const validator = {
     }
     return stylesIn;
   },
+  /**
+   * @param  options
+   * @param  markup
+   * @example
+   */
   validateTaskMarkup: function (options, markup) {
     markup = markup.map((item) => {
       item.in = this.validateFile(options, item.in, ['.html', '.htm'], true);
@@ -247,6 +302,11 @@ const validator = {
 
     return markup;
   },
+  /**
+   * @param  options
+   * @param  data
+   * @example
+   */
   validateTaskMarkupData: function (options, data) {
     let message = 'Optional task.markup.data must be a string that begins with \'<\' or undefined.';
     data = this.validateString(options, data, message);
@@ -256,6 +316,11 @@ const validator = {
     }
     return data;
   },
+  /**
+   * @param  options
+   * @param  scripts
+   * @example
+   */
   validateTaskScripts: function (options, scripts) {
     scripts = scripts || {};
     scripts.out = this.validateString(options, scripts.out, 'Optional task.scripts.out must be a string or undefined.');
@@ -275,6 +340,10 @@ const validator = {
     return scripts;
   },
 
+  /**
+   * @param  options
+   * @example
+   */
   validateOptions: function (options) {
     if (typeof(options) !== 'object' || Array.isArray(options)) {
       options = undefined;

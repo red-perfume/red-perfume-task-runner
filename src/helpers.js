@@ -1,4 +1,10 @@
 const helpers = {
+  /**
+   * @param  options
+   * @param  message
+   * @param  error
+   * @example
+   */
   throwError: function (options, message, error) {
     if (options.verbose && options.customLogger) {
       options.customLogger(message, error);

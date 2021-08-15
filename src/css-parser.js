@@ -3,6 +3,11 @@ const selectorParse = require('css-what').parse;
 
 const helpers = require('./helpers.js');
 
+/**
+ * @param  options
+ * @param  input
+ * @example
+ */
 const cssParser = function (options, input) {
   if (!input) {
     helpers.throwError('Invalid CSS input.');

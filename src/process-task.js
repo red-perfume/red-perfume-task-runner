@@ -3,6 +3,15 @@ const helpers = require('./helpers.js');
 const css = require('./css.js');
 const html = require('./html.js');
 
+/**
+ * Based on task settings concatenate all CSS inputs
+ * into one string.
+ *
+ * @param  {object} options     The user's options object
+ * @param  {object} taskStyles  Style settings for this task
+ * @return {object}             The CSS String and any style errors
+ * @example
+ */
 function getCssString (options, taskStyles) {
   let cssString = '';
   let styleErrors = [];
@@ -24,6 +33,11 @@ function getCssString (options, taskStyles) {
   return { cssString, styleErrors };
 }
 
+/**
+ * @param  options
+ * @param  item
+ * @example
+ */
 function getHtmlString (options, item) {
   let markupString = '';
   let markupErrors = [];
@@ -41,6 +55,13 @@ function getHtmlString (options, item) {
   return { markupString, markupErrors };
 }
 
+/**
+ * @param  options
+ * @param  taskStyles
+ * @param  processedStyles
+ * @param  styleErrors
+ * @example
+ */
 function outputAtomizedCSS (options, taskStyles, processedStyles, styleErrors) {
   if (taskStyles.out) {
     try {
@@ -58,6 +79,13 @@ function outputAtomizedCSS (options, taskStyles, processedStyles, styleErrors) {
   }
 }
 
+/**
+ * @param  options
+ * @param  item
+ * @param  processedMarkup
+ * @param  markupErrors
+ * @example
+ */
 function outputAtomizedHTML (options, item, processedMarkup, markupErrors) {
   if (item.out) {
     try {
@@ -75,6 +103,12 @@ function outputAtomizedHTML (options, item, processedMarkup, markupErrors) {
   }
 }
 
+/**
+ * @param  options
+ * @param  taskScripts
+ * @param  processedStyles
+ * @example
+ */
 function outputAtomizedJSON (options, taskScripts, processedStyles) {
   let scriptErrors;
   if (taskScripts.out) {
@@ -90,6 +124,11 @@ function outputAtomizedJSON (options, taskScripts, processedStyles) {
   }
 }
 
+/**
+ * @param  options
+ * @param  task
+ * @example
+ */
 const processTask = function (options, task) {
   let processedStyles = {};
 
