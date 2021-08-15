@@ -1,3 +1,10 @@
+'use strict';
+
+/**
+ * @file    Encodes a CSS class name
+ * @author  TheJaredWilcurt
+ */
+
 const helpers = require('./helpers.js');
 
 // Initially I thought this too verbose, but there is literally no limit on class lengths other than the machine's memory/CPU.
@@ -52,11 +59,13 @@ const propertyValueEncodingMap = {
 
 /**
  * Takes in a single character string. If it is part of the normal ASCII set, does nothing,
- * otherwise returns '__--U' and the charCode
+ * otherwise returns '__--U' and the charCode.
+ *
+ * @example
+ * unicodeEndocing('â');
  *
  * @param  {string} character  A single character string
  * @return {string}            The original ASCII char or '__--U' + charCode
- * @example
  */
 function unicodeEndocing (character) {
   let code = character.charCodeAt();
@@ -66,15 +75,18 @@ function unicodeEndocing (character) {
   }
 }
 
+// TODO: Eventually this should be an option user's can provide.
 const prefix = 'rp__';
 
 /**
  * Encodes propter/value pairs as valid, decodable classnames.
  *
+ * @example
+ * let encodedClassName = encodeClassName(options, declaration);
+ *
  * @param  {object} options      User's passed in options, containing verbose/customLoger
  * @param  {object} declaration  Contains the Property and Value strings
  * @return {string}              A classname starting with . and a prefix
- * @example
  */
 function encodeClassName (options, declaration) {
   if (!declaration || declaration.property === undefined || declaration.value === undefined) {
