@@ -1,3 +1,10 @@
+'use strict';
+
+/**
+ * @file    Helper functions used by unit tests
+ * @author  TheJaredWilcurt
+ */
+
 const testHelpers = {
   /**
    * The errno value from a failed fs read/write is a different
@@ -8,7 +15,6 @@ const testHelpers = {
    *
    * @param  {Error}  err  An Error object, or an array of Error objects
    * @return {object}      Just a plain object, with errno removed
-   * @example
    */
   removeErrno: function (err) {
     err = JSON.parse(JSON.stringify(err));
@@ -25,7 +31,6 @@ const testHelpers = {
    * @param  {string} value   The text to change
    * @param  {number} amount  How much indentation to remove from each line
    * @return {string}         The changed text
-   * @example
    */
   trimIndentation: function (value, amount) {
     value = value || '';

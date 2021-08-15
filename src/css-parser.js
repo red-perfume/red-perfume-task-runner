@@ -10,7 +10,6 @@ const selectorParse = require('css-what').parse;
 
 const helpers = require('./helpers.js');
 
-
 /**
  * Parses the provided CSS string to an Abstract
  * Syntax Tree (AST). Adds an "original" value to

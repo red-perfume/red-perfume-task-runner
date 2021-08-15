@@ -1,3 +1,10 @@
+'use strict';
+
+/**
+ * @file    Converts CSS AST to a string
+ * @author  TheJaredWilcurt
+ */
+
 const css = require('css');
 
 /**
@@ -5,7 +12,6 @@ const css = require('css');
  *
  * @param  {object} input  A CSS Abstract Syntax Tree (AST)
  * @return {string}        Valid CSS (not minified)
- * @example
  */
 function cssStringify (input) {
   if (

@@ -1,21 +1,26 @@
+'use strict';
+
+/**
+ * @file    Creates uglified atomized class names like .rp__2xh3
+ * @author  TheJaredWilcurt
+ */
+
 /**
  * Increment the Uglifier index if it contains a known bad
  * value when base 36 encoded.
  *
  * @param  {number} uglifierIndex  Initial value
  * @return {number}                Incremented or original value (if good)
- * @example
  */
 function incrementIfContainsBad (uglifierIndex) {
   let knownBad = [
     'ad' // adblockers may hide these elements
   ];
   /**
-   * Checks if a bad word can be found in a base 36 encoded number
+   * Checks if a bad word can be found in a base 36 encoded number.
    *
    * @param  {string}  value  A string of text we want to avoid occuring in uglified class names
    * @return {boolean}        true = contains bad word, false = no bad word found
-   * @example
    */
   function containsBad (value) {
     return uglifierIndex.toString(36).includes(value);
@@ -31,7 +36,6 @@ function incrementIfContainsBad (uglifierIndex) {
  *
  * @param  {number} uglifierIndex  A starting value
  * @return {object}                The class "name" and the incremented "index" number
- * @example
  */
 function cssUglifier (uglifierIndex) {
   uglifierIndex = uglifierIndex || 0;

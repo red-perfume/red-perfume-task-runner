@@ -14,9 +14,6 @@ const html = require('./html.js');
  * Based on task settings concatenate all CSS inputs
  * into one string.
  *
- * @example
- * let cssData = getCssString(options, task.styles);
- *
  * @param  {object} options     The user's options object
  * @param  {object} taskStyles  Style settings for this task
  * @return {object}             The CSS String and any style errors
@@ -45,9 +42,6 @@ function getCssString (options, taskStyles) {
 /**
  * Based on task settings produce an HTML string.
  *
- * @example
- * let htmlData = getHtmlString(options, task.styles);
- *
  * @param  {object} options  The user's options object
  * @param  {object} item     Contains in/out/data/result for one HTML file
  * @return {object}          The HTML String and any markup errors
@@ -71,9 +65,6 @@ function getHtmlString (options, item) {
 
 /**
  * Saves styles to disk and/or runs the result callback.
- *
- * @example
- * outputAtomizedCSS(options, task.styles, processedStyles, cssData.styleErrors);
  *
  * @param {object} options          The user's options object
  * @param {object} taskStyles       Style settings for this task
@@ -100,9 +91,6 @@ function outputAtomizedCSS (options, taskStyles, processedStyles, styleErrors) {
 /**
  * Saves markup to disk and/or runs the result callback.
  *
- * @example
- * outputAtomizedHTML(options, item, processedMarkup, htmlData.markupErrors);
- *
  * @param {object} options          The user's options object
  * @param {object} item             The in/out/data/result object for this markup file
  * @param {string} processedMarkup  The modified markup with atomized classes
@@ -127,9 +115,6 @@ function outputAtomizedHTML (options, item, processedMarkup, markupErrors) {
 
 /**
  * Saves the JSON to disk and/or runs the result callback.
- *
- * @example
- * outputAtomizedJSON(options, task.scripts, processedStyles);
  *
  * @param {object} options          The user's options object
  * @param {object} taskScripts      Script settings for this task

@@ -62,7 +62,7 @@ const propertyValueEncodingMap = {
  * otherwise returns '__--U' and the charCode.
  *
  * @example
- * unicodeEndocing('â');
+ * unicodeEndocing('â'); // '__--U226'
  *
  * @param  {string} character  A single character string
  * @return {string}            The original ASCII char or '__--U' + charCode

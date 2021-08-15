@@ -1,3 +1,10 @@
+'use strict';
+
+/**
+ * @file    Process, atomize, uglify a CSS string
+ * @author  TheJaredWilcurt
+ */
+
 const cssParser = require('./css-parser.js');
 const cssStringify = require('./css-stringify.js');
 const cssUglifier = require('./css-uglifier.js');
@@ -10,7 +17,6 @@ const helpers = require('./helpers.js');
  * logs during development.
  *
  * @param {any} item  Parsed CSS or a portion of it
- * @example
  */
 function recursivelyRemovePosition (item) {
   if (Array.isArray(item)) {
@@ -36,7 +42,6 @@ function recursivelyRemovePosition (item) {
  *
  * @param  {object} classMap  The class map object used by the HTML/JSON
  * @return {object}           Returns the classMap object
- * @example
  */
 function removeIdenticalProperties (classMap) {
   // Remove identical properties
@@ -53,7 +58,6 @@ function removeIdenticalProperties (classMap) {
  * @param  {Array}  selectors         Parsed CSS selectors
  * @param  {string} encodedClassName  Encoded class name
  * @return {object}                   Returns the classMap object
- * @example
  */
 function updateClassMap (classMap, selectors, encodedClassName) {
   /* A selector looks like:
@@ -83,7 +87,6 @@ function updateClassMap (classMap, selectors, encodedClassName) {
  *
  * @param {object} rule      Parsed CSS Rule
  * @param {object} newRules  Object containing all unique rules
- * @example
  */
 function handleNonClasses (rule, newRules) {
   let originalSelectorName = rule.selectors[0][0].original;
@@ -95,10 +98,14 @@ function handleNonClasses (rule, newRules) {
 }
 
 /**
- * @param  options
- * @param  input
- * @param  uglify
- * @example
+ * Takes in a string of CSS, parses it to AST, manipulates the AST to produce
+ * atomized CSS, optionally uglifies the atomized class names, stringifies the
+ * AST back to a string. Returns String and Atomization Map.
+ *
+ * @param  {object}  options  User's options
+ * @param  {string}  input    The CSS to be atomized/uglified
+ * @param  {boolean} uglify   Whether to uglify the atomized class names
+ * @return {object}           The classMap of original to atomized names and the atomized CSS string
  */
 const css = function (options, input, uglify) {
   options = options || {};
