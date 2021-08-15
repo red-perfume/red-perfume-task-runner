@@ -9,18 +9,8 @@ module.exports = {
     'jest': true
   },
   'extends': [
-    'plugin:jsdoc/recommended',
     'tjw-base',
-    'tjw-jest'
-  ],
-  'plugins': [
-    'jsdoc'
-  ],
-  'settings': {
-    'jsdoc': {
-      'tagNamePreference': {
-        'returns': 'return'
-      }
-    }
-  }
+    'tjw-jest',
+    'tjw-jsdoc'
+  ]
 };
