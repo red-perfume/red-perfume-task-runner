@@ -1,10 +1,20 @@
+'use strict';
+
+/**
+ * @file    Validate and default the options object per documented API and log warnings.
+ * @author  TheJaredWilcurt
+ */
+
 const helpers = require('./helpers.js');
 
 const validator = {
   /**
-   * @param  options
-   * @param  key
-   * @param  message
+   * [validateArray description]
+   *
+   * @param  {[type]} options  [description]
+   * @param  {[type]} key      [description]
+   * @param  {[type]} message  [description]
+   * @return {[type]}          [description]
    */
   validateArray: function (options, key, message) {
     if (key && !Array.isArray(key)) {
@@ -17,8 +27,11 @@ const validator = {
     return key;
   },
   /**
-   * @param  key
-   * @param  value
+   * [validateBoolean description]
+   *
+   * @param  {[type]} key    [description]
+   * @param  {[type]} value  [description]
+   * @return {[type]}        [description]
    */
   validateBoolean: function (key, value) {
     if (typeof(key) !== 'boolean') {
@@ -69,9 +82,12 @@ const validator = {
     return key;
   },
   /**
-   * @param  options
-   * @param  key
-   * @param  message
+   * [validateFunction description]
+   *
+   * @param  {[type]} options  [description]
+   * @param  {[type]} key      [description]
+   * @param  {[type]} message  [description]
+   * @return {[type]}          [description]
    */
   validateFunction: function (options, key, message) {
     if (key && typeof(key) !== 'function') {
@@ -84,9 +100,12 @@ const validator = {
     return key;
   },
   /**
-   * @param  options
-   * @param  key
-   * @param  message
+   * [validateObject description]
+   *
+   * @param  {[type]} options  [description]
+   * @param  {[type]} key      [description]
+   * @param  {[type]} message  [description]
+   * @return {[type]}          [description]
    */
   validateObject: function (options, key, message) {
     if (
@@ -105,9 +124,12 @@ const validator = {
     return key;
   },
   /**
-   * @param  options
-   * @param  key
-   * @param  message
+   * [validateString description]
+   *
+   * @param  {[type]} options  [description]
+   * @param  {[type]} key      [description]
+   * @param  {[type]} message  [description]
+   * @return {[type]}          [description]
    */
   validateString: function (options, key, message) {
     if (key === '' || (key && typeof(key) !== 'string')) {
@@ -121,7 +143,10 @@ const validator = {
   },
 
   /**
-   * @param  options
+   * Validates optional customLogger is a function.
+   *
+   * @param  {object} options  User's options
+   * @return {object}          Modified user's options
    */
   validateCustomLogger: function (options) {
     if (!options.customLogger) {
@@ -161,8 +186,11 @@ const validator = {
     return options;
   },
   /**
-   * @param  options
-   * @param  task
+   * [validateTask description]
+   *
+   * @param  {[type]} options  [description]
+   * @param  {[type]} task     [description]
+   * @return {[type]}          [description]
    */
   validateTask: function (options, task) {
     task.uglify = this.validateBoolean(task.uglify, false);
@@ -202,8 +230,11 @@ const validator = {
     return task;
   },
   /**
-   * @param  options
-   * @param  styles
+   * [validateTaskStyles description]
+   *
+   * @param  {[type]} options  [description]
+   * @param  {[type]} styles   [description]
+   * @return {[type]}          [description]
    */
   validateTaskStyles: function (options, styles) {
     styles.in = this.validateTaskStylesIn(options, styles.in);
@@ -236,8 +267,11 @@ const validator = {
     return styles;
   },
   /**
-   * @param  options
-   * @param  stylesIn
+   * [validateTaskStylesIn description]
+   *
+   * @param  {[type]} options   [description]
+   * @param  {[type]} stylesIn  [description]
+   * @return {[type]}           [description]
    */
   validateTaskStylesIn: function (options, stylesIn) {
     stylesIn = this.validateArray(options, stylesIn, 'Optional task.styles.in must be an array or undefined.');
@@ -249,8 +283,11 @@ const validator = {
     return stylesIn;
   },
   /**
-   * @param  options
-   * @param  markup
+   * [validateTaskMarkup description]
+   *
+   * @param  {[type]} options  [description]
+   * @param  {[type]} markup   [description]
+   * @return {[type]}          [description]
    */
   validateTaskMarkup: function (options, markup) {
     markup = markup.map((item) => {
@@ -291,8 +328,11 @@ const validator = {
     return markup;
   },
   /**
-   * @param  options
-   * @param  data
+   * [validateTaskMarkupData description]
+   *
+   * @param  {[type]} options  [description]
+   * @param  {[type]} data     [description]
+   * @return {[type]}          [description]
    */
   validateTaskMarkupData: function (options, data) {
     let message = 'Optional task.markup.data must be a string that begins with \'<\' or undefined.';
@@ -304,8 +344,11 @@ const validator = {
     return data;
   },
   /**
-   * @param  options
-   * @param  scripts
+   * [validateTaskScripts description]
+   *
+   * @param  {[type]} options  [description]
+   * @param  {[type]} scripts  [description]
+   * @return {[type]}          [description]
    */
   validateTaskScripts: function (options, scripts) {
     scripts = scripts || {};
@@ -327,7 +370,11 @@ const validator = {
   },
 
   /**
-   * @param  options
+   * Validates and defaults all values in the options object,
+   * including tasks.
+   *
+   * @param  {object} options  User's options
+   * @return {object}          Modified user's options
    */
   validateOptions: function (options) {
     if (typeof(options) !== 'object' || Array.isArray(options)) {

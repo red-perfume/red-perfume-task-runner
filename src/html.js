@@ -1,3 +1,10 @@
+'use strict';
+
+/**
+ * @file    Parse HTML to AST, replace classes with atomized versions, stringify back to HTML
+ * @author  TheJaredWilcurt
+ */
+
 const parse5 = require('parse5');
 
 const helpers = require('./helpers.js');
@@ -53,7 +60,7 @@ const html = function (options, input, classMap) {
   const document = parse5.parse(input);
 
   /**
-   * Finds and removes every instance of a value from an array
+   * Finds and removes every instance of a value from an array.
    *
    * @param  {Array} arr    Any array
    * @param  {any}   value  Any literal that can be compared with ===

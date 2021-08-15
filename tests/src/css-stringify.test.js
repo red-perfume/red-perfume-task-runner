@@ -1,3 +1,10 @@
+'use strict';
+
+/**
+ * @file    Testing file
+ * @author  TheJaredWilcurt
+ */
+
 const cssStringify = require('@/css-stringify.js');
 
 const testHelpers = require('@@/testHelpers.js');

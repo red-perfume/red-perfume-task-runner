@@ -1,3 +1,10 @@
+'use strict';
+
+/**
+ * @file    Testing file
+ * @author  TheJaredWilcurt
+ */
+
 const cssParser = require('@/css-parser.js');
 
 describe('CSS parser', () => {

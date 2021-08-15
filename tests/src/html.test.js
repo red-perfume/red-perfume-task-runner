@@ -1,3 +1,10 @@
+'use strict';
+
+/**
+ * @file    Testing file
+ * @author  TheJaredWilcurt
+ */
+
 const html = require('@/html.js');
 
 describe('HTML', () => {
