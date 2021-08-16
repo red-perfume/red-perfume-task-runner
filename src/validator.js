@@ -198,6 +198,15 @@ const validator = {
     task.markup = this.validateArray(options, task.markup, 'Optional task.markup must be an array or be undefined.');
     task.scripts = this.validateObject(options, task.scripts, 'Optional task.scripts must be a type of object or be undefined.');
 
+    if (
+      !task.styles &&
+      !task.markup &&
+      !task.scripts
+    ) {
+      helpers.throwError(options, 'Your task does not contain styles, markup, or scripts');
+      return;
+    }
+
     if (task.styles) {
       task.styles = this.validateTaskStyles(options, task.styles);
     }
@@ -216,15 +225,6 @@ const validator = {
     }
     if (!task.scripts) {
       delete task.scripts;
-    }
-
-    if (
-      !task.styles &&
-      !task.markup &&
-      !task.scripts
-    ) {
-      helpers.throwError(options, 'Your task does not contain styles, markup, or scripts');
-      return;
     }
 
     return task;
