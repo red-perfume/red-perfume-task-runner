@@ -130,6 +130,50 @@ function handleNonClasses (rule, newRules) {
 }
 
 /**
+ * Creates the encoded class name and pairs it with the original selector.
+ * Handles psuedo selectors too, like :hover. Mutates the classMap and
+ * newRules.
+ *
+ * @param {object} options      User's options
+ * @param {object} rule         A CSS Rule as AST including selectors
+ * @param {object} declaration  A single CSS proptery/value pair as AST
+ * @param {object} classMap     Map of original CSS selectors to encoded class names
+ * @param {object} newRules     The atomized CSS as AST
+ */
+function encodeDeclarationAsClassname (options, rule, declaration, classMap, newRules) {
+  /* An encoded class name look like:
+    .rp__padding__--COLON10px
+  */
+  let encodedClassName = encodeClassName(options, declaration);
+
+  // Array of comma separated selectors on a specific rule
+  const ruleSelectors = rule.selectors;
+
+  // Each selector is made up of parts like .cow.dog:hover:after would be an array of 4 objects for each part
+  ruleSelectors.forEach(function (selectorParts) {
+    let encodedPseudoNames = [];
+    let pseudoNames = [];
+    selectorParts.forEach(function (selectorPart) {
+      if (selectorPart.type && selectorPart.type === 'pseudo') {
+        let pseudoName = selectorPart.name;
+        encodedPseudoNames.push('___-' + pseudoName.toUpperCase());
+        pseudoNames.push(':' + pseudoName);
+      }
+    });
+    // .rp__display__--COLONblock___-HOVER___-AFTER:hover:after
+    encodedClassName = encodedClassName + encodedPseudoNames.join('') + pseudoNames.join('');
+
+    classMap = updateClassMap(classMap, rule.selectors, encodedClassName);
+
+    newRules[encodedClassName] = {
+      type: 'rule',
+      selectors: [[encodedClassName]],
+      declarations: [declaration]
+    };
+  });
+}
+
+/**
  * Takes in a string of CSS, parses it to AST, manipulates the AST to produce
  * atomized CSS, optionally uglifies the atomized class names, stringifies the
  * AST back to a string. Returns String and Atomization Map.
@@ -246,37 +290,7 @@ const css = function (options, input, uglify) {
         }
       */
       rule.declarations.forEach(function (declaration) {
-        /* An encoded class name look like:
-          .rp__padding__--COLON10px
-        */
-        let encodedClassName = encodeClassName(options, declaration);
-
-        // Array of comma separated selectors on a specific rule
-        const ruleSelectors = rule.selectors;
-
-        // Each selector is made up of parts like .cow.dog:hover:after would be an array of 4 objects for each part
-        ruleSelectors.forEach(function (selectorParts) {
-          let encodedPseudoNames = [];
-          let pseudoNames = [];
-          selectorParts.forEach(function (selectorPart) {
-            if (selectorPart.type && selectorPart.type === 'pseudo') {
-              let pseudoName = selectorPart.name;
-              encodedPseudoNames.push('___-' + pseudoName.toUpperCase());
-              pseudoNames.push(':' + pseudoName);
-            }
-          });
-          // .rp__display__--COLONblock___-HOVER___-AFTER:hover:after
-          encodedClassName = encodedClassName + encodedPseudoNames.join('') + pseudoNames.join('');
-
-          classMap = updateClassMap(classMap, rule.selectors, encodedClassName);
-
-          newRules[encodedClassName] = {
-            type: 'rule',
-            selectors: [[encodedClassName]],
-            declarations: [declaration]
-          };
-        });
-
+        encodeDeclarationAsClassname(options, rule, declaration, classMap, newRules);
       });
     }
   });
