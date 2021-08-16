@@ -232,6 +232,7 @@ const css = function (options, input, uglify) {
     recursivelyRemovePosition(rule);
     // console.log(JSON.stringify(rule, null, 2));
 
+    // TODO: I think this needs improved
     let type = rule.selectors[0][0].type;
     let name = rule.selectors[0][0].name;
     if (type === 'tag' || (type === 'attribute' && name !== 'class')) {
@@ -241,12 +242,7 @@ const css = function (options, input, uglify) {
         {
           type: 'declaration',
           property: 'padding',
-          value: '10px',
-          position: Position {
-            start: { line: 1, column: 48 },
-            end: { line: 1, column: 61 },
-            source: undefined
-          }
+          value: '10px'
         }
       */
       rule.declarations.forEach(function (declaration) {
@@ -255,20 +251,32 @@ const css = function (options, input, uglify) {
         */
         let encodedClassName = encodeClassName(options, declaration);
 
-        if (rule.selectors[0][1] && rule.selectors[0][1].type && rule.selectors[0][1].type === 'pseudo') {
-          let pseudoName = rule.selectors[0][1].name;
-          // .rp__display__--COLONblock___-HOVER:hover
-          let pseudoClassName = encodedClassName + '___-' + pseudoName.toUpperCase() + ':' + pseudoName;
-          encodedClassName = pseudoClassName;
-        }
+        // Array of comma separated selectors on a specific rule
+        const ruleSelectors = rule.selectors;
 
-        classMap = updateClassMap(classMap, rule.selectors, encodedClassName);
+        // Each selector is made up of parts like .cow.dog:hover:after would be an array of 4 objects for each part
+        ruleSelectors.forEach(function (selectorParts) {
+          let encodedPseudoNames = [];
+          let pseudoNames = [];
+          selectorParts.forEach(function (selectorPart) {
+            if (selectorPart.type && selectorPart.type === 'pseudo') {
+              let pseudoName = selectorPart.name;
+              encodedPseudoNames.push('___-' + pseudoName.toUpperCase());
+              pseudoNames.push(':' + pseudoName);
+            }
+          });
+          // .rp__display__--COLONblock___-HOVER___-AFTER:hover:after
+          encodedClassName = encodedClassName + encodedPseudoNames.join('') + pseudoNames.join('');
 
-        newRules[encodedClassName] = {
-          type: 'rule',
-          selectors: [[encodedClassName]],
-          declarations: [declaration]
-        };
+          classMap = updateClassMap(classMap, rule.selectors, encodedClassName);
+
+          newRules[encodedClassName] = {
+            type: 'rule',
+            selectors: [[encodedClassName]],
+            declarations: [declaration]
+          };
+        });
+
       });
     }
   });
