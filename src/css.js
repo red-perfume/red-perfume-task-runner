@@ -35,7 +35,7 @@ function recursivelyRemovePosition (item) {
 }
 
 /**
- * Remove duplicate property/value pairs that are duplicates.
+ * Remove property/value pairs that are duplicates.
  * `display: none; display: none;` becomes `display:none;`
  * `display: block; display: none;` is unchanged because they
  * are not identical.
@@ -46,6 +46,9 @@ function recursivelyRemovePosition (item) {
 function removeIdenticalProperties (classMap) {
   // Remove identical properties
   Object.keys(classMap).forEach(function (selector) {
+    // The double reverse is so the last duplicate is kept in place, and the previous are removed
+    // ['.rp__margin__--COLON2px', '.rp__margin__--COLON2px', '.rp__border__--COLON0px', '.rp__margin__--COLON2px'] =>
+    // ['.rp__border__--COLON0px', '.rp__margin__--COLON2px']
     classMap[selector] = Array.from(new Set(classMap[selector].reverse())).reverse();
   });
   return classMap;
@@ -60,19 +63,48 @@ function removeIdenticalProperties (classMap) {
  * @return {object}                   Returns the classMap object
  */
 function updateClassMap (classMap, selectors, encodedClassName) {
-  /* A selector looks like:
-    [{
-      type: 'attribute',
-      name: 'class',
-      action: 'element',
-      value: 'cow',
-      ignoreCase: false,
-      namespace: null,
-      original: '.cow'
-      }]
-    */
+  /*
+    An array of selectors for
+    .cat:hover, .bat:hover { margin: 2px; }
+    looks like:
+    [
+      [
+        {
+          "type": "attribute",
+          "name": "class",
+          "action": "element",
+          "value": "cat",
+          "namespace": null,
+          "ignoreCase": false,
+          "original": ".cat:hover"
+        },
+        {
+          "type": "pseudo",
+          "name": "hover",
+          "data": null
+        }
+      ],
+      [
+        {
+          "type": "attribute",
+          "name": "class",
+          "action": "element",
+          "value": "bat",
+          "namespace": null,
+          "ignoreCase": false,
+          "original": ".bat:hover"
+        },
+        {
+          "type": "pseudo",
+          "name": "hover",
+          "data": null
+        }
+      ]
+    ]
+  */
   selectors.forEach(function (selector) {
     let originalSelectorName = selector[0].original;
+    // '.cow:hover' => '.cow'
     originalSelectorName = originalSelectorName.split(':')[0];
 
     classMap[originalSelectorName] = classMap[originalSelectorName] || [];
