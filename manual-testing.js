@@ -1,3 +1,10 @@
+'use strict';
+
+/**
+ * @file    A place to play around with/try to out Red Perfume
+ * @author  TheJaredWilcurt
+ */
+
 const redPerfume = require('./index.js');
 
 redPerfume.atomize({
@@ -6,9 +13,9 @@ redPerfume.atomize({
       uglify: false,
       styles: {
         in: [
-          './test/input.css'
+          './manual-test/input.css'
         ],
-        out: './test/output.css',
+        out: './manual-test/output.css',
         data: `
           .cow,
           .cat {
@@ -49,14 +56,14 @@ redPerfume.atomize({
               </body>
             </html>
           `,
-          out: './test/out.html',
+          out: './manual-test/out.html',
           result: function (result, err) {
             console.log(result, err);
           }
         }
       ],
       scripts: {
-        out: './test/out.json',
+        out: './manual-test/out.json',
         result: function (result, err) {
           console.log(result, err);
         }

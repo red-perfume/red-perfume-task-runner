@@ -1,3 +1,10 @@
+'use strict';
+
+/**
+ * @file    Process, atomize, uglify a CSS string
+ * @author  TheJaredWilcurt
+ */
+
 const cssParser = require('./css-parser.js');
 const cssStringify = require('./css-stringify.js');
 const cssUglifier = require('./css-uglifier.js');
@@ -9,7 +16,7 @@ const helpers = require('./helpers.js');
  * data that is not of use for us and just clouds up the console
  * logs during development.
  *
- * @param  {any} item  Parsed CSS or a portion of it
+ * @param {any} item  Parsed CSS or a portion of it
  */
 function recursivelyRemovePosition (item) {
   if (Array.isArray(item)) {
@@ -78,8 +85,8 @@ function updateClassMap (classMap, selectors, encodedClassName) {
  * Ensure that non-classes are not atomized,
  * but still included in the output.
  *
- * @param  {object} rule     Parsed CSS Rule
- * @param  {object} newRules Object containing all unique rules
+ * @param {object} rule      Parsed CSS Rule
+ * @param {object} newRules  Object containing all unique rules
  */
 function handleNonClasses (rule, newRules) {
   let originalSelectorName = rule.selectors[0][0].original;
@@ -90,6 +97,16 @@ function handleNonClasses (rule, newRules) {
   };
 }
 
+/**
+ * Takes in a string of CSS, parses it to AST, manipulates the AST to produce
+ * atomized CSS, optionally uglifies the atomized class names, stringifies the
+ * AST back to a string. Returns String and Atomization Map.
+ *
+ * @param  {object}  options  User's options
+ * @param  {string}  input    The CSS to be atomized/uglified
+ * @param  {boolean} uglify   Whether to uglify the atomized class names
+ * @return {object}           The classMap of original to atomized names and the atomized CSS string
+ */
 const css = function (options, input, uglify) {
   options = options || {};
   input = input || '';

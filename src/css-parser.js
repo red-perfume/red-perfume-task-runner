@@ -1,8 +1,29 @@
+'use strict';
+
+/**
+ * @file    Parses CSS to an AST
+ * @author  TheJaredWilcurt
+ */
+
 const css = require('css');
 const selectorParse = require('css-what').parse;
 
 const helpers = require('./helpers.js');
 
+/**
+ * Parses the provided CSS string to an Abstract
+ * Syntax Tree (AST). Adds an "original" value to
+ * selectors on rules.
+ *
+ * @example
+ * try {
+ *   parsed = cssParser(options, input);
+ * } catch {}
+ *
+ * @param  {object} options  User's options
+ * @param  {string} input    The CSS string to be atomized
+ * @return {object}          A parsed CSS AST
+ */
 const cssParser = function (options, input) {
   if (!input) {
     helpers.throwError('Invalid CSS input.');

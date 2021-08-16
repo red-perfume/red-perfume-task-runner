@@ -1,26 +1,19 @@
 module.exports = {
-  'parser': 'babel-eslint',
-  'parserOptions': {
-    'ecmaVersion': 2017
+  parser: 'babel-eslint',
+  parserOptions: {
+    ecmaVersion: 2017
   },
-  'env': {
+  env: {
     'es6': true,
     'node': true,
     'jest': true
   },
-  'extends': [
-    'plugin:jsdoc/recommended',
+  extends: [
     'tjw-base',
-    'tjw-jest'
+    'tjw-jest',
+    'tjw-jsdoc'
   ],
-  'plugins': [
-    'jsdoc'
-  ],
-  'settings': {
-    'jsdoc': {
-      'tagNamePreference': {
-        'returns': 'return'
-      }
-    }
+  rules: {
+    'jsdoc/require-example': 'off'
   }
 };

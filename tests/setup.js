@@ -1,3 +1,10 @@
+'use strict';
+
+/**
+ * @file    Jest setup
+ * @author  TheJaredWilcurt
+ */
+
 // const testHelpers = require('@@/testHelpers.js');
 
 global.beforeEach(() => {

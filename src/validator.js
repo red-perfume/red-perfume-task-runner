@@ -1,6 +1,21 @@
+'use strict';
+
+/**
+ * @file    Validate and default the options object per documented API and log warnings.
+ * @author  TheJaredWilcurt
+ */
+
 const helpers = require('./helpers.js');
 
 const validator = {
+  /**
+   * Validates if a value is an array.
+   *
+   * @param  {object} options  User's options
+   * @param  {Array}  key      The value that should be an array
+   * @param  {string} message  The message to log if not an array
+   * @return {Array}           The array or undefined
+   */
   validateArray: function (options, key, message) {
     if (key && !Array.isArray(key)) {
       key = undefined;
@@ -11,6 +26,13 @@ const validator = {
     }
     return key;
   },
+  /**
+   * Validates and defaults would-be booleans.
+   *
+   * @param  {boolean} key    Value to validate
+   * @param  {boolean} value  Default value to use if not a boolean
+   * @return {boolean}        The value or default
+   */
   validateBoolean: function (key, value) {
     if (typeof(key) !== 'boolean') {
       key = value;
@@ -59,6 +81,14 @@ const validator = {
 
     return key;
   },
+  /**
+   * Validates a value is a function.
+   *
+   * @param  {object}   options  User's options
+   * @param  {Function} key      The value that should be a function
+   * @param  {string}   message  The message to log if not a function
+   * @return {Function}          The function or undefined
+   */
   validateFunction: function (options, key, message) {
     if (key && typeof(key) !== 'function') {
       key = undefined;
@@ -69,6 +99,14 @@ const validator = {
     }
     return key;
   },
+  /**
+   * Validates a value is an object.
+   *
+   * @param  {object} options  User's options
+   * @param  {object} key      The value that should be a object
+   * @param  {string} message  The message to log if not an object
+   * @return {object}          The object or undefined
+   */
   validateObject: function (options, key, message) {
     if (
       key &&
@@ -85,6 +123,14 @@ const validator = {
     }
     return key;
   },
+  /**
+   * Validates a value is a string.
+   *
+   * @param  {object} options  User's options
+   * @param  {string} key      Value that should be a string
+   * @param  {string} message  The message to log if not a string
+   * @return {string}          The string or undefined
+   */
   validateString: function (options, key, message) {
     if (key === '' || (key && typeof(key) !== 'string')) {
       key = undefined;
@@ -96,6 +142,12 @@ const validator = {
     return key;
   },
 
+  /**
+   * Validates optional customLogger is a function.
+   *
+   * @param  {object} options  User's options
+   * @return {object}          Modified user's options
+   */
   validateCustomLogger: function (options) {
     if (!options.customLogger) {
       delete options.customLogger;
@@ -133,6 +185,13 @@ const validator = {
 
     return options;
   },
+  /**
+   * Validates or removes the top level parts of a task.
+   *
+   * @param  {object} options  User's options
+   * @param  {object} task     A Red Perfume task to be validated
+   * @return {object}          validated task
+   */
   validateTask: function (options, task) {
     task.uglify = this.validateBoolean(task.uglify, false);
     task.styles = this.validateObject(options, task.styles, 'Optional task.styles must be a type of object or be undefined.');
@@ -170,6 +229,13 @@ const validator = {
 
     return task;
   },
+  /**
+   * Validates the values on styles task (in/out/data/result).
+   *
+   * @param  {object} options  User's options
+   * @param  {object} styles   The styles task options
+   * @return {object}          Modified styles task options
+   */
   validateTaskStyles: function (options, styles) {
     styles.in = this.validateTaskStylesIn(options, styles.in);
     styles.out = this.validateFile(options, styles.out, ['.css'], false);
@@ -200,6 +266,13 @@ const validator = {
     }
     return styles;
   },
+  /**
+   * Validates task.styles.in.
+   *
+   * @param  {object} options   User's options
+   * @param  {Array}  stylesIn  The array of file paths
+   * @return {Array}            The array or undefined
+   */
   validateTaskStylesIn: function (options, stylesIn) {
     stylesIn = this.validateArray(options, stylesIn, 'Optional task.styles.in must be an array or undefined.');
     if (stylesIn) {
@@ -209,6 +282,13 @@ const validator = {
     }
     return stylesIn;
   },
+  /**
+   * Validates the markup task.
+   *
+   * @param  {object} options  User's options
+   * @param  {Array}  markup   Array of objects of markup options
+   * @return {Array}           The array or undefined
+   */
   validateTaskMarkup: function (options, markup) {
     markup = markup.map((item) => {
       item.in = this.validateFile(options, item.in, ['.html', '.htm'], true);
@@ -247,6 +327,13 @@ const validator = {
 
     return markup;
   },
+  /**
+   * Validates the task.markup.data is a string of HTML.
+   *
+   * @param  {object} options  User's options
+   * @param  {string} data     The markup string to validate
+   * @return {string}          The valid string or undefined
+   */
   validateTaskMarkupData: function (options, data) {
     let message = 'Optional task.markup.data must be a string that begins with \'<\' or undefined.';
     data = this.validateString(options, data, message);
@@ -256,6 +343,13 @@ const validator = {
     }
     return data;
   },
+  /**
+   * Validates the task.scripts options.
+   *
+   * @param  {object} options  User's options
+   * @param  {object} scripts  The scripts task options
+   * @return {object}          Validated scripts task or undefined
+   */
   validateTaskScripts: function (options, scripts) {
     scripts = scripts || {};
     scripts.out = this.validateString(options, scripts.out, 'Optional task.scripts.out must be a string or undefined.');
@@ -275,6 +369,13 @@ const validator = {
     return scripts;
   },
 
+  /**
+   * Validates and defaults all values in the options object,
+   * including tasks.
+   *
+   * @param  {object} options  User's options
+   * @return {object}          Modified user's options
+   */
   validateOptions: function (options) {
     if (typeof(options) !== 'object' || Array.isArray(options)) {
       options = undefined;

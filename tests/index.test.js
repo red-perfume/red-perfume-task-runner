@@ -1,3 +1,10 @@
+'use strict';
+
+/**
+ * @file    Testing file
+ * @author  TheJaredWilcurt
+ */
+
 const mockfs = require('mock-fs');
 const fs = require('fs');
 const redPerfume = require('../index.js');

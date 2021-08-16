@@ -1,3 +1,10 @@
+'use strict';
+
+/**
+ * @file    Testing file
+ * @author  TheJaredWilcurt
+ */
+
 const classEncoding = require('@/css-class-encoding.js');
 
 describe('Class encoding', () => {
