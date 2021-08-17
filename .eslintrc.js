@@ -1,3 +1,10 @@
+'use strict';
+
+/**
+ * @file    ESLint setup
+ * @author  TheJaredWilcurt
+ */
+
 module.exports = {
   parser: 'babel-eslint',
   parserOptions: {
@@ -14,6 +21,14 @@ module.exports = {
     'tjw-jsdoc'
   ],
   rules: {
+    'max-lines-per-function': [
+      'warn',
+      {
+        max: 50,
+        skipBlankLines: true,
+        skipComments: true
+      }
+    ],
     'jsdoc/require-example': 'off'
   }
 };

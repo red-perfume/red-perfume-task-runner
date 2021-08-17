@@ -1,4 +1,5 @@
 'use strict';
+/* eslint-disable max-lines-per-function */
 
 /**
  * @file    Testing file
