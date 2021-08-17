@@ -1,4 +1,5 @@
 'use strict';
+/* eslint-disable max-lines-per-function */
 
 /**
  * @file    Testing file
@@ -222,6 +223,9 @@ describe('CSS', () => {
         .example:visited {
           color: #00F;
         }
+        .example:hover:after {
+          content: '';
+        }
         h1:hover {
           color: #F00;
         }
@@ -253,6 +257,9 @@ describe('CSS', () => {
           }
           .rp__color__--COLON__--OCTOTHORP00F___-VISITED:visited {
             color: #00F;
+          }
+          .rp__content__--COLON__--SINGLEQUOTE__--SINGLEQUOTE___-HOVER___-AFTER:hover:after {
+            content: '';
           }
           h1:hover {
             color: #F00;
@@ -291,13 +298,16 @@ describe('CSS', () => {
           .rp__5:visited {
             color: #00F;
           }
-          .rp__6 {
-            background: #F00;
+          .rp__6:hover:after {
+            content: '';
           }
           .rp__7 {
+            background: #F00;
+          }
+          .rp__8 {
             color: #00F;
           }
-          .rp__8:hover {
+          .rp__9:hover {
             background: #0F0;
           }
         `, 10));
