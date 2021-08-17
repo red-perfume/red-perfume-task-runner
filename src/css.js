@@ -174,6 +174,42 @@ function encodeDeclarationAsClassname (options, rule, declaration, classMap, new
 }
 
 /**
+ * Takes atomized class names and uglifies them.
+ *
+ * @param {object} classMap  Map of original CSS selectors to encoded class names
+ * @param {object} newRules  The atomized CSS as AST
+ */
+function uglifyClassNames (classMap, newRules) {
+  let index = 0;
+  Object.keys(newRules).forEach(function (key) {
+    if (key.startsWith('.')) {
+      let pseudo = '';
+      if (key.includes(':')) {
+        let split = key.split(':');
+        split.shift(0);
+        pseudo = ':' + split.join(':');
+      }
+      let result = cssUglifier(index);
+
+      index = result.index;
+
+      let uglifiedName = result.name + pseudo;
+      newRules[uglifiedName] = newRules[key];
+      newRules[uglifiedName].selectors[0][0] = uglifiedName;
+      delete newRules[key];
+
+      Object.keys(classMap).forEach(function (mapKey) {
+        key = key.split(':')[0];
+        let indexOfKey = classMap[mapKey].indexOf(key);
+        if (indexOfKey !== -1) {
+          classMap[mapKey][indexOfKey] = result.name;
+        }
+      });
+    }
+  });
+}
+
+/**
  * Takes in a string of CSS, parses it to AST, manipulates the AST to produce
  * atomized CSS, optionally uglifies the atomized class names, stringifies the
  * AST back to a string. Returns String and Atomization Map.
@@ -274,7 +310,6 @@ const css = function (options, input, uglify) {
   */
   parsed.stylesheet.rules.forEach(function (rule) {
     recursivelyRemovePosition(rule);
-    // console.log(JSON.stringify(rule, null, 2));
 
     // TODO: I think this needs improved
     let type = rule.selectors[0][0].type;
@@ -295,38 +330,10 @@ const css = function (options, input, uglify) {
     }
   });
 
-  recursivelyRemovePosition(newRules);
-  // console.log(JSON.stringify(newRules, null, 2));
   classMap = removeIdenticalProperties(classMap);
 
   if (uglify) {
-    let index = 0;
-    Object.keys(newRules).forEach(function (key) {
-      if (key.startsWith('.')) {
-        let pseudo = '';
-        if (key.includes(':')) {
-          let split = key.split(':');
-          split.shift(0);
-          pseudo = ':' + split.join(':');
-        }
-        let result = cssUglifier(index);
-
-        index = result.index;
-
-        let uglifiedName = result.name + pseudo;
-        newRules[uglifiedName] = newRules[key];
-        newRules[uglifiedName].selectors[0][0] = uglifiedName;
-        delete newRules[key];
-
-        Object.keys(classMap).forEach(function (mapKey) {
-          key = key.split(':')[0];
-          let indexOfKey = classMap[mapKey].indexOf(key);
-          if (indexOfKey !== -1) {
-            classMap[mapKey][indexOfKey] = result.name;
-          }
-        });
-      }
-    });
+    uglifyClassNames(classMap, newRules);
   }
 
   Object.keys(newRules).forEach(function (key) {
