@@ -1,3 +1,11 @@
+'use strict';
+/* eslint-disable max-lines-per-function */
+
+/**
+ * @file    Testing file
+ * @author  TheJaredWilcurt
+ */
+
 const html = require('@/html.js');
 
 describe('HTML', () => {

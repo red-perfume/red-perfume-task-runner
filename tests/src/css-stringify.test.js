@@ -1,3 +1,11 @@
+'use strict';
+/* eslint-disable max-lines-per-function */
+
+/**
+ * @file    Testing file
+ * @author  TheJaredWilcurt
+ */
+
 const cssStringify = require('@/css-stringify.js');
 
 const testHelpers = require('@@/testHelpers.js');

@@ -1,3 +1,10 @@
+'use strict';
+
+/**
+ * @file    Converts CSS AST to a string
+ * @author  TheJaredWilcurt
+ */
+
 const css = require('css');
 
 /**

@@ -1,3 +1,10 @@
+'use strict';
+
+/**
+ * @file    Creates uglified atomized class names like .rp__2xh3
+ * @author  TheJaredWilcurt
+ */
+
 /**
  * Increment the Uglifier index if it contains a known bad
  * value when base 36 encoded.
@@ -10,7 +17,7 @@ function incrementIfContainsBad (uglifierIndex) {
     'ad' // adblockers may hide these elements
   ];
   /**
-   * Checks if a bad word can be found in a base 36 encoded number
+   * Checks if a bad word can be found in a base 36 encoded number.
    *
    * @param  {string}  value  A string of text we want to avoid occuring in uglified class names
    * @return {boolean}        true = contains bad word, false = no bad word found

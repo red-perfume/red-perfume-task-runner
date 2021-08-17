@@ -1,3 +1,11 @@
+'use strict';
+/* eslint-disable max-lines-per-function */
+
+/**
+ * @file    Testing file
+ * @author  TheJaredWilcurt
+ */
+
 const classEncoding = require('@/css-class-encoding.js');
 
 describe('Class encoding', () => {
