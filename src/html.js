@@ -42,43 +42,48 @@ function cleanDocument (document) {
 cleanDocument({});
 
 /**
- * Finds and removes every instance of a value from an array.
- *
- * @param  {Array} arr    Any array
- * @param  {any}   value  Any literal that can be compared with ===
- * @return {Array}        The mutated array
- */
-function removeEveryInstance (arr, value) {
-  let i = 0;
-  while (i < arr.length) {
-    if (arr[i] === value) {
-      arr.splice(i, 1);
-    } else {
-      ++i;
-    }
-  }
-  return arr;
-}
-
-/**
  * Replaces all instances of a class name in class attributes in the DOM
  * with its atomized representation of class names.
  *
- * @param  {object}    node            An HTML AST node
+ * @param  {object}    node            An HTML node as AST
  * @param  {string}    classToReplace  A string to find and replace
  * @param  {Array}     newClasses      Array of strings that will replace the given class
  * @return {undefined}                 Just mutates the AST. Nothing returned
  */
 function replaceSemanticClassWithAtomizedClasses (node, classToReplace, newClasses) {
+  /* An example of a Node:
+    {
+      nodeName: 'h1',
+      tagName: 'h1',
+      attrs: [
+        {
+          name: 'class',
+          value: 'cool cat nice wow'
+        }
+      ],
+      namespaceURI: 'http://www.w3.org/1999/xhtml',
+      childNodes: [
+        {
+          nodeName: '#text',
+          value: '\n                  Meow\n                '
+        }
+      ]
+    }
+  */
   if (node.attrs) {
     node.attrs.forEach(function (attribute) {
       if (attribute.name === 'class') {
+        // console.log(JSON.stringify(cleanDocument(node), null, 2));
+        // 'cool cat nice wow' => ['cool','cat','nice','wow']
         let classes = attribute.value.split(' ');
         if (classes.includes(classToReplace)) {
-          classes = removeEveryInstance(classes, classToReplace);
-          classes.push(...newClasses);
+          classes = helpers.removeEveryInstance(classes, classToReplace);
+          classes = [
+            ...classes,
+            ...newClasses
+          ];
+          attribute.value = classes.join(' ');
         }
-        attribute.value = classes.join(' ');
       }
     });
   }

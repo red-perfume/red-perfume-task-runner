@@ -29,7 +29,10 @@ redPerfume.atomize({
           }
         `,
         result: function (result, err) {
-          console.log(result, err);
+          console.log(result);
+          if (err) {
+            console.log(err);
+          }
         }
       },
       markup: [
@@ -58,14 +61,20 @@ redPerfume.atomize({
           `,
           out: './manual-test/out.html',
           result: function (result, err) {
-            console.log(result, err);
+            console.log(result);
+            if (err) {
+              console.log(err);
+            }
           }
         }
       ],
       scripts: {
         out: './manual-test/out.json',
         result: function (result, err) {
-          console.log(result, err);
+          console.log(result);
+          if (err) {
+            console.log(err);
+          }
         }
       }
     }
