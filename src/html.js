@@ -77,11 +77,16 @@ function replaceSemanticClassWithAtomizedClasses (node, classToReplace, newClass
         // 'cool cat nice wow' => ['cool','cat','nice','wow']
         let classes = attribute.value.split(' ');
         if (classes.includes(classToReplace)) {
-          classes = helpers.removeEveryInstance(classes, classToReplace);
+          // ['cool','cat','nice','wow'] => ['cool','nice','wow']
+          classes = classes.filter(function (className) {
+            return className !== classToReplace;
+          });
+          // ['cool','cat','nice','wow','rp__4','rp__8']
           classes = [
             ...classes,
             ...newClasses
           ];
+          // 'cool cat nice wow rp__4 rp__8'
           attribute.value = classes.join(' ');
         }
       }
