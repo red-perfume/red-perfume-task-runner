@@ -1,3 +1,10 @@
+'use strict';
+
+/**
+ * @file    Parses CSS to an AST
+ * @author  TheJaredWilcurt
+ */
+
 const css = require('css');
 const selectorParse = require('css-what').parse;
 
@@ -8,7 +15,7 @@ const helpers = require('./helpers.js');
  * data that is not of use for us and just clouds up the console
  * logs during development.
  *
- * @param  {any} rule  Parsed CSS or a portion of it
+ * @param {any} rule  Parsed CSS or a portion of it
  */
 function recursivelyRemovePosition (rule) {
   if (Array.isArray(rule)) {
@@ -26,6 +33,20 @@ function recursivelyRemovePosition (rule) {
   }
 }
 
+/**
+ * Parses the provided CSS string to an Abstract
+ * Syntax Tree (AST). Adds an "original" value to
+ * selectors on rules.
+ *
+ * @example
+ * try {
+ *   parsed = cssParser(options, input);
+ * } catch {}
+ *
+ * @param  {object} options  User's options
+ * @param  {string} input    The CSS string to be atomized
+ * @return {object}          A parsed CSS AST
+ */
 const cssParser = function (options, input) {
   if (!input) {
     helpers.throwError('Invalid CSS input.');

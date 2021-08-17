@@ -1,3 +1,10 @@
+'use strict';
+
+/**
+ * @file    Helper functions used by unit tests
+ * @author  TheJaredWilcurt
+ */
+
 const testHelpers = {
   /**
    * The errno value from a failed fs read/write is a different

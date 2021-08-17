@@ -17,17 +17,18 @@
   ],
   "dependencies": {
     "css": "^3.0.0",
-    "css-what": "^4.0.0",
+    "css-what": "^5.0.1",
     "parse5": "^6.0.1"
   },
   "devDependencies": {
     "babel-eslint": "^10.1.0",
-    "eslint": "^7.16.0",
+    "eslint": "^7.32.0",
     "eslint-config-tjw-base": "^1.0.0",
     "eslint-config-tjw-jest": "^1.0.0",
-    "eslint-plugin-jsdoc": "^30.7.9",
+    "eslint-config-tjw-jsdoc": "^1.0.0",
+    "eslint-plugin-jsdoc": "^36.0.7",
     "jest": "24.9.0",
-    "mock-fs": "^4.13.0"
+    "mock-fs": "^5.0.0"
   },
   "homepage": "https://github.com/red-perfume/red-perfume#readme",
   "repository": {

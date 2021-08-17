@@ -1,36 +1,34 @@
+'use strict';
+
+/**
+ * @file    ESLint setup
+ * @author  TheJaredWilcurt
+ */
+
 module.exports = {
-  'parser': 'babel-eslint',
-  'parserOptions': {
-    'ecmaVersion': 2017
+  parser: 'babel-eslint',
+  parserOptions: {
+    ecmaVersion: 2017
   },
-  'env': {
+  env: {
     'es6': true,
     'node': true,
     'jest': true
   },
-  'extends': [
-    'plugin:jsdoc/recommended',
+  extends: [
     'tjw-base',
-    'tjw-jest'
+    'tjw-jest',
+    'tjw-jsdoc'
   ],
-  'plugins': [
-    'jsdoc'
-  ],
-  'rules': {
+  rules: {
     'max-lines-per-function': [
       'warn',
       {
-        'max': 50,
-        'skipBlankLines': true,
-        'skipComments': true
+        max: 50,
+        skipBlankLines: true,
+        skipComments: true
       }
-    ]
-  },
-  'settings': {
-    'jsdoc': {
-      'tagNamePreference': {
-        'returns': 'return'
-      }
-    }
+    ],
+    'jsdoc/require-example': 'off'
   }
 };
