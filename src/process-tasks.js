@@ -140,12 +140,13 @@ function outputAtomizedJSON (options, taskScripts, processedStyles) {
  * Atomizes and uglifies CSS.
  * Outputs CSS to file and/or callback.
  *
- * @param {object} options          The user's options object
- * @param {object} task             The task with all settings
- * @param {object} processedStyles  The map of original CSS class names to atomized classes
+ * @param  {object} options  The user's options object
+ * @param  {object} task     The task with all settings
+ * @return {object}          The map of original CSS class names to atomized classes & errors
  */
-function processStyles (options, task, processedStyles) {
+function processStyles (options, task) {
   const cssData = getCssString(options, task.styles);
+  let processedStyles = {};
 
   const hasStyleFiles = task.styles.in && task.styles.in.length;
   if (hasStyleFiles || task.styles.data) {
@@ -153,6 +154,7 @@ function processStyles (options, task, processedStyles) {
   }
 
   outputAtomizedCSS(options, task.styles, processedStyles, cssData.styleErrors);
+  return processedStyles;
 }
 
 /**
@@ -191,7 +193,7 @@ function processTask (options, task) {
   let processedStyles = {};
 
   if (task.styles) {
-    processStyles(options, task, processedStyles);
+    processedStyles = processStyles(options, task);
   }
   if (task.markup) {
     processMarkup(options, task, processedStyles);

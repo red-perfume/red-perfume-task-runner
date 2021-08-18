@@ -25,6 +25,7 @@ function cleanDocument (document) {
    */
   function removeParentNodes (node) {
     delete node.parentNode;
+    delete node.namespaceURI;
     // Coverage ignored because this function is only used during development.
     /* istanbul ignore next */
     if (node.childNodes) {
