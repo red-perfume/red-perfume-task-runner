@@ -6,7 +6,7 @@
  */
 
 const validator = require('./src/validator.js');
-const processTask = require('./src/process-task.js');
+const processTasks = require('./src/process-tasks.js');
 
 const redPerfume = {
   /**
@@ -37,9 +37,7 @@ const redPerfume = {
    */
   atomize: function (options) {
     options = this.validate(options);
-    options.tasks.forEach((task) => {
-      processTask(options, task);
-    });
+    processTasks(options);
   }
 };
 

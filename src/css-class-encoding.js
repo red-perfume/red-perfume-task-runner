@@ -62,12 +62,12 @@ const propertyValueEncodingMap = {
  * otherwise returns '__--U' and the charCode.
  *
  * @example
- * unicodeEndocing('â'); // '__--U226'
+ * unicodeEncoding('â'); // '__--U226'
  *
  * @param  {string} character  A single character string
  * @return {string}            The original ASCII char or '__--U' + charCode
  */
-function unicodeEndocing (character) {
+function unicodeEncoding (character) {
   let code = character.charCodeAt();
   // 33 = !, 48 = 0, 65 = A, 97 = a, 126 = ~
   if (code < 33 || code > 126) {
@@ -116,7 +116,7 @@ function encodeClassName (options, declaration) {
   let encoded = nameArray.map(function (character) {
     return (
       propertyValueEncodingMap[character] ||
-      unicodeEndocing(character) ||
+      unicodeEncoding(character) ||
       character
     );
   });

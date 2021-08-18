@@ -25,6 +25,7 @@ function cleanDocument (document) {
    */
   function removeParentNodes (node) {
     delete node.parentNode;
+    delete node.namespaceURI;
     // Coverage ignored because this function is only used during development.
     /* istanbul ignore next */
     if (node.childNodes) {
@@ -39,7 +40,6 @@ function cleanDocument (document) {
 
   return document;
 }
-cleanDocument({});
 
 /**
  * Replaces all instances of a class name in class attributes in the DOM
@@ -73,7 +73,6 @@ function replaceSemanticClassWithAtomizedClasses (node, classToReplace, newClass
   if (node.attrs) {
     node.attrs.forEach(function (attribute) {
       if (attribute.name === 'class') {
-        // console.log(JSON.stringify(cleanDocument(node), null, 2));
         // 'cool cat nice wow' => ['cool','cat','nice','wow']
         let classes = attribute.value.split(' ');
         if (classes.includes(classToReplace)) {
@@ -114,8 +113,9 @@ const html = function (options, input, classMap) {
   input = input || '';
   classMap = classMap || {};
 
-  // String => Object
-  const document = parse5.parse(input);
+  // TODO: cleanDocument() only needed for cleaner console logs, could be removed later for performance boost
+  // String => AST Object.
+  const document = cleanDocument(parse5.parse(input));
 
   Object.keys(classMap).forEach(function (semanticClass) {
     let atomizedClasses = classMap[semanticClass];
@@ -127,8 +127,6 @@ const html = function (options, input, classMap) {
     }
     replaceSemanticClassWithAtomizedClasses(document, semanticClass, atomizedClasses);
   });
-
-  // console.log(JSON.stringify(cleanDocument(document), null, 2));
 
   // Object => string
   let markup = parse5.serialize(document);
