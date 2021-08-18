@@ -97,6 +97,7 @@ const cssParser = function (options, input) {
     }
    */
   if (parsed && parsed.stylesheet && parsed.stylesheet.rules) {
+    // TODO: This line is only used to make console logs cleaner, can be commented out in the future for a performance boost
     recursivelyRemovePosition(parsed.stylesheet.rules);
     parsed.stylesheet.rules.forEach(function (rule) {
       let parsedSelectors = selectorParse(rule.selectors.join(','));
