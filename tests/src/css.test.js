@@ -89,49 +89,49 @@ describe('CSS', () => {
 
   describe('Process CSS', () => {
     test('One rule', () => {
-      let output = testHelpers.trimIndentation(`
+      const input = '.test { background: #F00; }';
+      const classMap = {
+        '.test': [
+          '.rp__background__--COLON__--OCTOTHORPF00'
+        ]
+      };
+      const output = testHelpers.trimIndentation(`
         .rp__background__--COLON__--OCTOTHORPF00 {
           background: #F00;
         }
       `, 8);
+      const uglify = false;
 
-      expect(css(options, '.test { background: #F00; }', false))
-        .toEqual({
-          classMap: {
-            '.test': [
-              '.rp__background__--COLON__--OCTOTHORPF00'
-            ]
-          },
-          output
-        });
+      expect(css(options, input, uglify))
+        .toEqual({ classMap, output });
 
       expect(options.customLogger)
         .not.toHaveBeenCalled();
     });
 
     test('One rule uglified', () => {
-      let output = testHelpers.trimIndentation(`
+      const input = '.test { background: #F00; }';
+      const classMap = {
+        '.test': [
+          '.rp__0'
+        ]
+      };
+      const output = testHelpers.trimIndentation(`
         .rp__0 {
           background: #F00;
         }
       `, 8);
+      const uglify = true;
 
-      expect(css(options, '.test { background: #F00; }', true))
-        .toEqual({
-          classMap: {
-            '.test': [
-              '.rp__0'
-            ]
-          },
-          output
-        });
+      expect(css(options, input, uglify))
+        .toEqual({ classMap, output });
 
       expect(options.customLogger)
         .not.toHaveBeenCalled();
     });
 
     test('Handle non-classes', () => {
-      let input = `
+      const input = `
         h1 {
           background: #F00;
           border: 1px solid #00F;
@@ -205,10 +205,13 @@ describe('CSS', () => {
             text-align: center;
           }
         `, 10));
+
+      expect(options.customLogger)
+        .not.toHaveBeenCalled();
     });
 
     test('Handle pseudo-classes', () => {
-      let input = `
+      const input = `
         .example {
           display: inline-block;
           text-align: right;
@@ -311,6 +314,9 @@ describe('CSS', () => {
             background: #0F0;
           }
         `, 10));
+
+      expect(options.customLogger)
+        .not.toHaveBeenCalled();
     });
   });
 });
