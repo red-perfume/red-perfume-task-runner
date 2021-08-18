@@ -94,8 +94,8 @@ function updateClassMap (classMap, selectors, encodedClassName) {
  * Ensure that non-classes are not atomized,
  * but still included in the output.
  *
- * @param  {object} rule     Parsed CSS Rule
- * @return {object} newRule  A CSS AST rule
+ * @param  {object} rule  Parsed CSS Rule
+ * @return {object}       New CSS rule as AST, newRule
  */
 function handleNonClasses (rule) {
   let originalSelectorName = rule.selectors[0][0].original;
@@ -121,13 +121,14 @@ function handleNonClasses (rule) {
 function encodeDeclarationAsClassname (options, rule, declaration, classMap, newRules) {
   // Array of comma separated selectors on a specific rule
   const ruleSelectors = rule.selectors;
-  const isClass = rule.selectors[0].find(function (selector) {
+  const type = ruleSelectors[0][0].type;
+  const isClass = ruleSelectors[0].find(function (selector) {
     return selector.name === 'class';
   });
   let encodedClassName = '';
   let encodedName = '';
   if (!isClass) {
-    encodedName = rule.selectors[0][0].original;
+    encodedName = ruleSelectors[0][0].original;
   } else {
     /* An encoded class name look like:
       .rp__padding__--COLON10px
