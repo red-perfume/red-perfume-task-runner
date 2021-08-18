@@ -12,29 +12,6 @@ const encodeClassName = require('./css-class-encoding.js');
 const helpers = require('./helpers.js');
 
 /**
- * Rrecursively remove position. Parsed CSS contains position
- * data that is not of use for us and just clouds up the console
- * logs during development.
- *
- * @param {any} item  Parsed CSS or a portion of it
- */
-function recursivelyRemovePosition (item) {
-  if (Array.isArray(item)) {
-    item.forEach(function (subItem) {
-      recursivelyRemovePosition(subItem);
-    });
-  }
-  if (item && typeof(item) === 'object' && !Array.isArray(item)) {
-    if (item.hasOwnProperty('position')) {
-      delete item.position;
-    }
-    Object.keys(item).forEach(function (key) {
-      recursivelyRemovePosition(item[key]);
-    });
-  }
-}
-
-/**
  * Remove property/value pairs that are duplicates.
  * `display: none; display: none;` becomes `display:none;`
  * `display: block; display: none;` is unchanged because they
@@ -268,49 +245,17 @@ const css = function (options, input, uglify) {
          {
            type: 'declaration',
            property: 'background',
-           value: '#F00',
-           position: {
-             start: {
-               line: 1,
-               column: 8
-             },
-             end: {
-               line: 1,
-               column: 24
-             }
-           }
+           value: '#F00'
          },
          {
            type: 'declaration',
            property: 'border',
-           value: 'none',
-           position: {
-             start: {
-               line: 1,
-               column: 26
-             },
-             end: {
-               line: 1,
-               column: 39
-             }
-           }
+           value: 'none'
          }
-       ],
-       position: {
-         start: {
-           line: 1,
-           column: 1
-         },
-         end: {
-           line: 1,
-           column: 40
-         }
-       }
+       ]
      }
   */
   parsed.stylesheet.rules.forEach(function (rule) {
-    recursivelyRemovePosition(rule);
-
     // TODO: I think this needs improved
     let type = rule.selectors[0][0].type;
     let name = rule.selectors[0][0].name;

@@ -1,7 +1,7 @@
 'use strict';
 
 /**
- * @file    Processes a single task
+ * @file    Processes all tasks
  * @author  TheJaredWilcurt
  */
 
@@ -136,6 +136,48 @@ function outputAtomizedJSON (options, taskScripts, processedStyles) {
 }
 
 /**
+ * Retrieves CSS string based on options.
+ * Atomizes and uglifies CSS.
+ * Outputs CSS to file and/or callback.
+ *
+ * @param {object} options          The user's options object
+ * @param {object} task             The task with all settings
+ * @param {object} processedStyles  The map of original CSS class names to atomized classes
+ */
+function processStyles (options, task, processedStyles) {
+  const cssData = getCssString(options, task.styles);
+
+  const hasStyleFiles = task.styles.in && task.styles.in.length;
+  if (hasStyleFiles || task.styles.data) {
+    processedStyles = css(options, cssData.cssString, task.uglify);
+  }
+
+  outputAtomizedCSS(options, task.styles, processedStyles, cssData.styleErrors);
+}
+
+/**
+ * Retrieves HTML string based on options.
+ * Replaces atomized class names in markup.
+ * Outputs HTML to file and/or callback.
+ *
+ * @param {object} options          The user's options object
+ * @param {object} task             The task with all settings
+ * @param {object} processedStyles  The map of original CSS class names to atomized classes
+ */
+function processMarkup (options, task, processedStyles) {
+  task.markup.forEach(function (item) {
+    const htmlData = getHtmlString(options, item);
+
+    let processedMarkup = '';
+    if (item.in || item.data) {
+      processedMarkup = html(options, htmlData.markupString, processedStyles.classMap);
+    }
+
+    outputAtomizedHTML(options, item, processedMarkup, htmlData.markupErrors);
+  });
+}
+
+/**
  * Processes a single Red Perfume task including
  * Style, Markup, and Scripts.
  *
@@ -145,36 +187,36 @@ function outputAtomizedJSON (options, taskScripts, processedStyles) {
  * @param {object} options  The user's options object
  * @param {object} task     The task with all settings
  */
-const processTask = function (options, task) {
+function processTask (options, task) {
   let processedStyles = {};
 
   if (task.styles) {
-    const cssData = getCssString(options, task.styles);
-
-    const hasStyleFiles = task.styles.in && task.styles.in.length;
-    if (hasStyleFiles || task.styles.data) {
-      processedStyles = css(options, cssData.cssString, task.uglify);
-    }
-
-    outputAtomizedCSS(options, task.styles, processedStyles, cssData.styleErrors);
+    processStyles(options, task, processedStyles);
   }
-
   if (task.markup) {
-    task.markup.forEach((item) => {
-      const htmlData = getHtmlString(options, item);
-
-      let processedMarkup = '';
-      if (item.in || item.data) {
-        processedMarkup = html(options, htmlData.markupString, processedStyles.classMap);
-      }
-
-      outputAtomizedHTML(options, item, processedMarkup, htmlData.markupErrors);
-    });
+    processMarkup(options, task, processedStyles);
   }
-
   if (task.scripts) {
     outputAtomizedJSON(options, task.scripts, processedStyles);
   }
 };
 
-module.exports = processTask;
+/**
+ * Processes all Red Perfume tasks including
+ * Style, Markup, and Scripts.
+ *
+ * @example
+ * processTasks(options);
+ *
+ * @param {object} options  The user's options object
+ */
+function processTasks (options) {
+  options = options || {};
+  options.tasks = options.tasks || [];
+
+  options.tasks.forEach(function (task) {
+    processTask(options, task);
+  });
+}
+
+module.exports = processTasks;

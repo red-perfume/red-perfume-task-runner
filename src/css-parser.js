@@ -11,6 +11,29 @@ const selectorParse = require('css-what').parse;
 const helpers = require('./helpers.js');
 
 /**
+ * Rrecursively remove position. Parsed CSS contains position
+ * data that is not of use for us and just clouds up the console
+ * logs during development.
+ *
+ * @param {any} item  Parsed CSS or a portion of it
+ */
+function recursivelyRemovePosition (item) {
+  if (Array.isArray(item)) {
+    item.forEach(function (subItem) {
+      recursivelyRemovePosition(subItem);
+    });
+  }
+  if (item && typeof(item) === 'object' && !Array.isArray(item)) {
+    if (item.hasOwnProperty('position')) {
+      delete item.position;
+    }
+    Object.keys(item).forEach(function (key) {
+      recursivelyRemovePosition(item[key]);
+    });
+  }
+}
+
+/**
  * Parses the provided CSS string to an Abstract
  * Syntax Tree (AST). Adds an "original" value to
  * selectors on rules.
@@ -74,6 +97,7 @@ const cssParser = function (options, input) {
     }
    */
   if (parsed && parsed.stylesheet && parsed.stylesheet.rules) {
+    recursivelyRemovePosition(parsed.stylesheet.rules);
     parsed.stylesheet.rules.forEach(function (rule) {
       let parsedSelectors = selectorParse(rule.selectors.join(','));
       for (let i = 0; i < parsedSelectors.length; i++) {
