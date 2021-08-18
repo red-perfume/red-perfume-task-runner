@@ -11,7 +11,7 @@ const selectorParse = require('css-what').parse;
 const helpers = require('./helpers.js');
 
 /**
- * Rrecursively remove position. Parsed CSS contains position
+ * Recursively remove position. Parsed CSS contains position
  * data that is not of use for us and just clouds up the console
  * logs during development.
  *
