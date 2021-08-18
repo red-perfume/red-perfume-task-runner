@@ -113,7 +113,8 @@ const html = function (options, input, classMap) {
   input = input || '';
   classMap = classMap || {};
 
-  // String => Object
+  // TODO: cleanDocument() only needed for cleaner console logs, could be removed later for performance boost
+  // String => AST Object.
   const document = cleanDocument(parse5.parse(input));
 
   Object.keys(classMap).forEach(function (semanticClass) {
