@@ -221,7 +221,7 @@ Key       | Type     | Default     | Description
 
 #### API Hooks/Callbacks example
 
-All the hooks are shown below. Most users will only use the `afterX` hooks as a simple callback to know when something has finished. The other hooks are mostly there for 3rd party plugin authors.
+All the hooks are shown below. Most users will only use the `afterOutput` hooks as a simple callback to know when something has finished. Perhaps to pass along the atomized string to another plugin to minify, or generate a report or something. These hooks are primarily for those writing 3rd party plugins. Or for existing 3rd party libraries to add documentation on how to combine them with Red Perfume.
 
 ```js
 redPerfume.atomize({
@@ -266,7 +266,7 @@ redPerfume.atomize({
 });
 ```
 
-**Hooks descriptions:**
+**Hook descriptions:**
 
 * Global hooks:
   * `beforeValidation` - Before the options object is validated and defaulted. The first thing ran before anything else.
@@ -300,6 +300,8 @@ redPerfume.atomize({
 * `htmlData` - This object: `{ markupString, markupErrors }`
 * `htmlData.markupString` - The string of HTML from the `in` file and `data` combined, but not atomized.
 * `htmlData.markupErrors` - An array of errors from attempting to read in style files.
+
+The arguments defined here will always be the same, in every hook, with the excpection that `options` will be mutated during validation. However, due to the nature of JavaScript object referencing, it is very possible for 3rd party plugins to mutate many of these object values. This is intentional and allowed. Though we would encourage that you just store that on the original options object, the validation does not remove undocumented keys.
 
 
 ## Running locally to see the proof of concept or contribute
