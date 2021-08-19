@@ -105,6 +105,8 @@ This above example already works as a proof of concept with the current code. Ho
 
 ### API Example
 
+You can point to files or pass strings in directly. Tasks are sequential, the output of one can feed into the input of the next. You can output to file or use callback hooks provided (more in the next example).
+
 ```js
 const redPerfume = require('red-perfume');
 
@@ -143,24 +145,27 @@ redPerfume.atomize({
       uglify: true,
       styles: {
         data: '.example { padding: 10px; margin: 10px; }',
-        result: function (result, err) {
-          // .rp__a { padding: 10px } .rp__b { margin: 10px }
-          console.log(result);
+        hooks: {
+          afterOutput: function (options, { task, cssData, processedStyles }) {
+            console.log(options, task, cssData, processedStyles);
+          }
         }
       },
       markup: [
         {
           data: '<!DOCTYPE html><html><body><div class="example"></div></body></html>',
-          result: function (result, err) {
-            // '<!DOCTYPE html><html><body><div class="rp__a rp__b"></div></body></html>'
-            console.log(result);
+          hooks: {
+            afterOutput: function (options, { task, item, processedStyles, htmlData, processedMarkup }) {
+              console.log(options, task, item, processedStyles, htmlData, processedMarkup);
+            }
           }
         }
       ],
       scripts: {
-        result: function (result, err) {
-          // { '.example': [ '.rp__a', '.rp__b' ] }
-          console.log(result);
+        hooks: {
+          afterOutput: function (options, { task, processedStyles }) {
+            console.log(options, task, processedStyles);
+          }
         }
       }
     }
@@ -176,11 +181,11 @@ The documented API is fully implemented and tested. Though there are many edge c
 
 ### API Documentation
 
-Key             | Type     | Allowed          | Default         | Description
-:--             | :--      | :--              | :--             | :--
-`verbose`       | Boolean  | `true`, `false`  | `true`          | If true, consoles out helpful warnings and errors using `customLogger` or `console.error`.
-`customLogger`  | Function | Any function     | `console.error` | You can pass in your own custom function to log errors/warnings to. When called the function will receive a `message` string for the first argument and sometimes an `error` object for the second argument. This can be useful in scenarios like adding in custom wrappers or colors in a command line/terminal. This function may be called multiple times before all tasks complete. Only called if `verbose` is true.
-`tasks`         | Array    | Array of objects | `undefined`     | An array of task objects. Each represents the settings for an atomization task to be performed.
+Key                      | Type     | Allowed          | Default         | Description
+:--                      | :--      | :--              | :--             | :--
+`verbose`                | Boolean  | `true`, `false`  | `true`          | If true, consoles out helpful warnings and errors using `customLogger` or `console.error`.
+`customLogger`           | Function | Any function     | `console.error` | You can pass in your own custom function to log errors/warnings to. When called the function will receive a `message` string for the first argument and sometimes an `error` object for the second argument. This can be useful in scenarios like adding in custom wrappers or colors in a command line/terminal. This function may be called multiple times before all tasks complete. Only called if `verbose` is true.
+`tasks`                  | Array    | Array of objects | `undefined`     | An array of task objects. Each represents the settings for an atomization task to be performed.
 
 **Tasks API:**
 
@@ -195,24 +200,106 @@ Key       | Type    | Default     | Description
 
 Key       | Type     | Default     | Description
 :--       | :--      | :--         | :--
-`in`      | Array    | `undefined` | An array of strings to valid paths for CSS files. All files will remain untouched. A new atomized string is produced for `out`/`result`.
+`in`      | Array    | `undefined` | An array of strings to valid paths for CSS files. All files will remain untouched. A new atomized string is produced for `out`/hooks.
+`data`    | String   | `undefined` | A string of CSS to be atomized. Files are provived via `in` are concatenated with `data` at the end, then atomized and sent to `out`/hooks.
 `out`     | String   | `undefined` | A string file path output. If file exists it will be overwritten with the atomized styles from `in` and/or `data`
-`data`    | String   | `undefined` | A string of CSS to be atomized. Atomized styles are passed to `out` and `result`.
-`result`  | Function | `undefined` | A function, if supplied, will be called with the combined atomized results from `data` and the files form `in` as the first argument, and an error for the second argument. You can create a promise in this function to be returned if you like.
 
 **Markup Task API:**
+
 Key       | Type     | Default     | Description
 :--       | :--      | :--         | :--
-`in`      | String   | `undefined` | Path to an HTML file.
+`in`      | String   | `undefined` | Path to an HTML file to be processed.
+`data`    | String   | `undefined` | A string of markup to be processed. This is appended to the end of the `in` file contents if both are provided.
 `out`     | String   | `undefined` | Path where the modified version of the `in` file will be stored. If file already exists, it will be overwritten.
-`data`    | String   | `undefined` | A string of markup to be processed. This is ignored there is a valid HTML file passed to `in`
-`result`  | Function | `undefined` | A function, if supplied, will be called with the processed string version of the markup from `in` or `data` as the first argument, and an error for the second argument. You can create a promise in this function to be returned if you like.
 
 **Scripts Task API:**
+
 Key       | Type     | Default     | Description
 :--       | :--      | :--         | :--
 `out`     | String   | `undefined` | Path where a JSON object will be stored. The object contains keys (selectors) and values (array of strings of atomized class names). If file already exists, it will be overwritten.
-`result`  | Function | `undefined` | A function, if supplied, will be called with the JSON object as first argument, and an error for the second argument. You can create a promise in this function to be returned if you like.
+
+
+#### API Hooks/Callbacks example
+
+All the hooks are shown below. Most users will only use the `afterX` hooks as a simple callback to know when something has finished. The other hooks are mostly there for 3rd party plugin authors.
+
+```js
+redPerfume.atomize({
+  hooks: {
+    beforeValidation: function (options) {},
+    afterValidation:  function (options) {},
+    beforeTasks:      function (options) {},
+    afterTasks:       function (options) {}
+  },
+  tasks: [
+    {
+      hooks: {
+        beforeTask: function (options, { task }) {},
+        afterTask:  function (options, { task, processedStyles, processedMarkup }) {}
+      },
+      styles: {
+        hooks: {
+          beforeRead:     function (options, { task }) {},
+          afterRead:      function (options, { task, cssData }) {},
+          afterProcessed: function (options, { task, cssData, processedStyles }) {},
+          afterOutput:    function (options, { task, cssData, processedStyles }) {}
+        }
+      },
+      markup: [
+        {
+          hooks: {
+            beforeRead:     function (options, { task, item, processedStyles }) {},
+            afterRead:      function (options, { task, item, processedStyles, htmlData }) {},
+            afterProcessed: function (options, { task, item, processedStyles, htmlData, processedMarkup }) {},
+            afterOutput:    function (options, { task, item, processedStyles, htmlData, processedMarkup }) {}
+          }
+        }
+      ],
+      scripts: {
+        hooks: {
+          beforeOutput: function (options, { task, processedStyles }) {},
+          afterOutput:  function (options, { task, processedStyles }) {}
+        }
+      }
+    }
+  ]
+});
+```
+
+**Hooks descriptions:**
+
+* Global hooks:
+  * `beforeValidation` - Before the options object is validated and defaulted. The first thing ran before anything else.
+  * `afterValidation` - Right after the options are validated, they will be in this state for the rest of all the hooks
+  * `beforeTasks` - Right before we start processing the tasks array
+  * `afterTasks` - After the last task as been processed, should be the final hook called. Nothing else happens after this.
+* Task hooks
+  * `beforeTask` - Ran right before a task starts.
+  * `afterTask` - Ran right after a task finishes.
+* Styles/Markup hooks:
+  * `beforeRead` - Right before we get the string of text from files and/or `data`.
+  * `afterRead` - Right after we get the string of text from files and/or `data`. Also right before we process/atomize the string.
+  * `afterProcessed` - Right after the string has been atomized. Right before we output it to file if `out` is provided.
+* Scripts hooks
+  * `beforeOutput` - Right before we write the JSON to disk if `out` is provided.
+* Styles/Markup/Scripts hook
+  * `afterOutput` - Right after the file has been written to disk if `out` is provided. This is always called and the last thing to happen in a subTask
+
+**Hook argument definitions:**
+
+* `options` - The options object the user originall passed in (`beforeValidation`) or a modifed version with all API defaults in place (any point `afterValidation`)
+* `task` - The current task object being processed. Looks like `{ styles, markup, scripts, hooks }`, see API above for more info.
+* `processedStyles` - This object: `{ classMap, output }`
+* `processedStyles.classMap` - An object where the keys are the original class names and the values are the atomized class names made from the original CSS rule. This is the same map we output in the `scripts` sub task. How the keys are written (with or without a `.`) and how the values are stored (as an array or string) are subject to change before v1.0.0.
+* `processedStyles.output` - The atomized string of CSS.
+* `processedMarkup` - An atomized string of HTML.
+* `cssData` - This object: `{ cssString, styleErrors }`
+* `cssData.cssString` - The string of all CSS input files and `data` combined, but not atomized.
+* `cssData.styleErrors` - An array of errors from attempting to read in style files.
+* `item` - The current markup item being processed. Looks like `{ in, out, data, hooks}`, see API above for more info.
+* `htmlData` - This object: `{ markupString, markupErrors }`
+* `htmlData.markupString` - The string of HTML from the `in` file and `data` combined, but not atomized.
+* `htmlData.markupErrors` - An array of errors from attempting to read in style files.
 
 
 ## Running locally to see the proof of concept or contribute
