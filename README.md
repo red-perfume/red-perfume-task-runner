@@ -287,7 +287,7 @@ redPerfume.atomize({
 
 **Hook argument definitions:**
 
-* `options` - The options object the user originall passed in (`beforeValidation`) or a modifed version with all API defaults in place (any point `afterValidation`)
+* `options` - The options object the user originally passed in (`beforeValidation`) or a modifed version with all API defaults in place (any point from `afterValidation` and on)
 * `task` - The current task object being processed. Looks like `{ styles, markup, scripts, hooks }`, see API above for more info.
 * `processedStyles` - This object: `{ classMap, output }`
 * `processedStyles.classMap` - An object where the keys are the original class names and the values are the atomized class names made from the original CSS rule. This is the same map we output in the `scripts` sub task. How the keys are written (with or without a `.`) and how the values are stored (as an array or string) are subject to change before v1.0.0.
