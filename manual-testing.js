@@ -28,10 +28,9 @@ redPerfume.atomize({
               padding: 8px;
           }
         `,
-        result: function (result, err) {
-          console.log(result);
-          if (err) {
-            console.log(err);
+        hooks: {
+          afterOutput: function (options, { task, cssData, processedStyles }) {
+            console.log({ task, cssData, processedStyles });
           }
         }
       },
@@ -60,20 +59,18 @@ redPerfume.atomize({
             </html>
           `,
           out: './manual-test/out.html',
-          result: function (result, err) {
-            console.log(result);
-            if (err) {
-              console.log(err);
+          hooks: {
+            afterOutput: function (options, { task, item, processedStyles, htmlData, processedMarkup }) {
+              console.log({ task, item, processedStyles, htmlData, processedMarkup });
             }
           }
         }
       ],
       scripts: {
         out: './manual-test/out.json',
-        result: function (result, err) {
-          console.log(result);
-          if (err) {
-            console.log(err);
+        hooks: {
+          afterOutput: function (options, { task, processedStyles }) {
+            console.log({ task, processedStyles });
           }
         }
       }
