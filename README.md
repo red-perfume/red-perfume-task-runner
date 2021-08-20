@@ -181,11 +181,11 @@ The documented API is fully implemented and tested. Though there are many edge c
 
 ### API Documentation
 
-Key                      | Type     | Allowed          | Default         | Description
-:--                      | :--      | :--              | :--             | :--
-`verbose`                | Boolean  | `true`, `false`  | `true`          | If true, consoles out helpful warnings and errors using `customLogger` or `console.error`.
-`customLogger`           | Function | Any function     | `console.error` | You can pass in your own custom function to log errors/warnings to. When called the function will receive a `message` string for the first argument and sometimes an `error` object for the second argument. This can be useful in scenarios like adding in custom wrappers or colors in a command line/terminal. This function may be called multiple times before all tasks complete. Only called if `verbose` is true.
-`tasks`                  | Array    | Array of objects | `undefined`     | An array of task objects. Each represents the settings for an atomization task to be performed.
+Key             | Type     | Allowed          | Default         | Description
+:--             | :--      | :--              | :--             | :--
+`verbose`       | Boolean  | `true`, `false`  | `true`          | If true, consoles out helpful warnings and errors using `customLogger` or `console.error`.
+`customLogger`  | Function | Any function     | `console.error` | You can pass in your own custom function to log errors/warnings to. When called the function will receive a `message` string for the first argument and sometimes an `error` object for the second argument. This can be useful in scenarios like adding in custom wrappers or colors in a command line/terminal. This function may be called multiple times before all tasks complete. Only called if `verbose` is true.
+`tasks`         | Array    | Array of objects | `undefined`     | An array of task objects. Each represents the settings for an atomization task to be performed.
 
 **Tasks API:**
 
@@ -289,7 +289,7 @@ These are always called and in the same order. For example, `afterOutput` will s
 
 **Hook argument definitions:**
 
-* `options` - The options object the user originall passed in (`beforeValidation`) or a modifed version with all API defaults in place (any point `afterValidation`)
+* `options` - The options object the user originally passed in (`beforeValidation`) or a modifed version with all API defaults in place (any point from `afterValidation` and on)
 * `task` - The current task object being processed. Looks like `{ styles, markup, scripts, hooks }`, see API above for more info.
 * `processedStyles` - This object: `{ classMap, output }`
 * `processedStyles.classMap` - An object where the keys are the original class names and the values are the atomized class names made from the original CSS rule. This is the same map we output in the `scripts` sub task. How the keys are written (with or without a `.`) and how the values are stored (as an array or string) are subject to change before v1.0.0.
