@@ -7,6 +7,41 @@
 
 const helpers = require('./helpers.js');
 
+/**
+ * This is each of the hook names for each section
+ * as documented in the API.
+ *
+ * @type {object}
+ */
+const documentedHooks = {
+  global: [
+    'beforeValidation',
+    'afterValidation',
+    'beforeTasks',
+    'afterTasks'
+  ],
+  task: [
+    'beforeTask',
+    'afterTask'
+  ],
+  styles: [
+    'beforeRead',
+    'afterRead',
+    'afterProcessed',
+    'afterOutput'
+  ],
+  markup: [
+    'beforeRead',
+    'afterRead',
+    'afterProcessed',
+    'afterOutput'
+  ],
+  scripts: [
+    'beforeOutput',
+    'afterOutput'
+  ]
+};
+
 const validator = {
   /**
    * Validates if a value is an array.
@@ -180,6 +215,7 @@ const validator = {
     task.markup = this.validateArray(options, task.markup, 'Optional task.markup must be an array or be undefined.');
     task.scripts = this.validateObject(options, task.scripts, 'Optional task.scripts must be a type of object or be undefined.');
     task.hooks = this.validateObject(options, task.hooks, 'Optional task.hooks must be a type of object or be undefined.');
+    task.hooks = this.validateHookTypes(options, documentedHooks.task, task.hooks, 'task.hooks.');
 
     if (
       !task.styles &&
@@ -199,8 +235,6 @@ const validator = {
     if (task.scripts) {
       task.scripts = this.validateTaskScripts(options, task.scripts);
     }
-
-    task.hooks = this.validateTaskHooks(options, task);
 
     if (!task.styles) {
       delete task.styles;
@@ -226,6 +260,7 @@ const validator = {
     styles.out = this.validateFile(options, styles.out, ['.css'], false);
     styles.data = this.validateString(options, styles.data, 'Optional task.styles.data must be a string of CSS or undefined.');
     styles.hooks = this.validateObject(options, styles.hooks, 'Optional task.styles.hooks must be an object or undefined.');
+    styles.hooks = this.validateHookTypes(options, documentedHooks.styles, styles.hooks, 'task.styles.hooks.');
 
     if (!styles.in) {
       delete styles.in;
@@ -236,8 +271,6 @@ const validator = {
     if (!styles.data) {
       delete styles.data;
     }
-
-    styles.hooks = this.validateStylesHooks(options, styles);
 
     if (!styles.in && !styles.data) {
       helpers.throwError(options, 'Task did not contain a task.styles.in or a task.style.data');
@@ -279,6 +312,7 @@ const validator = {
       item.out = this.validateFile(options, item.out, ['.html', '.htm'], false);
       item.data = this.validateTaskMarkupData(options, item.data);
       item.hooks = this.validateObject(options, item.hooks, 'Optional task.markup.hooks must be an object or undefined.');
+      item.hooks = this.validateHookTypes(options, documentedHooks.markup, item.hooks, 'task.markup[item].hooks.');
 
       if (!item.in) {
         delete item.in;
@@ -289,8 +323,6 @@ const validator = {
       if (!item.out) {
         delete item.out;
       }
-
-      item.hooks = this.validateStylesHooks(options, item);
 
       if (!item.in && !item.data) {
         helpers.throwError(options, 'Task did not contain a task.markup.in or a task.markup.data');
@@ -337,12 +369,11 @@ const validator = {
     scripts = scripts || {};
     scripts.out = this.validateString(options, scripts.out, 'Optional task.scripts.out must be a string or undefined.');
     scripts.hooks = this.validateObject(options, scripts.hooks, 'Optional task.scripts.hooks must be an object or undefined.');
+    scripts.hooks = this.validateHookTypes(options, documentedHooks.scripts, scripts.hooks, 'task.scripts.hooks.');
 
     if (!scripts.out) {
       delete scripts.out;
     }
-
-    scripts.hooks = this.validateScriptsHooks(options, scripts);
 
     if (!scripts.out && !Object.keys(scripts.hooks).length) {
       helpers.throwError(options, 'Task did not contain a task.scripts.out or a task.scripts.hooks callback');
@@ -352,7 +383,6 @@ const validator = {
     }
     return scripts;
   },
-
   /**
    * Generically validates all hook types as a
    * being a function, or deletes them.
@@ -375,81 +405,6 @@ const validator = {
     });
     return hooksContainer;
   },
-  /**
-   * Validates the styles hooks or deletes them.
-   *
-   * @param  {object} options  User's options
-   * @param  {object} styles   The styles subTask
-   * @return {object}          Hooks object
-   */
-  validateStylesHooks: function (options, styles) {
-    const documentedHooks = [
-      'beforeRead',
-      'afterRead',
-      'afterProcessed',
-      'afterOutput'
-    ];
-    return this.validateHookTypes(options, documentedHooks, styles.hooks, 'task.styles.hooks.');
-  },
-  /**
-   * Validates the markup item hooks or deletes them.
-   *
-   * @param  {object} options  User's options
-   * @param  {object} item     The markup subTask
-   * @return {object}          Hooks object
-   */
-  validateMarkupHooks: function (options, item) {
-    const documentedHooks = [
-      'beforeRead',
-      'afterRead',
-      'afterProcessed',
-      'afterOutput'
-    ];
-    return this.validateHookTypes(options, documentedHooks, item.hooks, 'task.markup[item].hooks.');
-  },
-  /**
-   * Validates the scripts hooks or deletes them.
-   *
-   * @param  {object} options  User's options
-   * @param  {object} scripts  The scripts subTask
-   * @return {object}          Hooks object
-   */
-  validateScriptsHooks: function (options, scripts) {
-    const documentedHooks = [
-      'beforeOutput',
-      'afterOutput'
-    ];
-    return this.validateHookTypes(options, documentedHooks, scripts.hooks, 'task.scripts.hooks.');
-  },
-  /**
-   * Validate that task hooks are functions or deletes them.
-   *
-   * @param  {object} options  User's options
-   * @param  {object} task     Current task
-   * @return {object}          Hooks object
-   */
-  validateTaskHooks: function (options, task) {
-    const documentedHooks = [
-      'beforeTask',
-      'afterTask'
-    ];
-    return this.validateHookTypes(options, documentedHooks, task.hooks, 'task.hooks.');
-  },
-  /**
-   * Validate that all the global hooks are functions or deletes them.
-   *
-   * @param  {object} options  User's options
-   * @return {object}          Hooks object
-   */
-  validateGlobalHooks: function (options) {
-    const documentedHooks = [
-      'beforeValidation',
-      'afterValidation',
-      'beforeTasks',
-      'afterTasks'
-    ];
-    return this.validateHookTypes(options, documentedHooks, options.hooks, 'global ');
-  },
 
   /**
    * Validates and defaults all values in the options object,
@@ -466,7 +421,7 @@ const validator = {
     options.verbose = this.validateBoolean(options.verbose, true);
     options = this.validateCustomLogger(options);
     options = this.validateTasks(options);
-    options.hooks = this.validateGlobalHooks(options);
+    options.hooks = this.validateHookTypes(options, documentedHooks.global, options.hooks, 'global ');
 
     return options;
   }
