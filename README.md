@@ -268,6 +268,8 @@ redPerfume.atomize({
 
 **Hook descriptions:**
 
+These are always called and in the same order. For example, `afterOutput` will still be called even if the `out` setting was `undefined`, the output is skipped but the hook is still called.
+
 * Global hooks:
   * `beforeValidation` - Before the options object is validated and defaulted. The first thing ran before anything else.
   * `afterValidation` - Right after the options are validated, they will be in this state for the rest of all the hooks
@@ -292,7 +294,7 @@ redPerfume.atomize({
 * `processedStyles` - This object: `{ classMap, output }`
 * `processedStyles.classMap` - An object where the keys are the original class names and the values are the atomized class names made from the original CSS rule. This is the same map we output in the `scripts` sub task. How the keys are written (with or without a `.`) and how the values are stored (as an array or string) are subject to change before v1.0.0.
 * `processedStyles.output` - The atomized string of CSS.
-* `processedMarkup` - An atomized string of HTML.
+* `processedMarkup` - Array of atomized strings of HTML for each markup item.
 * `cssData` - This object: `{ cssString, styleErrors }`
 * `cssData.cssString` - The string of all CSS input files and `data` combined, but not atomized.
 * `cssData.styleErrors` - An array of errors from attempting to read in style files.
