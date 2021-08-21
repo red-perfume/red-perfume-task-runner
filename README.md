@@ -219,7 +219,7 @@ Key       | Type     | Default     | Description
 `out`     | String   | `undefined` | Path where a JSON object will be stored. The object contains keys (selectors) and values (array of strings of atomized class names). If file already exists, it will be overwritten.
 
 
-#### API Hooks/Callbacks example
+#### Life Cycle Callback hooks example
 
 All the hooks are shown below. Most users will only use the `afterOutput` hooks as a simple callback to know when something has finished. Perhaps to pass along the atomized string to another plugin to minify, or generate a report or something. These hooks are primarily for those writing 3rd party plugins. Or for existing 3rd party libraries to add documentation on how to combine them with Red Perfume.
 
@@ -235,7 +235,7 @@ redPerfume.atomize({
     {
       hooks: {
         beforeTask: function (options, { task }) {},
-        afterTask:  function (options, { task, processedStyles, processedMarkup }) {}
+        afterTask:  function (options, { task, processedStyles, allProcessedMarkup, processedScripts }) {}
       },
       styles: {
         hooks: {
@@ -258,7 +258,7 @@ redPerfume.atomize({
       scripts: {
         hooks: {
           beforeOutput: function (options, { task, processedStyles }) {},
-          afterOutput:  function (options, { task, processedStyles }) {}
+          afterOutput:  function (options, { task, processedStyles, processedScripts }) {}
         }
       }
     }
@@ -294,16 +294,50 @@ These are always called and in the same order. For example, `afterOutput` will s
 * `processedStyles` - This object: `{ classMap, output }`
 * `processedStyles.classMap` - An object where the keys are the original class names and the values are the atomized class names made from the original CSS rule. This is the same map we output in the `scripts` sub task. How the keys are written (with or without a `.`) and how the values are stored (as an array or string) are subject to change before v1.0.0.
 * `processedStyles.output` - The atomized string of CSS.
-* `processedMarkup` - Array of atomized strings of HTML for each markup item.
+* `allProcessedMarkup` - Array of atomized strings of HTML for each markup item.
+* `processedScripts` - Contains the `scriptErrors` array.
+* `processedScripts.scriptErrors` - An array of errors from attempting to write JSON files to disk.
 * `cssData` - This object: `{ cssString, styleErrors }`
 * `cssData.cssString` - The string of all CSS input files and `data` combined, but not atomized.
-* `cssData.styleErrors` - An array of errors from attempting to read in style files.
+* `cssData.styleErrors` - An array of errors from attempting to read/write style files.
 * `item` - The current markup item being processed. Looks like `{ in, out, data, hooks}`, see API above for more info.
 * `htmlData` - This object: `{ markupString, markupErrors }`
 * `htmlData.markupString` - The string of HTML from the `in` file and `data` combined, but not atomized.
-* `htmlData.markupErrors` - An array of errors from attempting to read in style files.
+* `htmlData.markupErrors` - An array of errors from attempting to read/write markup files.
+* `processedMarkup` - The atomized HTML string for a specific markup item.
 
-The arguments defined here will always be the same, in every hook, with the excpection that `options` will be mutated during validation. However, due to the nature of JavaScript object referencing, it is very possible for 3rd party plugins to mutate many of these object values. This is intentional and allowed. Though we would encourage that you just store that on the original options object, the validation does not remove undocumented keys.
+The arguments defined here will always be the same, in every hook, with the excpection that `options` will be mutated during validation. However, due to the nature of JavaScript object referencing, it is very possible for any 3rd party plugins you use to mutate these object values. This is intentional and allowed. Though we would encourage 3rd party libraries to just add their own options on the option object rather than mutate the data used by Red Perfume, since the validation does not remove undocumented keys.
+
+The order hooks are called in:
+
+1. Global: `beforeValidation`
+1. Global: `afterValidation`
+1. Global: `beforeTasks`
+1. Task 1: `beforeTask`
+1. Task 1 - Styles: `beforeRead`
+1. Task 1 - Styles: `afterRead`
+1. Task 1 - Styles: `afterProcessed`
+1. Task 1 - Styles: `afterOutput`
+1. Task 1 - Markup: `beforeRead`
+1. Task 1 - Markup: `afterRead`
+1. Task 1 - Markup: `afterProcessed`
+1. Task 1 - Markup: `afterOutput`
+1. Task 1 - Scripts: `beforeOutput`
+1. Task 1 - Scripts: `afterOutput`
+1. Task 1: `afterTask`
+1. Task 2: `beforeTask`
+1. Task 2 - Styles: `beforeRead`
+1. Task 2 - Styles: `afterRead`
+1. Task 2 - Styles: `afterProcessed`
+1. Task 2 - Styles: `afterOutput`
+1. Task 2 - Markup: `beforeRead`
+1. Task 2 - Markup: `afterRead`
+1. Task 2 - Markup: `afterProcessed`
+1. Task 2 - Markup: `afterOutput`
+1. Task 2 - Scripts: `beforeOutput`
+1. Task 2 - Scripts: `afterOutput`
+1. Task 2: `afterTask`
+1. Global: `afterTasks`
 
 
 ## Running locally to see the proof of concept or contribute
