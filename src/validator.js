@@ -13,7 +13,7 @@ const helpers = require('./helpers.js');
  *
  * @type {object}
  */
-const documentedHooks = {
+const allDocumentedHooks = {
   global: [
     'beforeValidation',
     'afterValidation',
@@ -215,7 +215,7 @@ const validator = {
     task.markup = this.validateArray(options, task.markup, 'Optional task.markup must be an array or be undefined.');
     task.scripts = this.validateObject(options, task.scripts, 'Optional task.scripts must be a type of object or be undefined.');
     task.hooks = this.validateObject(options, task.hooks, 'Optional task.hooks must be a type of object or be undefined.');
-    task.hooks = this.validateHookTypes(options, documentedHooks.task, task.hooks, 'task.hooks.');
+    task.hooks = this.validateHookTypes(options, allDocumentedHooks.task, task.hooks, 'task.hooks.');
 
     if (
       !task.styles &&
@@ -245,6 +245,19 @@ const validator = {
     if (!task.scripts) {
       delete task.scripts;
     }
+    if (
+      !task.styles &&
+      !task.markup &&
+      !task.scripts &&
+      !Object.keys(task.hooks).length
+    ) {
+      delete task.hooks;
+    }
+
+    const onlyContainsUglify = JSON.stringify(Object.keys(task)) === '["uglify"]';
+    if (onlyContainsUglify) {
+      task = undefined;
+    }
 
     return task;
   },
@@ -260,7 +273,7 @@ const validator = {
     styles.out = this.validateFile(options, styles.out, ['.css'], false);
     styles.data = this.validateString(options, styles.data, 'Optional task.styles.data must be a string of CSS or undefined.');
     styles.hooks = this.validateObject(options, styles.hooks, 'Optional task.styles.hooks must be an object or undefined.');
-    styles.hooks = this.validateHookTypes(options, documentedHooks.styles, styles.hooks, 'task.styles.hooks.');
+    styles.hooks = this.validateHookTypes(options, allDocumentedHooks.styles, styles.hooks, 'task.styles.hooks.');
 
     if (!styles.in) {
       delete styles.in;
@@ -277,6 +290,14 @@ const validator = {
     }
     if (!styles.out && !Object.keys(styles.hooks).length) {
       helpers.throwError(options, 'Task did not contain a task.styles.out or a task.style.hooks callback.');
+    }
+    if (
+      !styles.in &&
+      !styles.out &&
+      !styles.data &&
+      !Object.keys(styles.hooks).length
+    ) {
+      delete styles.hooks;
     }
     if (!Object.keys(styles).length) {
       styles = undefined;
@@ -312,7 +333,7 @@ const validator = {
       item.out = this.validateFile(options, item.out, ['.html', '.htm'], false);
       item.data = this.validateTaskMarkupData(options, item.data);
       item.hooks = this.validateObject(options, item.hooks, 'Optional task.markup.hooks must be an object or undefined.');
-      item.hooks = this.validateHookTypes(options, documentedHooks.markup, item.hooks, 'task.markup[item].hooks.');
+      item.hooks = this.validateHookTypes(options, allDocumentedHooks.markup, item.hooks, 'task.markup[item].hooks.');
 
       if (!item.in) {
         delete item.in;
@@ -330,6 +351,15 @@ const validator = {
       if (!item.out && !Object.keys(item.hooks).length) {
         helpers.throwError(options, 'Task did not contain a task.markup.out or a task.markup.hooks callback.');
       }
+      if (
+        !item.in &&
+        !item.data &&
+        !item.out &&
+        !Object.keys(item.hooks).length
+      ) {
+        delete item.hooks;
+      }
+
       if (!Object.keys(item).length) {
         item = undefined;
       }
@@ -369,7 +399,7 @@ const validator = {
     scripts = scripts || {};
     scripts.out = this.validateString(options, scripts.out, 'Optional task.scripts.out must be a string or undefined.');
     scripts.hooks = this.validateObject(options, scripts.hooks, 'Optional task.scripts.hooks must be an object or undefined.');
-    scripts.hooks = this.validateHookTypes(options, documentedHooks.scripts, scripts.hooks, 'task.scripts.hooks.');
+    scripts.hooks = this.validateHookTypes(options, allDocumentedHooks.scripts, scripts.hooks, 'task.scripts.hooks.');
 
     if (!scripts.out) {
       delete scripts.out;
@@ -377,6 +407,7 @@ const validator = {
 
     if (!scripts.out && !Object.keys(scripts.hooks).length) {
       helpers.throwError(options, 'Task did not contain a task.scripts.out or a task.scripts.hooks callback');
+      delete scripts.hooks;
     }
     if (!Object.keys(scripts).length) {
       scripts = undefined;
@@ -400,7 +431,7 @@ const validator = {
       const allowedTypes = ['function', 'undefined'];
       if (!allowedTypes.includes(hookType)) {
         helpers.throwError(options, 'The ' + location + hook + ' must be a function or undefined.');
-        delete hooksContainer.hooks[hook];
+        delete hooksContainer[hook];
       }
     });
     return hooksContainer;
@@ -421,7 +452,7 @@ const validator = {
     options.verbose = this.validateBoolean(options.verbose, true);
     options = this.validateCustomLogger(options);
     options = this.validateTasks(options);
-    options.hooks = this.validateHookTypes(options, documentedHooks.global, options.hooks, 'global ');
+    options.hooks = this.validateHookTypes(options, allDocumentedHooks.global, options.hooks, 'global ');
 
     return options;
   }
