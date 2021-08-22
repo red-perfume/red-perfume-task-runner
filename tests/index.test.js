@@ -40,7 +40,7 @@ describe('Red Perfume', () => {
             _________________________
             Red-Perfume:
             options.tasks Must be an array of objects. See documentation for details.
-          `, 12), undefined);
+          `, 12));
 
         console.error = consoleError;
         consoleError = undefined;
@@ -60,16 +60,21 @@ describe('Red Perfume', () => {
             in: [
               'C:\\app.css'
             ],
-            result: function (data, err) {
-              expect(data)
-                .toEqual('');
+            hooks: {
+              afterOutput: function (options, { task, cssData, processedStyles }) {
+                expect(Object.keys(task))
+                  .toEqual(['uglify', 'styles', 'hooks']);
 
-              expect(testHelpers.removeErrno(err))
-                .toEqual({
-                  syscall: 'open',
-                  code: 'EACCES',
-                  path:'C:\\app.css'
-                });
+                expect(processedStyles)
+                  .toEqual({ classMap: {}, output: '' });
+
+                expect(testHelpers.removeErrno(cssData.styleErrors))
+                  .toEqual({
+                    syscall: 'open',
+                    code: 'EACCES',
+                    path:'C:\\app.css'
+                  });
+              }
             }
           }
         }];
@@ -108,22 +113,30 @@ describe('Red Perfume', () => {
               'C:\\app.css'
             ],
             out: 'C:\\out.css',
-            result: function (data, err) {
-              let expectation = testHelpers.trimIndentation(`
-                .rp__0 {
-                  margin: 0px;
-                }
-              `, 16);
+            hooks: {
+              afterOutput: function (options, { task, cssData, processedStyles }) {
+                let classMap = {
+                  '.a': ['.rp__0']
+                };
+                let output = testHelpers.trimIndentation(`
+                  .rp__0 {
+                    margin: 0px;
+                  }
+                `, 18);
 
-              expect(data)
-                .toEqual(expectation);
+                expect(Object.keys(task))
+                  .toEqual(['uglify', 'styles', 'hooks']);
 
-              expect(testHelpers.removeErrno(err))
-                .toEqual({
-                  code: 'EACCES',
-                  path: 'C:\\out.css',
-                  syscall: 'open'
-                });
+                expect(processedStyles)
+                  .toEqual({ classMap, output });
+
+                expect(testHelpers.removeErrno(cssData.styleErrors))
+                  .toEqual({
+                    code: 'EACCES',
+                    path: 'C:\\out.css',
+                    syscall: 'open'
+                  });
+              }
             }
           }
         }];
@@ -157,16 +170,30 @@ describe('Red Perfume', () => {
             {
               in: 'C:\\home.html',
               out: 'C:\\home.dist.html',
-              result: function (data, err) {
-                expect(data)
-                  .toEqual('<html><head></head><body></body></html>');
+              hooks: {
+                afterOutput: function (options, { task, item, processedStyles, htmlData, processedMarkup }) {
+                  expect(Object.keys(task))
+                    .toEqual(['uglify', 'markup', 'hooks']);
 
-                expect(testHelpers.removeErrno(err))
-                  .toEqual({
-                    syscall: 'open',
-                    code: 'EACCES',
-                    path:'C:\\home.html'
-                  });
+                  expect(Object.keys(item))
+                    .toEqual(['in', 'out', 'hooks']);
+
+                  expect(processedStyles)
+                    .toEqual({});
+
+                  expect(htmlData.markupString)
+                    .toEqual('');
+
+                  expect(testHelpers.removeErrno(htmlData.markupErrors[0]))
+                    .toEqual({
+                      syscall: 'open',
+                      code: 'EACCES',
+                      path:'C:\\home.html'
+                    });
+
+                  expect(processedMarkup)
+                    .toEqual('<html><head></head><body></body></html>');
+                }
               }
             }
           ]

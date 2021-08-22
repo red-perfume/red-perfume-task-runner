@@ -50,7 +50,7 @@ const helpers = {
         error
       );
     } else if (options.verbose) {
-      console.warn(
+      console.error(
         '_________________________\n' +
         'Red-Perfume:\n' +
         this.insertReturns(message)
