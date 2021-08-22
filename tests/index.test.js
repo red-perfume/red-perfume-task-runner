@@ -297,19 +297,36 @@ describe('Red Perfume', () => {
           },
           scripts: {
             out: 'C:\\out.json',
-            result: function (data, err) {
-              expect(data)
-                .toEqual({
+            hooks: {
+              afterOutput: function (options, { task, processedStyles, processedScripts }) {
+                const classMap = {
                   '.a': ['.rp__0'],
                   '.b': ['.rp__1']
-                });
+                };
+                const output = testHelpers.trimIndentation(`
+                  .rp__0 {
+                    margin: 0px;
+                  }
+                  .rp__1 {
+                    padding: 0px;
+                  }`, 18);
 
-              expect(testHelpers.removeErrno(err))
-                .toEqual({
-                  code: 'EACCES',
-                  path: 'C:\\out.json',
-                  syscall: 'open'
-                });
+                expect(Object.keys(task))
+                  .toEqual(['uglify', 'styles', 'scripts', 'hooks']);
+
+                expect(Object.keys(processedScripts))
+                  .toEqual(['scriptErrors']);
+
+                expect(processedStyles)
+                  .toEqual({ classMap, output });
+
+                expect(testHelpers.removeErrno(processedScripts.scriptErrors[0]))
+                  .toEqual({
+                    code: 'EACCES',
+                    path: 'C:\\out.json',
+                    syscall: 'open'
+                  });
+              }
             }
           }
         }];
@@ -347,54 +364,62 @@ describe('Red Perfume', () => {
               'C:\\vendor.css'
             ],
             out: 'C:\\out.css',
-            result: function () {
-              let expectation = testHelpers.trimIndentation(`
-                .rp__0 {
-                  margin: 0px;
-                }
-                .rp__1 {
-                  padding: 0px;
-                }
-              `, 16);
+            hooks: {
+              afterOutput: function () {
+                let expectation = testHelpers.trimIndentation(`
+                  .rp__0 {
+                    margin: 0px;
+                  }
+                  .rp__1 {
+                    padding: 0px;
+                  }
+                `, 18);
 
-              expect(String(fs.readFileSync('C:\\out.css')))
-                .toEqual(expectation + '\n');
+                expect(String(fs.readFileSync('C:\\out.css')))
+                  .toEqual(expectation + '\n');
+              }
             }
           },
           markup: [
             {
               in: 'C:\\home.html',
               out: 'C:\\home.out.html',
-              result: function () {
-                expect(String(fs.readFileSync('C:\\home.out.html')))
-                  .toEqual('<html><head></head><body><h1 class="rp__0">Hi</h1></body></html>\n');
+              hooks: {
+                afterOutput: function () {
+                  expect(String(fs.readFileSync('C:\\home.out.html')))
+                    .toEqual('<html><head></head><body><h1 class="rp__0">Hi</h1></body></html>\n');
+                }
               }
             },
             {
               in: 'C:\\about.html',
               out: 'C:\\about.out.html',
-              result: function () {
-                expect(String(fs.readFileSync('C:\\about.out.html')))
-                  .toEqual('<html><head></head><body><h2 class="rp__1">Yo</h2></body></html>\n');
+              hooks: {
+                afterOutput: function () {
+                  expect(String(fs.readFileSync('C:\\about.out.html')))
+                    .toEqual('<html><head></head><body><h2 class="rp__1">Yo</h2></body></html>\n');
+                }
               }
             }
           ],
           scripts: {
             out: 'C:\\out.json',
-            result: function () {
-              let expectation = testHelpers.trimIndentation(`
-                {
-                  ".a": [
-                    ".rp__0"
-                  ],
-                  ".b": [
-                    ".rp__1"
-                  ]
-                }
-              `, 16);
+            hooks: {
+              afterOutput: function () {
+                let expectation = testHelpers.trimIndentation(`
+                  {
+                    ".a": [
+                      ".rp__0"
+                    ],
+                    ".b": [
+                      ".rp__1"
+                    ]
+                  }
+                `, 18);
 
-              expect(String(fs.readFileSync('C:\\out.json')))
-                .toEqual(expectation + '\n');
+                expect(String(fs.readFileSync('C:\\out.json')))
+                  .toEqual(expectation + '\n');
+              }
             }
           }
         }];
@@ -423,34 +448,42 @@ describe('Red Perfume', () => {
               'C:\\vendor.css'
             ],
             out: 'C:\\out.css',
-            result: function () {
-              expect(String(fs.readFileSync('C:\\out.css')))
-                .toEqual('\n');
+            hooks: {
+              afterOutput: function () {
+                expect(String(fs.readFileSync('C:\\out.css')))
+                  .toEqual('\n');
+              }
             }
           },
           markup: [
             {
               in: 'C:\\home.html',
               out: 'C:\\home.out.html',
-              result: function () {
-                expect(String(fs.readFileSync('C:\\home.out.html')))
-                  .toEqual('<html><head></head><body></body></html>\n');
+              hooks: {
+                afterOutput: function () {
+                  expect(String(fs.readFileSync('C:\\home.out.html')))
+                    .toEqual('<html><head></head><body></body></html>\n');
+                }
               }
             },
             {
               in: 'C:\\about.html',
               out: 'C:\\about.out.html',
-              result: function () {
-                expect(String(fs.readFileSync('C:\\about.out.html')))
-                  .toEqual('<html><head></head><body></body></html>\n');
+              hooks: {
+                afterOutput: function () {
+                  expect(String(fs.readFileSync('C:\\about.out.html')))
+                    .toEqual('<html><head></head><body></body></html>\n');
+                }
               }
             }
           ],
           scripts: {
             out: 'C:\\out.json',
-            result: function () {
-              expect(String(fs.readFileSync('C:\\out.json')))
-                .toEqual('{}\n');
+            hooks: {
+              afterOutput: function () {
+                expect(String(fs.readFileSync('C:\\out.json')))
+                  .toEqual('{}\n');
+              }
             }
           }
         }];
