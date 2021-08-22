@@ -69,8 +69,8 @@ redPerfume.atomize({
       scripts: {
         out: './manual-test/out.json',
         hooks: {
-          afterOutput: function (options, { task, processedStyles }) {
-            console.log({ task, processedStyles });
+          afterOutput: function (options, { task, processedStyles, processedScripts }) {
+            console.log({ task, processedStyles, processedScripts });
           }
         }
       }
