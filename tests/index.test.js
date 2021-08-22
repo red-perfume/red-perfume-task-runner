@@ -232,16 +232,30 @@ describe('Red Perfume', () => {
             {
               in: 'C:\\home.html',
               out: 'C:\\home.out.html',
-              result: function (data, err) {
-                expect(data)
-                  .toEqual('<html><head></head><body><h1 class="a">Hi</h1></body></html>');
+              hooks: {
+                afterOutput: function (options, { task, item, processedStyles, htmlData, processedMarkup }) {
+                  expect(Object.keys(task))
+                    .toEqual(['uglify', 'markup', 'hooks']);
 
-                expect(testHelpers.removeErrno(err))
-                  .toEqual({
-                    code: 'EACCES',
-                    path: 'C:\\home.out.html',
-                    syscall: 'open'
-                  });
+                  expect(Object.keys(item))
+                    .toEqual(['in', 'out', 'hooks']);
+
+                  expect(processedStyles)
+                    .toEqual({});
+
+                  expect(htmlData.markupString)
+                    .toEqual('<h1 class="a">Hi</h1>');
+
+                  expect(processedMarkup)
+                    .toEqual('<html><head></head><body><h1 class="a">Hi</h1></body></html>');
+
+                  expect(testHelpers.removeErrno(htmlData.markupErrors[0]))
+                    .toEqual({
+                      code: 'EACCES',
+                      path: 'C:\\home.out.html',
+                      syscall: 'open'
+                    });
+                }
               }
             }
           ]
