@@ -191,8 +191,8 @@ const validator = {
     }
 
     if (options.tasks.length) {
-      options.tasks = options.tasks.map((task) => {
-        return this.validateTask(options, task);
+      options.tasks = options.tasks.map((task, taskIndex) => {
+        return this.validateTask(options, task, taskIndex);
       }).filter(Boolean);
 
       if (!options.tasks.length) {
@@ -205,11 +205,12 @@ const validator = {
   /**
    * Validates or removes the top level parts of a task.
    *
-   * @param  {object} options  User's options
-   * @param  {object} task     A Red Perfume task to be validated
-   * @return {object}          validated task
+   * @param  {object} options    User's options
+   * @param  {object} task       A Red Perfume task to be validated
+   * @param  {number} taskIndex  The index of the current task
+   * @return {object}            validated task
    */
-  validateTask: function (options, task) {
+  validateTask: function (options, task, taskIndex) {
     task.uglify = this.validateBoolean(task.uglify, false);
     task.styles = this.validateObject(options, task.styles, 'Optional task.styles must be a type of object or be undefined.');
     task.markup = this.validateArray(options, task.markup, 'Optional task.markup must be an array or be undefined.');
@@ -217,46 +218,32 @@ const validator = {
     task.hooks = this.validateObject(options, task.hooks, 'Optional task.hooks must be a type of object or be undefined.');
     task.hooks = this.validateHookTypes(options, allDocumentedHooks.task, task.hooks, 'task.hooks.');
 
-    if (
-      !task.styles &&
-      !task.markup &&
-      !task.scripts &&
-      !Object.keys(task.hooks).length
-    ) {
-      helpers.throwError(options, 'Your task does not contain styles, markup, scripts, or callback hooks.');
-      return;
-    }
-
     if (task.styles) {
-      task.styles = this.validateTaskStyles(options, task);
+      task.styles = this.validateTaskStyles(options, task, taskIndex);
     }
     if (task.markup) {
-      task.markup = this.validateTaskMarkup(options, task);
+      task.markup = this.validateTaskMarkup(options, task, taskIndex);
     }
     if (task.scripts) {
-      task.scripts = this.validateTaskScripts(options, task);
+      task.scripts = this.validateTaskScripts(options, task, taskIndex);
     }
 
-    if (!task.styles) {
-      delete task.styles;
-    }
-    if (!task.markup) {
-      delete task.markup;
-    }
-    if (!task.scripts) {
-      delete task.scripts;
-    }
+    ['styles', 'markup', 'scripts'].forEach(function (setting) {
+      if (!task[setting]) {
+        delete task[setting];
+      }
+    });
     if (
       !task.styles &&
       !task.markup &&
       !task.scripts &&
       !Object.keys(task.hooks).length
     ) {
+      helpers.throwError(options, 'Tasks[' + taskIndex + '] does not contain styles, markup, scripts, or callback hooks.');
       delete task.hooks;
     }
 
-    const onlyContainsUglify = JSON.stringify(Object.keys(task)) === '["uglify"]';
-    if (onlyContainsUglify) {
+    if (JSON.stringify(Object.keys(task)) === '["uglify"]') {
       task = undefined;
     }
 
@@ -265,11 +252,12 @@ const validator = {
   /**
    * Validates the values on styles task (in/out/data/hooks).
    *
-   * @param  {object} options  User's options
-   * @param  {object} task     The current task
-   * @return {object}          Validated task.styles or undefined
+   * @param  {object} options    User's options
+   * @param  {object} task       The current task
+   * @param  {number} taskIndex  The index of the current task
+   * @return {object}            Validated task.styles or undefined
    */
-  validateTaskStyles: function (options, task) {
+  validateTaskStyles: function (options, task, taskIndex) {
     let styles = task.styles || {};
     styles.in = this.validateTaskStylesIn(options, styles.in);
     styles.out = this.validateFile(options, styles.out, ['.css'], false);
@@ -277,25 +265,26 @@ const validator = {
     styles.hooks = this.validateObject(options, styles.hooks, 'Optional task.styles.hooks must be an object or undefined.');
     styles.hooks = this.validateHookTypes(options, allDocumentedHooks.styles, styles.hooks, 'task.styles.hooks.');
 
-    if (!styles.in) {
-      delete styles.in;
-    }
-    if (!styles.out) {
-      delete styles.out;
-    }
-    if (!styles.data) {
-      delete styles.data;
-    }
+    ['in', 'out', 'data'].forEach(function (setting) {
+      if (!styles[setting]) {
+        delete styles[setting];
+      }
+    });
 
     if (!styles.in && !styles.data) {
-      helpers.throwError(options, 'Task did not contain a task.styles.in or a task.style.data');
+      helpers.throwError(options, 'Tasks[' + taskIndex + '] did not contain a task.styles.in or a task.style.data');
     }
     if (
       !styles.out &&
       !Object.keys(styles.hooks).length &&
       !task.hooks.afterTask
     ) {
-      helpers.throwError(options, 'Task did not contain a task.styles.out, a task.style.hooks callback, or a task.hooks.afterTask callback.');
+      helpers.throwError(options, [
+        'Tasks[' + taskIndex + '] did not contain',
+        'a task.styles.out,',
+        'a task.style.hooks callback,',
+        'or a task.hooks.afterTask callback.'
+      ].join(' '));
     }
     if (
       !styles.in &&
@@ -329,11 +318,12 @@ const validator = {
   /**
    * Validates the markup task.
    *
-   * @param  {object} options  User's options
-   * @param  {object} task     The current task
-   * @return {Array}           The validated task.markup array or undefined
+   * @param  {object} options    User's options
+   * @param  {object} task       The current task
+   * @param  {number} taskIndex  The index of the current task
+   * @return {Array}             The validated task.markup array or undefined
    */
-  validateTaskMarkup: function (options, task) {
+  validateTaskMarkup: function (options, task, taskIndex) {
     let markup = task.markup || [];
     markup = markup.map((item, index) => {
       item.in = this.validateFile(options, item.in, ['.html', '.htm'], true);
@@ -342,32 +332,28 @@ const validator = {
       item.hooks = this.validateObject(options, item.hooks, 'Optional task.markup.hooks must be an object or undefined.');
       item.hooks = this.validateHookTypes(options, allDocumentedHooks.markup, item.hooks, 'task.markup[item].hooks.');
 
-      if (!item.in) {
-        delete item.in;
-      }
-      if (!item.data) {
-        delete item.data;
-      }
-      if (!item.out) {
-        delete item.out;
-      }
+      ['in', 'data', 'out'].forEach(function (setting) {
+        if (!item[setting]) {
+          delete item[setting];
+        }
+      });
 
       if (!item.in && !item.data) {
-        helpers.throwError(options, 'Task did not contain a task.markup[' + index + '].in or a task.markup[' + index + '].data');
+        helpers.throwError(options, 'Tasks[' + taskIndex + '] did not contain a task.markup[' + index + '].in or a task.markup[' + index + '].data');
       }
       if (
         !item.out &&
         !Object.keys(item.hooks).length &&
         !task.hooks.afterTask
       ) {
-        helpers.throwError(options, 'Task did not contain a task.markup[' + index + '].out, a task.markup[' + index + '].hooks callback, or a task.hooks.afterTask callback.');
+        helpers.throwError(options, [
+          'Tasks[' + taskIndex + '] did not contain',
+          'a task.markup[' + index + '].out,',
+          'a task.markup[' + index + '].hooks callback,',
+          'or a task.hooks.afterTask callback.'
+        ].join(' '));
       }
-      if (
-        !item.in &&
-        !item.data &&
-        !item.out &&
-        !Object.keys(item.hooks).length
-      ) {
+      if (!item.in && !item.data && !item.out && !Object.keys(item.hooks).length) {
         delete item.hooks;
       }
 
@@ -402,11 +388,12 @@ const validator = {
   /**
    * Validates the task.scripts options.
    *
-   * @param  {object} options  User's options
-   * @param  {object} task     The current task
-   * @return {object}          Validated task.scripts or undefined
+   * @param  {object} options    User's options
+   * @param  {object} task       The current task
+   * @param  {number} taskIndex  The index of the current task
+   * @return {object}            Validated task.scripts or undefined
    */
-  validateTaskScripts: function (options, task) {
+  validateTaskScripts: function (options, task, taskIndex) {
     let scripts = task.scripts || {};
     scripts.out = this.validateString(options, scripts.out, 'Optional task.scripts.out must be a string or undefined.');
     scripts.hooks = this.validateObject(options, scripts.hooks, 'Optional task.scripts.hooks must be an object or undefined.');
@@ -421,7 +408,7 @@ const validator = {
       !Object.keys(scripts.hooks).length &&
       !task.hooks.afterTask
     ) {
-      helpers.throwError(options, 'Task did not contain a task.scripts.out, a task.scripts.hooks callback, or a task.hooks.afterTask callback.');
+      helpers.throwError(options, 'Tasks[' + taskIndex + '] did not contain a task.scripts.out, a task.scripts.hooks callback, or a task.hooks.afterTask callback.');
     }
     if (!scripts.out && !Object.keys(scripts.hooks).length) {
       delete scripts.hooks;
