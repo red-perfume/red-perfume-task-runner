@@ -292,18 +292,18 @@ These are always called and in the same order. For example, `afterOutput` will s
 * `options` - The options object the user originally passed in (`beforeValidation`) or a modifed version with all API defaults in place (any point from `afterValidation` and on)
 * `task` - The current task object being processed. Looks like `{ styles, markup, scripts, hooks }`, see API above for more info.
 * `processedStyles` - This object: `{ classMap, output }`
-* `processedStyles.classMap` - An object where the keys are the original class names and the values are the atomized class names made from the original CSS rule. This is the same map we output in the `scripts` sub task. How the keys are written (with or without a `.`) and how the values are stored (as an array or string) are subject to change before v1.0.0.
-* `processedStyles.output` - The atomized string of CSS.
+   * `processedStyles.classMap` - An object where the keys are the original class names and the values are the atomized class names made from the original CSS rule. This is the same map we output in the `scripts` sub task. How the keys are written (with or without a `.`) and how the values are stored (as an array or string) are subject to change before v1.0.0.
+   * `processedStyles.output` - The atomized string of CSS.
 * `allProcessedMarkup` - Array of atomized strings of HTML for each markup item.
 * `processedScripts` - Contains the `scriptErrors` array.
-* `processedScripts.scriptErrors` - An array of errors from attempting to write JSON files to disk.
+   * `processedScripts.scriptErrors` - An array of errors from attempting to write JSON files to disk.
 * `cssData` - This object: `{ cssString, styleErrors }`
-* `cssData.cssString` - The string of all CSS input files and `data` combined, but not atomized.
-* `cssData.styleErrors` - An array of errors from attempting to read/write style files.
+   * `cssData.cssString` - The string of all CSS input files and `data` combined, but not atomized.
+   * `cssData.styleErrors` - An array of errors from attempting to read/write style files.
 * `item` - The current markup item being processed. Looks like `{ in, out, data, hooks}`, see API above for more info.
 * `htmlData` - This object: `{ markupString, markupErrors }`
-* `htmlData.markupString` - The string of HTML from the `in` file and `data` combined, but not atomized.
-* `htmlData.markupErrors` - An array of errors from attempting to read/write markup files.
+   * `htmlData.markupString` - The string of HTML from the `in` file and `data` combined, but not atomized.
+   * `htmlData.markupErrors` - An array of errors from attempting to read/write markup files.
 * `processedMarkup` - The atomized HTML string for a specific markup item.
 
 The arguments defined here will always be the same, in every hook, with the excpection that `options` will be mutated during validation. However, due to the nature of JavaScript object referencing, it is very possible for any 3rd party plugins you use to mutate these object values. This is intentional and allowed. Though we would encourage 3rd party libraries to just add their own options on the option object rather than mutate the data used by Red Perfume, since the validation does not remove undocumented keys.
