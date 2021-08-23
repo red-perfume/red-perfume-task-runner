@@ -229,7 +229,7 @@ redPerfume.atomize({
     beforeValidation: function (options) {},
     afterValidation:  function (options) {},
     beforeTasks:      function (options) {},
-    afterTasks:       function (options) {}
+    afterTasks:       function (options, [{ task, inputCss, atomizedCss, classMap, allInputMarkup, allAtomizedMarkup, styleErrors, markupErrors, scriptErrors }]) {}
   },
   tasks: [
     {
@@ -274,7 +274,7 @@ These are always called and in the same order. For example, `afterOutput` will s
   * `beforeValidation` - Before the options object is validated and defaulted. The first thing ran before anything else.
   * `afterValidation` - Right after the options are validated, they will be in this state for the rest of all the hooks
   * `beforeTasks` - Right before we start processing the tasks array
-  * `afterTasks` - After the last task as been processed, should be the final hook called. Nothing else happens after this.
+  * `afterTasks` - After the last task has been processed, should be the final hook called. Nothing else happens after this. Includes an array where each object contains data from a task.
 * Task hooks
   * `beforeTask` - Ran right before a task starts.
   * `afterTask` - Ran right after a task finishes.
@@ -306,9 +306,6 @@ Argument             | Type   | Description
 `styleErrors`        | array  | An array of errors from attempting to read/write/parse/stringify style files.
 `markupErrors`       | array  | An array of errors from attempting to read/write/parse/stringify markup files.
 `scriptErrors`       | array  | An array of errors from attempting to write JSON files to disk.
-
-
-
 
 
 The order hooks are called in:

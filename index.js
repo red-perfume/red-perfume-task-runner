@@ -13,15 +13,16 @@ const processTasks = require('./src/process-tasks.js');
  *
  * @param {object} options  The user's options object
  * @param {string} hook     The hook to run
+ * @param {Array}  data     The data to be emitted
  */
-function runHook (options, hook) {
+function runHook (options, hook, data) {
   if (
     options &&
     options.hooks &&
     options.hooks[hook] &&
     typeof(options.hooks[hook]) === 'function'
   ) {
-    options.hooks[hook](options);
+    options.hooks[hook](options, data);
   }
 }
 
@@ -58,8 +59,8 @@ const redPerfume = {
     runHook(options, 'afterValidation');
 
     runHook(options, 'beforeTasks');
-    processTasks(options);
-    runHook(options, 'afterTasks');
+    const results = processTasks(options);
+    runHook(options, 'afterTasks', results);
   }
 };
 

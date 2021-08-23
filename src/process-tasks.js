@@ -225,8 +225,9 @@ function processScripts (options, task, classMap) {
  * @example
  * processTask(options, task);
  *
- * @param {object} options  The user's options object
- * @param {object} task     The task with all settings
+ * @param  {object} options  The user's options object
+ * @param  {object} task     The task with all settings
+ * @return {object}          All the variables to be emitted from final callback hook
  */
 function processTask (options, task) {
   runHook(options, task, 'beforeTask', { task });
@@ -251,7 +252,9 @@ function processTask (options, task) {
     ({ scriptErrors } = processScripts(options, task, atomizedCss, classMap));
   }
 
-  runHook(options, task, 'afterTask', { task, inputCss, atomizedCss, classMap, allInputMarkup, allAtomizedMarkup, styleErrors, markupErrors, scriptErrors });
+  const finalOutput = { task, inputCss, atomizedCss, classMap, allInputMarkup, allAtomizedMarkup, styleErrors, markupErrors, scriptErrors };
+  runHook(options, task, 'afterTask', finalOutput);
+  return finalOutput;
 };
 
 /**
@@ -261,15 +264,19 @@ function processTask (options, task) {
  * @example
  * processTasks(options);
  *
- * @param {object} options  The user's options object
+ * @param  {object} options  The user's options object
+ * @return {object}          All the variables to be emitted from final callback hook
  */
 function processTasks (options) {
   options = options || {};
   options.tasks = options.tasks || [];
 
+  const finalOutputs = [];
   options.tasks.forEach(function (task) {
-    processTask(options, task);
+    finalOutputs.push(processTask(options, task));
   });
+
+  return finalOutputs;
 }
 
 module.exports = processTasks;
