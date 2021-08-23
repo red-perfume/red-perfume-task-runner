@@ -190,7 +190,6 @@ function processMarkup (options, task, classMap) {
       processedMarkup = html(options, inputHtml, classMap, markupErrors);
     }
     let atomizedHtml = processedMarkup.atomizedHtml;
-    markupErrors = processedMarkup.markupErrors;
     runHook(options, subTask, 'afterProcessed', { task, subTask, classMap, inputHtml, atomizedHtml, markupErrors });
 
     outputAtomizedHTML(options, subTask, atomizedHtml, markupErrors);

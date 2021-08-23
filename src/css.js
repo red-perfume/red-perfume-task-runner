@@ -113,8 +113,8 @@ function handleNonClasses (rule, newRules) {
  * @param {object} rule         A CSS Rule as AST including selectors
  * @param {object} declaration  A single CSS proptery/value pair as AST
  * @param {object} classMap     Map of original CSS selectors to encoded class names
- * @param {Array}  styleErrors  Array of style related errors
  * @param {object} newRules     The atomized CSS as AST
+ * @param {Array}  styleErrors  Array of style related errors
  */
 function encodeDeclarationAsClassname (options, rule, declaration, classMap, newRules, styleErrors) {
   /* An encoded class name look like:

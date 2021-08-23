@@ -29,8 +29,8 @@ redPerfume.atomize({
           }
         `,
         hooks: {
-          afterOutput: function (options, { task, cssData, processedStyles }) {
-            console.log({ task, cssData, processedStyles });
+          afterOutput: function (options, { task, inputCss, atomizedCss, classMap, styleErrors }) {
+            console.log({ task, inputCss, atomizedCss, classMap, styleErrors });
           }
         }
       },
@@ -60,8 +60,8 @@ redPerfume.atomize({
           `,
           out: './manual-test/out.html',
           hooks: {
-            afterOutput: function (options, { task, item, processedStyles, htmlData, processedMarkup }) {
-              console.log({ task, item, processedStyles, htmlData, processedMarkup });
+            afterOutput: function (options, { task, subTask, classMap, inputHtml, atomizedHtml, markupErrors }) {
+              console.log({ task, subTask, classMap, inputHtml, atomizedHtml, markupErrors });
             }
           }
         }
@@ -69,8 +69,8 @@ redPerfume.atomize({
       scripts: {
         out: './manual-test/out.json',
         hooks: {
-          afterOutput: function (options, { task, processedStyles, processedScripts }) {
-            console.log({ task, processedStyles, processedScripts });
+          afterOutput: function (options, { task, classMap, scriptErrors }) {
+            console.log({ task, classMap, scriptErrors });
           }
         }
       }
