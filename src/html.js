@@ -130,15 +130,15 @@ const html = function (options, input, classMap, markupErrors) {
   });
 
   // Object => string
-  let markup = parse5.serialize(document);
+  let atomizedHtml = parse5.serialize(document);
 
-  if (!markup || markup === '<html><head></head><body></body></html>') {
+  if (!atomizedHtml || atomizedHtml === '<html><head></head><body></body></html>') {
     const message = 'Error parsing HTML';
     markupErrors.push(message);
-    helpers.throwError(options, message, (markup || document));
+    helpers.throwError(options, message, (atomizedHtml || document));
   }
 
-  return { atomizedHtml: markup, markupErrors };
+  return atomizedHtml;
 };
 
 module.exports = html;
