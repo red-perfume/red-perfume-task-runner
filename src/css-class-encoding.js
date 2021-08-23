@@ -86,9 +86,10 @@ const prefix = 'rp__';
  *
  * @param  {object} options      User's passed in options, containing verbose/customLoger
  * @param  {object} declaration  Contains the Property and Value strings
+ * @param  {Array}  styleErrors  Array containing all style related errors
  * @return {string}              A classname starting with . and a prefix
  */
-function encodeClassName (options, declaration) {
+function encodeClassName (options, declaration, styleErrors) {
   if (!declaration || declaration.property === undefined || declaration.value === undefined) {
     let message = [
       'A rule declaration was missing details,',
@@ -108,6 +109,7 @@ function encodeClassName (options, declaration) {
       'Honestly, if you actually got this',
       'error, I\'m kind of impressed.'
     ].join(' ');
+    styleErrors.push(message);
     helpers.throwError(options, message);
   }
   declaration = declaration || {};
