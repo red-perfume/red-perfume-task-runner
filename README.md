@@ -146,8 +146,8 @@ redPerfume.atomize({
       styles: {
         data: '.example { padding: 10px; margin: 10px; }',
         hooks: {
-          afterOutput: function (options, { task, cssData, processedStyles }) {
-            console.log(options, task, cssData, processedStyles);
+          afterOutput: function (options, { task, inputCss, atomizedCss, classMap, styleErrors }) {
+            console.log({ options, task, inputCss, atomizedCss, classMap, styleErrors });
           }
         }
       },
@@ -155,16 +155,16 @@ redPerfume.atomize({
         {
           data: '<!DOCTYPE html><html><body><div class="example"></div></body></html>',
           hooks: {
-            afterOutput: function (options, { task, item, processedStyles, htmlData, processedMarkup }) {
-              console.log(options, task, item, processedStyles, htmlData, processedMarkup);
+            afterOutput: function (options, { task, subTask, classMap, inputHtml, atomizedHtml, markupErrors }) {
+              console.log({ options, task, subTask, classMap, inputHtml, atomizedHtml, markupErrors });
             }
           }
         }
       ],
       scripts: {
         hooks: {
-          afterOutput: function (options, { task, processedStyles }) {
-            console.log(options, task, processedStyles);
+          afterOutput: function (options, { task, classMap, scriptErrors }) {
+            console.log({ options, task, classMap, scriptErrors });
           }
         }
       }
