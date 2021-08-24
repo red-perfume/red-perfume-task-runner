@@ -405,6 +405,9 @@ const validator = {
    * @return {object}            Validated task.scripts or undefined
    */
   validateTaskScripts: function (options, task, taskIndex) {
+    task = task || {};
+    task.hooks = task.hooks || {};
+    taskIndex = taskIndex || 0;
     let scripts = task.scripts || {};
     scripts.out = this.validateString(options, scripts.out, 'Optional task.scripts.out must be a string or undefined.');
     scripts.hooks = this.validateObject(options, scripts.hooks, 'Optional task.scripts.hooks must be an object or undefined.');
