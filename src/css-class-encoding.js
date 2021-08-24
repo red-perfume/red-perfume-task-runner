@@ -5,6 +5,7 @@
  * @author  TheJaredWilcurt
  */
 
+const constants = require('./constants.js');
 const helpers = require('./helpers.js');
 
 // Initially I thought this too verbose, but there is literally no limit on class lengths other than the machine's memory/CPU.
@@ -91,26 +92,8 @@ const prefix = 'rp__';
  */
 function encodeClassName (options, declaration, styleErrors) {
   if (!declaration || declaration.property === undefined || declaration.value === undefined) {
-    let message = [
-      'A rule declaration was missing details,',
-      'such as property or value.',
-      'This may result in a classname like',
-      '.rp__width__--COLONundefined,',
-      '.rp__undefined__--COLON100px,',
-      'or',
-      '.rp__undefined__--COLONundefined.',
-      'If there are multiples of these,',
-      'they may replace the previous.',
-      'Please report this error to',
-      'github.com/red-perfume/red-perfume/issues',
-      'because I have no idea how to',
-      'reproduce it with actual CSS input.',
-      'This was just meant for a safety check.',
-      'Honestly, if you actually got this',
-      'error, I\'m kind of impressed.'
-    ].join(' ');
-    styleErrors.push(message);
-    helpers.throwError(options, message);
+    styleErrors.push(constants.IMPRESSED_MESSAGE);
+    helpers.throwError(options, constants.IMPRESSED_MESSAGE);
   }
   declaration = declaration || {};
   let newName = declaration.property + ':' + declaration.value;
