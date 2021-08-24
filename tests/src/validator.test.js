@@ -195,34 +195,6 @@ describe('Validator', () => {
     });
   });
 
-  describe('validateFunction', () => {
-    test('Falsy', () => {
-      expect(validator.validateFunction(options, false, 'message'))
-        .toEqual(undefined);
-
-      expect(options.customLogger)
-        .not.toHaveBeenCalled();
-    });
-
-    test('Not a function', () => {
-      expect(validator.validateFunction(options, 'key', 'message'))
-        .toEqual(undefined);
-
-      expect(options.customLogger)
-        .toHaveBeenCalledWith('message', undefined);
-    });
-
-    test('Function', () => {
-      const fn = function () {};
-
-      expect(validator.validateFunction(options, fn, 'message'))
-        .toEqual(fn);
-
-      expect(options.customLogger)
-        .not.toHaveBeenCalled();
-    });
-  });
-
   describe('validateObject', () => {
     test('Falsy', () => {
       expect(validator.validateObject(options, false, 'message'))
@@ -311,7 +283,7 @@ describe('Validator', () => {
           _________________________
           Red-Perfume:
           Optional customLogger must be a type of function.
-        `, 10), undefined);
+        `, 10));
     });
 
     test('Function', () => {
@@ -328,11 +300,11 @@ describe('Validator', () => {
 
   describe('validateTasks', () => {
     test('All tasks valid', () => {
-      let result = jest.fn();
+      let hooks = { afterOutput: jest.fn() };
       options.tasks = [{
         styles: {
           data: '.a{margin:1px}',
-          result
+          hooks
         }
       }];
 
@@ -344,8 +316,9 @@ describe('Validator', () => {
             uglify: false,
             styles: {
               data: '.a{margin:1px}',
-              result
-            }
+              hooks
+            },
+            hooks: {}
           }]
         });
 
@@ -360,7 +333,7 @@ describe('Validator', () => {
         .toEqual(undefined);
 
       expect(options.customLogger)
-        .toHaveBeenCalledWith('Your task does not contain styles, markup, or scripts', undefined);
+        .toHaveBeenCalledWith('Tasks[0] does not contain styles, markup, scripts, or callback hooks.', undefined);
     });
 
     test('Uglify true', () => {
@@ -368,32 +341,35 @@ describe('Validator', () => {
         .toEqual(undefined);
 
       expect(options.customLogger)
-        .toHaveBeenCalledWith('Your task does not contain styles, markup, or scripts', undefined);
+        .toHaveBeenCalledWith('Tasks[0] does not contain styles, markup, scripts, or callback hooks.', undefined);
     });
 
-    test('Styles, data, no result', () => {
+    test('Styles, data, no hooks', () => {
       expect(validator.validateTask(options, { styles: { data: '.test { margin: 1px; }' } }))
         .toEqual({
           uglify: false,
           styles: {
-            data: '.test { margin: 1px; }'
-          }
+            data: '.test { margin: 1px; }',
+            hooks: {}
+          },
+          hooks: {}
         });
 
       expect(options.customLogger)
-        .toHaveBeenCalledWith('Task did not contain a task.styles.out or a task.style.result', undefined);
+        .toHaveBeenCalledWith('Tasks[0] did not contain a task.styles.out, a task.style.hooks callback, or a task.hooks.afterTask callback.', undefined);
     });
 
-    test('Styles, data, result', () => {
-      let result = jest.fn();
+    test('Styles, data, hooks', () => {
+      let hooks = { afterOutput: jest.fn() };
 
-      expect(validator.validateTask(options, { styles: { data: '.test { margin: 1px; }', result } }))
+      expect(validator.validateTask(options, { styles: { data: '.test { margin: 1px; }', hooks } }))
         .toEqual({
           uglify: false,
           styles: {
             data: '.test { margin: 1px; }',
-            result
-          }
+            hooks
+          },
+          hooks: {}
         });
 
       expect(options.customLogger)

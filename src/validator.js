@@ -211,6 +211,7 @@ const validator = {
    * @return {object}            validated task
    */
   validateTask: function (options, task, taskIndex) {
+    taskIndex = taskIndex || 0;
     task.uglify = this.validateBoolean(task.uglify, false);
     task.styles = this.validateObject(options, task.styles, 'Optional task.styles must be a type of object or be undefined.');
     task.markup = this.validateArray(options, task.markup, 'Optional task.markup must be an array or be undefined.');
