@@ -49,6 +49,7 @@ function recursivelyRemovePosition (item) {
  * @return {object}              A parsed CSS AST
  */
 const cssParser = function (options, input, styleErrors) {
+  styleErrors = styleErrors || [];
   if (!input) {
     const message = 'Invalid CSS input.';
     styleErrors.push(message);

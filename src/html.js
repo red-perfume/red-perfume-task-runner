@@ -113,6 +113,7 @@ const html = function (options, input, classMap, markupErrors) {
   options = options || {};
   input = input || '';
   classMap = classMap || {};
+  markupErrors = markupErrors || [];
 
   // TODO: cleanDocument() only needed for cleaner console logs, could be removed later for performance boost
   // String => AST Object.

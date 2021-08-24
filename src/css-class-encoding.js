@@ -91,6 +91,7 @@ const prefix = 'rp__';
  * @return {string}              A classname starting with . and a prefix
  */
 function encodeClassName (options, declaration, styleErrors) {
+  styleErrors = styleErrors || [];
   if (!declaration || declaration.property === undefined || declaration.value === undefined) {
     styleErrors.push(constants.IMPRESSED_MESSAGE);
     helpers.throwError(options, constants.IMPRESSED_MESSAGE);

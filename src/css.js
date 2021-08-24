@@ -261,6 +261,7 @@ const css = function (options, input, uglify, styleErrors) {
   options = options || {};
   input = input || '';
   uglify = uglify || false;
+  styleErrors = styleErrors || [];
   const message = 'Error parsing CSS';
   let parsed;
   try {
