@@ -247,7 +247,7 @@ function processTask (options, task) {
 
   let scriptErrors;
   if (task.scripts) {
-    ({ scriptErrors } = processScripts(options, task, atomizedCss, classMap));
+    ({ scriptErrors } = processScripts(options, task, classMap));
   }
 
   const finalOutput = { task, inputCss, atomizedCss, classMap, allInputMarkup, allAtomizedMarkup, styleErrors, markupErrors, scriptErrors };
