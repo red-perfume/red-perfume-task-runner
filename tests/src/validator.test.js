@@ -382,22 +382,25 @@ describe('Validator', () => {
           uglify: false,
           styles: {
             data: '.test { margin: 1px; }',
-            out: 'C:\\file.css'
-          }
+            out: 'C:\\file.css',
+            hooks: {}
+          },
+          hooks: {}
         });
 
       expect(options.customLogger)
         .not.toHaveBeenCalled();
     });
 
-    test('Markup, data, result', () => {
+    test('Markup, data, hook', () => {
       let data = '<h1 class="test">Hi</h1>';
-      let result = jest.fn();
+      let hooks = { afterOutput: jest.fn() };
 
-      expect(validator.validateTask(options, { markup: [{ data, result }] }))
+      expect(validator.validateTask(options, { markup: [{ data, hooks }] }))
         .toEqual({
           uglify: false,
-          markup: [{ data, result }]
+          markup: [{ data, hooks }],
+          hooks: {}
         });
 
       expect(options.customLogger)
@@ -406,33 +409,32 @@ describe('Validator', () => {
 
     test('Each section is empty object', () => {
       expect(validator.validateTask(options, { styles: {}, markup: [], scripts: {} }))
-        .toEqual({ uglify: false });
+        .toEqual(undefined);
 
       expect(options.customLogger)
-        .toHaveBeenCalledWith('Task did not contain a task.styles.in or a task.style.data', undefined);
+        .toHaveBeenCalledWith('Tasks[0] did not contain a task.styles.in or a task.style.data', undefined);
 
       expect(options.customLogger)
-        .toHaveBeenCalledWith('Task did not contain a task.styles.out or a task.style.result', undefined);
+        .toHaveBeenCalledWith('Tasks[0] did not contain a task.styles.out, a task.style.hooks callback, or a task.hooks.afterTask callback.', undefined);
 
       expect(options.customLogger)
-        .toHaveBeenCalledWith('Task did not contain a task.scripts.out or a task.scripts.result', undefined);
+        .toHaveBeenCalledWith('Tasks[0] did not contain a task.scripts.out, a task.scripts.hooks callback, or a task.hooks.afterTask callback.', undefined);
     });
 
     test('Each section is valid', () => {
+      const hooks = { afterOutput: jest.fn() };
       let task = {
         styles: {
           data: '.test { color: #F00; }',
-          result: jest.fn()
+          hooks
         },
         markup: [
           {
             data: '<div class="test">Hi</div>',
-            result: jest.fn()
+            hooks
           }
         ],
-        scripts: {
-          result: jest.fn()
-        }
+        scripts: { hooks }
       };
 
       expect(validator.validateTask(options, task))
@@ -449,10 +451,10 @@ describe('Validator', () => {
         .toEqual(undefined);
 
       expect(options.customLogger)
-        .toHaveBeenCalledWith('Task did not contain a task.styles.in or a task.style.data', undefined);
+        .toHaveBeenCalledWith('Tasks[0] did not contain a task.styles.in or a task.style.data', undefined);
 
       expect(options.customLogger)
-        .toHaveBeenCalledWith('Task did not contain a task.styles.out or a task.style.result', undefined);
+        .toHaveBeenCalledWith('Tasks[0] did not contain a task.styles.out, a task.style.hooks callback, or a task.hooks.afterTask callback.', undefined);
     });
 
     test('In and out', () => {
@@ -469,8 +471,8 @@ describe('Validator', () => {
         out: 'C:\\out.css'
       };
 
-      expect(validator.validateTaskStyles(options, styles))
-        .toEqual(styles);
+      expect(validator.validateTaskStyles(options, { styles }))
+        .toEqual({ ...styles, hooks: {} });
 
       expect(options.customLogger)
         .not.toHaveBeenCalled();
@@ -489,14 +491,14 @@ describe('Validator', () => {
     });
 
     test('Empty object', () => {
-      expect(validator.validateTaskMarkup(options, [{}]))
+      expect(validator.validateTaskMarkup(options, { markup: [{}] }))
         .toEqual(undefined);
 
       expect(options.customLogger)
-        .toHaveBeenCalledWith('Task did not contain a task.markup.in or a task.markup.data', undefined);
+        .toHaveBeenCalledWith('Tasks[0] did not contain a task.markup[0].in or a task.markup[0].data', undefined);
 
       expect(options.customLogger)
-        .toHaveBeenCalledWith('Task did not contain a task.markup.out or a task.markup.result', undefined);
+        .toHaveBeenCalledWith('Tasks[0] did not contain a task.markup[0].out, a task.markup[0].hooks callback, or a task.hooks.afterTask callback.', undefined);
     });
 
     test('In out', () => {
@@ -509,7 +511,7 @@ describe('Validator', () => {
         out: 'C:\\out.html'
       }];
 
-      expect(validator.validateTaskMarkup(options, markup))
+      expect(validator.validateTaskMarkup(options, { markup }))
         .toEqual(markup);
 
       expect(options.customLogger)
@@ -525,7 +527,7 @@ describe('Validator', () => {
         .toEqual(undefined);
 
       expect(options.customLogger)
-        .toHaveBeenCalledWith('Optional task.markup.data must be a string that begins with \'<\' or undefined.', undefined);
+        .toHaveBeenCalledWith('Optional tasks[0].markup[0].data must be a string that begins with \'<\' or undefined.', undefined);
     });
 
     test('Valid HTML', () => {

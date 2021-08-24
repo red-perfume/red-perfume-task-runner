@@ -259,6 +259,9 @@ const validator = {
    * @return {object}            Validated task.styles or undefined
    */
   validateTaskStyles: function (options, task, taskIndex) {
+    task = task || {};
+    task.hooks = task.hooks || {};
+    taskIndex = taskIndex || 0;
     let styles = task.styles || {};
     styles.in = this.validateTaskStylesIn(options, styles.in);
     styles.out = this.validateFile(options, styles.out, ['.css'], false);
@@ -325,43 +328,46 @@ const validator = {
    * @return {Array}             The validated task.markup array or undefined
    */
   validateTaskMarkup: function (options, task, taskIndex) {
+    task = task || {};
+    task.hooks = task.hooks || {};
+    taskIndex = taskIndex || 0;
     let markup = task.markup || [];
-    markup = markup.map((item, index) => {
-      item.in = this.validateFile(options, item.in, ['.html', '.htm'], true);
-      item.out = this.validateFile(options, item.out, ['.html', '.htm'], false);
-      item.data = this.validateTaskMarkupData(options, item.data);
-      item.hooks = this.validateObject(options, item.hooks, 'Optional task.markup.hooks must be an object or undefined.');
-      item.hooks = this.validateHookTypes(options, allDocumentedHooks.markup, item.hooks, 'task.markup[item].hooks.');
+    markup = markup.map((subTask, subTaskIndex) => {
+      subTask.in = this.validateFile(options, subTask.in, ['.html', '.htm'], true);
+      subTask.out = this.validateFile(options, subTask.out, ['.html', '.htm'], false);
+      subTask.data = this.validateTaskMarkupData(options, subTask.data, taskIndex, subTaskIndex);
+      subTask.hooks = this.validateObject(options, subTask.hooks, 'Optional task.markup.hooks must be an object or undefined.');
+      subTask.hooks = this.validateHookTypes(options, allDocumentedHooks.markup, subTask.hooks, 'task.markup[subTask].hooks.');
 
       ['in', 'data', 'out'].forEach(function (setting) {
-        if (!item[setting]) {
-          delete item[setting];
+        if (!subTask[setting]) {
+          delete subTask[setting];
         }
       });
 
-      if (!item.in && !item.data) {
-        helpers.throwError(options, 'Tasks[' + taskIndex + '] did not contain a task.markup[' + index + '].in or a task.markup[' + index + '].data');
+      if (!subTask.in && !subTask.data) {
+        helpers.throwError(options, 'Tasks[' + taskIndex + '] did not contain a task.markup[' + subTaskIndex + '].in or a task.markup[' + subTaskIndex + '].data');
       }
       if (
-        !item.out &&
-        !Object.keys(item.hooks).length &&
+        !subTask.out &&
+        !Object.keys(subTask.hooks).length &&
         !task.hooks.afterTask
       ) {
         helpers.throwError(options, [
           'Tasks[' + taskIndex + '] did not contain',
-          'a task.markup[' + index + '].out,',
-          'a task.markup[' + index + '].hooks callback,',
+          'a task.markup[' + subTaskIndex + '].out,',
+          'a task.markup[' + subTaskIndex + '].hooks callback,',
           'or a task.hooks.afterTask callback.'
         ].join(' '));
       }
-      if (!item.in && !item.data && !item.out && !Object.keys(item.hooks).length) {
-        delete item.hooks;
+      if (!subTask.in && !subTask.data && !subTask.out && !Object.keys(subTask.hooks).length) {
+        delete subTask.hooks;
       }
 
-      if (!Object.keys(item).length) {
-        item = undefined;
+      if (!Object.keys(subTask).length) {
+        subTask = undefined;
       }
-      return item;
+      return subTask;
     }).filter(Boolean);
 
     if (!markup.length) {
@@ -373,12 +379,16 @@ const validator = {
   /**
    * Validates the task.markup.data is a string of HTML.
    *
-   * @param  {object} options  User's options
-   * @param  {string} data     The markup string to validate
-   * @return {string}          The valid string or undefined
+   * @param  {object} options       User's options
+   * @param  {string} data          The markup string to validate
+   * @param  {number} taskIndex     The index of the current task
+   * @param  {number} subTaskIndex  The index of the current markdown subTask
+   * @return {string}               The valid string or undefined
    */
-  validateTaskMarkupData: function (options, data) {
-    let message = 'Optional task.markup.data must be a string that begins with \'<\' or undefined.';
+  validateTaskMarkupData: function (options, data, taskIndex, subTaskIndex) {
+    taskIndex = taskIndex || 0;
+    subTaskIndex = subTaskIndex || 0;
+    let message = 'Optional tasks[' + taskIndex + '].markup[' + subTaskIndex + '].data must be a string that begins with \'<\' or undefined.';
     data = this.validateString(options, data, message);
     if (data && !data.trim().startsWith('<')) {
       data = undefined;
