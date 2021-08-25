@@ -105,7 +105,7 @@ This above example already works as a proof of concept with the current code. Ho
 
 ### API Example
 
-You can point to files or pass strings in directly. Tasks are sequential, the output of one can feed into the input of the next. You can output to file or use callback hooks provided (more in the next example).
+You can point to files or pass strings in directly. Tasks are sequential, the output of one can feed into the input of the next. You can output to file or use lifecycle callback hooks (documented in next section).
 
 ```js
 const redPerfume = require('red-perfume');
@@ -200,9 +200,10 @@ Key       | Type    | Default     | Description
 
 Key       | Type     | Default     | Description
 :--       | :--      | :--         | :--
-`in`      | Array    | `undefined` | An array of strings to valid paths for CSS files. All files will remain untouched. A new atomized string is produced for `out`/hooks.
-`data`    | String   | `undefined` | A string of CSS to be atomized. Files are provived via `in` are concatenated with `data` at the end, then atomized and sent to `out`/hooks.
+`in`      | Array    | `undefined` | An array of strings to valid paths for CSS files. All files will remain untouched. A new atomized string is produced for `out` and/or hooks.
+`data`    | String   | `undefined` | A string of CSS to be atomized. Files provived via `in` are concatenated with `data` at the end, then atomized and sent to `out` and/or hooks.
 `out`     | String   | `undefined` | A string file path output. If file exists it will be overwritten with the atomized styles from `in` and/or `data`
+`hooks`   | Object   | `{}`        | Lifecycle callback hooks (documented in next section)
 
 **Markup Task API:**
 
@@ -210,18 +211,19 @@ Key       | Type     | Default     | Description
 :--       | :--      | :--         | :--
 `in`      | String   | `undefined` | Path to an HTML file to be processed.
 `data`    | String   | `undefined` | A string of markup to be processed. This is appended to the end of the `in` file contents if both are provided.
-`out`     | String   | `undefined` | Path where the modified version of the `in` file will be stored. If file already exists, it will be overwritten.
+`out`     | String   | `undefined` | Path where the modified version of the `in` file and/or `data` will be stored. If file already exists, it will be overwritten.
+`hooks`   | Object   | `{}`        | Lifecycle callback hooks (documented in next section)
 
 **Scripts Task API:**
 
 Key       | Type     | Default     | Description
 :--       | :--      | :--         | :--
-`out`     | String   | `undefined` | Path where a JSON object will be stored. The object contains keys (selectors) and values (array of strings of atomized class names). If file already exists, it will be overwritten.
+`out`     | String   | `undefined` | Path where a JSON object (`classMap`) will be stored. The object contains keys (selectors) and values (array of strings of atomized class names). If file already exists, it will be overwritten. Output subject to change before v1.0.0.
 
 
-#### Life Cycle Callback hooks example
+#### Lifecycle Callback Hooks Example
 
-All the hooks are shown below. Most users will only use the `afterOutput` hooks as a simple callback to know when something has finished. Perhaps to pass along the atomized string to another plugin to minify, or generate a report or something. These hooks are primarily for those writing 3rd party plugins. Or for existing 3rd party libraries to add documentation on how to combine them with Red Perfume.
+All the hooks are shown below. **Most users will only use the `afterOutput` hooks as a simple callback to know when something has finished**. Perhaps to pass along the atomized string to another plugin to minify, or generate a report or something. These hooks are primarily for those writing 3rd party plugins. Or for existing 3rd party libraries to add documentation on how to combine them with Red Perfume.
 
 ```js
 redPerfume.atomize({
