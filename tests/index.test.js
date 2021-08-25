@@ -589,6 +589,114 @@ describe('Red Perfume', () => {
           .not.toHaveBeenCalled();
       });
 
+      test('Runs all global hooks', () => {
+        mockfs({
+          'C:\\app.css': '.a{margin:0px}',
+          'C:\\vendor.css': '.b{padding:0px}',
+          'C:\\home.html': '<h1 class="a">Hi</h1>',
+          'C:\\about.html': '<h2 class="b">Yo</h2>'
+        });
+
+        options.hooks = {
+          beforeValidation: function (options) {
+            expect(Object.keys(options))
+              .toEqual(['verbose', 'customLogger', 'hooks', 'tasks']);
+          },
+          afterValidation: function (options) {
+            expect(Object.keys(options))
+              .toEqual(['verbose', 'customLogger', 'hooks', 'tasks']);
+          },
+          beforeTasks: function (options) {
+            expect(Object.keys(options))
+              .toEqual(['verbose', 'customLogger', 'hooks', 'tasks']);
+          },
+          afterTasks: function (options, results) {
+            expect(Object.keys(options))
+              .toEqual(['verbose', 'customLogger', 'hooks', 'tasks']);
+
+            results.forEach(({ task, inputCss, atomizedCss, classMap, allInputMarkup, allAtomizedMarkup, styleErrors, markupErrors, scriptErrors }) => {
+              expect(Object.keys(task))
+                .toEqual(['uglify', 'styles', 'markup', 'scripts', 'hooks']);
+
+              expect(inputCss)
+                .toEqual('.a{margin:0px}.b{padding:0px}.c{border:0px}');
+
+              expect(atomizedCss)
+                .toEqual(testHelpers.trimIndentation(`
+                  .rp__0 {
+                    margin: 0px;
+                  }
+                  .rp__1 {
+                    padding: 0px;
+                  }
+                  .rp__2 {
+                    border: 0px;
+                  }`, 18));
+
+              expect(classMap)
+                .toEqual({
+                  '.a': ['.rp__0'],
+                  '.b': ['.rp__1'],
+                  '.c': ['.rp__2']
+                });
+
+              expect(allInputMarkup)
+                .toEqual([
+                  '<h1 class="a">Hi</h1>',
+                  '<h2 class="b">Yo</h2>'
+                ]);
+
+              expect(allAtomizedMarkup)
+                .toEqual([
+                  '<html><head></head><body><h1 class=\"rp__0\">Hi</h1></body></html>',
+                  '<html><head></head><body><h2 class=\"rp__1\">Yo</h2></body></html>'
+                ]);
+
+              expect(styleErrors)
+                .toEqual([]);
+
+              expect(markupErrors)
+                .toEqual([]);
+
+              expect(scriptErrors)
+                .toEqual([]);
+            });
+          }
+        };
+
+        options.tasks = [{
+          uglify: true,
+          styles: {
+            in: [
+              'C:\\app.css',
+              'C:\\vendor.css'
+            ],
+            data: '.c{border:0px}',
+            out: 'C:\\out.css'
+          },
+          markup: [
+            {
+              in: 'C:\\home.html',
+              out: 'C:\\home.out.html'
+            },
+            {
+              in: 'C:\\about.html',
+              out: 'C:\\about.out.html'
+            }
+          ],
+          scripts: {
+            out: 'C:\\out.json'
+          }
+        }];
+
+        redPerfume.atomize(options);
+
+        expect(options.customLogger)
+          .not.toHaveBeenCalled();
+
+        mockfs.restore();
+      });
+
       describe('Every type of CSS', () => {
         const inputMarkup = testHelpers.trimIndentation(`
           <!DOCTYPE html>
