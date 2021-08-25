@@ -37,7 +37,7 @@ function getCssString (options, taskStyles, styleErrors) {
   let cssString = '';
 
   if (taskStyles.in) {
-    taskStyles.in.forEach((file) => {
+    taskStyles.in.forEach(function (file) {
       try {
         cssString = cssString + String(fs.readFileSync(file));
       } catch (err) {
@@ -151,11 +151,7 @@ function processStyles (options, task) {
   const inputCss = getCssString(options, task.styles, styleErrors);
   runHook(options, task.styles, 'afterRead', { task, inputCss, styleErrors });
 
-  let processedStyles = {};
-  const hasStyleFiles = task.styles.in && task.styles.in.length;
-  if (hasStyleFiles || task.styles.data) {
-    processedStyles = css(options, inputCss, task.uglify, styleErrors);
-  }
+  const processedStyles = css(options, inputCss, task.uglify, styleErrors);
   const atomizedCss = processedStyles.atomizedCss;
   const classMap = processedStyles.classMap;
   runHook(options, task.styles, 'afterProcessed', { task, inputCss, atomizedCss, classMap, styleErrors });
@@ -185,10 +181,7 @@ function processMarkup (options, task, classMap) {
     const inputHtml = getHtmlString(options, subTask, markupErrors);
     runHook(options, subTask, 'afterRead', { task, subTask, classMap, inputHtml, markupErrors });
 
-    let atomizedHtml;
-    if (subTask.in || subTask.data) {
-      atomizedHtml = html(options, inputHtml, classMap, markupErrors);
-    }
+    const atomizedHtml = html(options, inputHtml, classMap, markupErrors);
     runHook(options, subTask, 'afterProcessed', { task, subTask, classMap, inputHtml, atomizedHtml, markupErrors });
 
     outputAtomizedHTML(options, subTask, atomizedHtml, markupErrors);

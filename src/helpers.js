@@ -14,6 +14,7 @@ const helpers = {
    * @return {string}          Message with returns added
    */
   insertReturns: function (message) {
+    message = message || '';
     const maxLineLength = 108;
     let words = message.split(' ');
     let line = '';
@@ -42,7 +43,7 @@ const helpers = {
   throwError: function (options, message, error) {
     if (options.verbose && options.customLogger) {
       options.customLogger(message, error);
-    } else if (options.verbose && options.error) {
+    } else if (options.verbose && error) {
       console.error(
         '_________________________\n' +
         'Red-Perfume:\n' +

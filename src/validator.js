@@ -443,6 +443,8 @@ const validator = {
    * @return {object}                  The validated hooks container
    */
   validateHookTypes: function (options, documentedHooks, hooksContainer, location) {
+    options = options || {};
+    documentedHooks = documentedHooks || [];
     hooksContainer = hooksContainer || {};
     documentedHooks.forEach(function (hook) {
       const hookType = typeof(hooksContainer[hook]);

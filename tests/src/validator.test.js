@@ -446,7 +446,18 @@ describe('Validator', () => {
   });
 
   describe('validateTaskStyles', () => {
-    test('Empty object', () => {
+    test('Undefined task', () => {
+      expect(validator.validateTaskStyles(options))
+        .toEqual(undefined);
+
+      expect(options.customLogger)
+        .toHaveBeenCalledWith('Tasks[0] did not contain a task.styles.in or a task.style.data', undefined);
+
+      expect(options.customLogger)
+        .toHaveBeenCalledWith('Tasks[0] did not contain a task.styles.out, a task.style.hooks callback, or a task.hooks.afterTask callback.', undefined);
+    });
+
+    test('Empty task object', () => {
       expect(validator.validateTaskStyles(options, {}))
         .toEqual(undefined);
 
@@ -482,15 +493,23 @@ describe('Validator', () => {
   });
 
   describe('validateTaskMarkup', () => {
-    test('Empty array', () => {
-      expect(validator.validateTaskMarkup(options, []))
+    test('Undefined task', () => {
+      expect(validator.validateTaskMarkup(options))
         .toEqual(undefined);
 
       expect(options.customLogger)
         .not.toHaveBeenCalled();
     });
 
-    test('Empty object', () => {
+    test('Empty array of subTasks', () => {
+      expect(validator.validateTaskMarkup(options, { markup: [] }))
+        .toEqual(undefined);
+
+      expect(options.customLogger)
+        .not.toHaveBeenCalled();
+    });
+
+    test('Empty subTask object', () => {
       expect(validator.validateTaskMarkup(options, { markup: [{}] }))
         .toEqual(undefined);
 
@@ -573,6 +592,41 @@ describe('Validator', () => {
         .not.toHaveBeenCalled();
 
       mockfs.restore();
+    });
+  });
+
+  describe('validateHookTypes', () => {
+    test('Empty', () => {
+      expect(validator.validateHookTypes())
+        .toEqual({});
+    });
+
+    test('Just options', () => {
+      expect(validator.validateHookTypes(options))
+        .toEqual({});
+
+      expect(options.customLogger)
+        .not.toHaveBeenCalled();
+    });
+
+    test('Bad hooks', () => {
+      expect(validator.validateHookTypes(options, ['potato'], { potato: 'potato' }, 'Test '))
+        .toEqual({});
+
+      expect(options.customLogger)
+        .toHaveBeenCalledWith('The Test potato must be a function or undefined.', undefined);
+    });
+
+    test('Good hooks', () => {
+      const hooksContainer = {
+        afterOutput: jest.fn()
+      };
+
+      expect(validator.validateHookTypes(options, ['beforeOutput', 'afterOutput'], hooksContainer, 'Test '))
+        .toEqual(hooksContainer);
+
+      expect(options.customLogger)
+        .not.toHaveBeenCalled();
     });
   });
 
