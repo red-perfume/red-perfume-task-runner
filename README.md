@@ -111,7 +111,7 @@ The alpha version of `red-perfume` already works for simple CSS, like the above 
 **Uglified Example:**
 
 ```css
-/* After */
+/* Uglified */
 .rp__0 {
   font-size: 12px;
 }
@@ -124,7 +124,7 @@ The alpha version of `red-perfume` already works for simple CSS, like the above 
 ```
 
 ```html
-<!-- After -->
+<!-- Uglified -->
 <!DOCTYPE html>
 <html>
   <head>
