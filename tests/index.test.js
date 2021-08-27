@@ -340,6 +340,194 @@ describe('Red Perfume', () => {
 
         mockfs.restore();
       });
+
+      test('Fails at everything, life is hard', () => {
+        const file = {
+          content: 'Fail',
+          mode: parseInt('0000', 8)
+        };
+        mockfs({
+          'C:\\app.css': mockfs.file(file),
+          'C:\\vendor.css': mockfs.file(file),
+          'C:\\out.css': mockfs.file(file),
+          'C:\\index.html': mockfs.file(file),
+          'C:\\out.html': mockfs.file(file),
+          'C:\\out.json': mockfs.file(file)
+        });
+
+        options.tasks = [
+          {
+            styles: {
+              in: [
+                'C:\\app.css',
+                'C:\\vendor.css'
+              ],
+              out: 'C:\\out.css'
+            },
+            markup: [{
+              in: 'C:\\index.html',
+              out: 'C:\\out.html'
+            }],
+            scripts: {
+              out: 'C:\\out.json'
+            },
+            uglify: true
+          },
+          {
+            styles: {
+              in: [
+                'C:\\app.css',
+                'C:\\vendor.css'
+              ],
+              out: 'C:\\out.css'
+            },
+            markup: [{
+              in: 'C:\\index.html',
+              out: 'C:\\out.html'
+            }],
+            scripts: { out: 'C:\\out.json' }
+          }
+        ];
+        let errorTracker = {
+          styles0: 0,
+          styles1: 0,
+          markup0: 0,
+          markup1: 0,
+          script0: 0,
+          script1: 0
+        };
+        options.hooks = {
+          afterTasks: function (options, results) {
+            results.forEach(function ({ task, inputCss, atomizedCss, classMap, allInputMarkup, allAtomizedMarkup, styleErrors, markupErrors, scriptErrors }, index) {
+              errorTracker['styles' + index] = styleErrors.length;
+              errorTracker['markup' + index] = markupErrors.length;
+              errorTracker['scripts' + index] = scriptErrors.length;
+
+              expect(Object.keys(task))
+                .toEqual(['styles', 'markup', 'scripts', 'uglify', 'hooks']);
+
+              expect(inputCss)
+                .toEqual('');
+
+              expect(atomizedCss)
+                .toEqual('');
+
+              expect(classMap)
+                .toEqual({});
+
+              expect(allInputMarkup)
+                .toEqual(['']);
+
+              expect(allAtomizedMarkup)
+                .toEqual(['<html><head></head><body></body></html>']);
+
+              expect(styleErrors.length)
+                .toEqual(5);
+
+              expect(markupErrors.length)
+                .toEqual(3);
+
+              expect(scriptErrors.length)
+                .toEqual(1);
+
+              expect(testHelpers.removeErrno(scriptErrors[0]))
+                .toEqual({
+                  code: 'EACCES',
+                  path: 'C:\\out.json',
+                  syscall: 'open'
+                });
+            });
+          }
+        };
+
+        const totalErrors = (
+          errorTracker.styles0 +
+          errorTracker.styles1 +
+          errorTracker.markup0 +
+          errorTracker.markup1 +
+          errorTracker.script0 +
+          errorTracker.script1
+        );
+
+        expect(totalErrors)
+          .toEqual(options.customLogger.mock.calls.length);
+
+        redPerfume.atomize(options);
+
+        const errorsForOneTask = [
+          [
+            'Error reading style file: C:\\app.css',
+            {
+              code: 'EACCES',
+              errno: -4092,
+              path: 'C:\\app.css',
+              syscall: 'open'
+            }
+          ],
+          [
+            'Error reading style file: C:\\vendor.css',
+            {
+              code: 'EACCES',
+              errno: -4092,
+              path: 'C:\\vendor.css',
+              syscall: 'open'
+            }
+          ],
+          [
+            'Invalid CSS input.',
+            null
+          ],
+          [
+            'Error parsing CSS',
+            ''
+          ],
+          [
+            'Error writing CSS file: C:\\out.css',
+            {
+              code: 'EACCES',
+              errno: -4092,
+              path: 'C:\\out.css',
+              syscall: 'open'
+            }
+          ],
+          [
+            'Error reading markup file: C:\\index.html',
+            {
+              code: 'EACCES',
+              errno: -4092,
+              path: 'C:\\index.html',
+              syscall: 'open'
+            }
+          ],
+          [
+            'Error parsing HTML',
+            '<html><head></head><body></body></html>'
+          ],
+          [
+            'Error writing markup file: C:\\out.html',
+            {
+              code: 'EACCES',
+              errno: -4092,
+              path: 'C:\\out.html',
+              syscall: 'open'
+            }
+          ],
+          [
+            'Error writing script file: C:\\out.json',
+            {
+              code: 'EACCES',
+              errno: -4092,
+              path: 'C:\\out.json',
+              syscall: 'open'
+            }
+          ]
+        ];
+
+        expect(JSON.parse(JSON.stringify(options.customLogger.mock.calls)))
+          .toEqual([...errorsForOneTask, ...errorsForOneTask]);
+
+        mockfs.restore();
+      });
     });
 
     describe('Valid options with tasks', () => {
