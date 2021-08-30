@@ -43,13 +43,17 @@ function recursivelyRemovePosition (item) {
  *   parsed = cssParser(options, input);
  * } catch {}
  *
- * @param  {object} options  User's options
- * @param  {string} input    The CSS string to be atomized
- * @return {object}          A parsed CSS AST
+ * @param  {object} options      User's options
+ * @param  {string} input        The CSS string to be atomized
+ * @param  {Array}  styleErrors  Array of style related errors
+ * @return {object}              A parsed CSS AST
  */
-const cssParser = function (options, input) {
+const cssParser = function (options, input, styleErrors) {
+  styleErrors = styleErrors || [];
   if (!input) {
-    helpers.throwError('Invalid CSS input.');
+    const message = 'Invalid CSS input.';
+    styleErrors.push(message);
+    helpers.throwError(options, message);
     return;
   }
 

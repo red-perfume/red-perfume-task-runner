@@ -14,7 +14,7 @@ describe('CSS', () => {
   let options;
   const errorResponse = {
     classMap: {},
-    output: ''
+    atomizedCss: ''
   };
 
   beforeEach(() => {
@@ -26,7 +26,7 @@ describe('CSS', () => {
 
   describe('removeIdenticalProperties', () => {
     test('Removes dupes', () => {
-      expect(css.removeIdenticalProperties({
+      const classMap = {
         '.duplicates': [
           '.rp__display__--COLONnone',
           '.rp__display__--COLONblock',
@@ -35,7 +35,11 @@ describe('CSS', () => {
           '.rp__display__--COLONnone',
           '.rp__display__--COLONflex'
         ]
-      }))
+      };
+
+      css.removeIdenticalProperties(classMap);
+
+      expect(classMap)
         .toEqual({
           '.duplicates': [
             '.rp__display__--COLONblock',
@@ -95,7 +99,7 @@ describe('CSS', () => {
           '.rp__background__--COLON__--OCTOTHORPF00'
         ]
       };
-      const output = testHelpers.trimIndentation(`
+      const atomizedCss = testHelpers.trimIndentation(`
         .rp__background__--COLON__--OCTOTHORPF00 {
           background: #F00;
         }
@@ -103,7 +107,7 @@ describe('CSS', () => {
       const uglify = false;
 
       expect(css(options, input, uglify))
-        .toEqual({ classMap, output });
+        .toEqual({ classMap, atomizedCss });
 
       expect(options.customLogger)
         .not.toHaveBeenCalled();
@@ -116,7 +120,7 @@ describe('CSS', () => {
           '.rp__0'
         ]
       };
-      const output = testHelpers.trimIndentation(`
+      const atomizedCss = testHelpers.trimIndentation(`
         .rp__0 {
           background: #F00;
         }
@@ -124,7 +128,7 @@ describe('CSS', () => {
       const uglify = true;
 
       expect(css(options, input, uglify))
-        .toEqual({ classMap, output });
+        .toEqual({ classMap, atomizedCss });
 
       expect(options.customLogger)
         .not.toHaveBeenCalled();
@@ -154,7 +158,7 @@ describe('CSS', () => {
         }
       `;
 
-      expect(css(options, input, false).output)
+      expect(css(options, input, false).atomizedCss)
         .toEqual(testHelpers.trimIndentation(`
           h1 {
             background: #F00;
@@ -180,7 +184,7 @@ describe('CSS', () => {
           }
         `, 10));
 
-      expect(css(options, input, true).output)
+      expect(css(options, input, true).atomizedCss)
         .toEqual(testHelpers.trimIndentation(`
           h1 {
             background: #F00;
@@ -241,7 +245,7 @@ describe('CSS', () => {
         }
       `;
 
-      expect(css(options, input, false).output)
+      expect(css(options, input, false).atomizedCss)
         .toEqual(testHelpers.trimIndentation(`
           .rp__display__--COLONinline-block {
             display: inline-block;
@@ -278,7 +282,7 @@ describe('CSS', () => {
           }
         `, 10));
 
-      expect(css(options, input, true).output)
+      expect(css(options, input, true).atomizedCss)
         .toEqual(testHelpers.trimIndentation(`
           h1:hover {
             color: #F00;
