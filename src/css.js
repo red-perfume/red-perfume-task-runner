@@ -17,8 +17,7 @@ const helpers = require('./helpers.js');
  * `display: block; display: none;` is unchanged because they
  * are not identical.
  *
- * @param  {object} classMap  The class map object used by the HTML/JSON
- * @return {object}           Returns the classMap object
+ * @param {object} classMap  The class map object used by the HTML/JSON
  */
 function removeIdenticalProperties (classMap) {
   // Remove identical properties
@@ -28,7 +27,6 @@ function removeIdenticalProperties (classMap) {
     // ['.rp__border__--COLON0px', '.rp__margin__--COLON2px']
     classMap[selector] = Array.from(new Set(classMap[selector].reverse())).reverse();
   });
-  return classMap;
 }
 
 /**
@@ -117,8 +115,9 @@ function handleNonClasses (rule) {
  * @param {object} declaration  A single CSS proptery/value pair as AST
  * @param {object} classMap     Map of original CSS selectors to encoded class names
  * @param {object} newRules     The atomized CSS as AST
+ * @param {Array}  styleErrors  Array of style related errors
  */
-function encodeDeclarationAsClassname (options, rule, declaration, classMap, newRules) {
+function encodeDeclarationAsClassname (options, rule, declaration, classMap, newRules, styleErrors) {
   // Array of comma separated selectors on a specific rule
   const ruleSelectors = rule.selectors;
   const type = ruleSelectors[0][0].type;
@@ -133,7 +132,7 @@ function encodeDeclarationAsClassname (options, rule, declaration, classMap, new
     /* An encoded class name look like:
       .rp__padding__--COLON10px
     */
-    encodedClassName = encodeClassName(options, declaration);
+    encodedClassName = encodeClassName(options, declaration, styleErrors);
     if (type === 'tag') {
       encodedName = name + encodedClassName;
     }
@@ -207,44 +206,15 @@ function uglifyClassNames (classMap, newRules) {
 }
 
 /**
- * Takes in a string of CSS, parses it to AST, manipulates the AST to produce
- * atomized CSS, optionally uglifies the atomized class names, stringifies the
- * AST back to a string. Returns String and Atomization Map.
+ * Loop over all rules and atomize as needed.
  *
- * @param  {object}  options  User's options
- * @param  {string}  input    The CSS to be atomized/uglified
- * @param  {boolean} uglify   Whether to uglify the atomized class names
- * @return {object}           The classMap of original to atomized names and the atomized CSS string
+ * @param {object} options      User's options
+ * @param {Array}  rules        CSS Rules as AST including selectors
+ * @param {object} classMap     Map of original CSS selectors to encoded class names
+ * @param {object} newRules     The atomized CSS as AST
+ * @param {Array}  styleErrors  Array of style related errors
  */
-const css = function (options, input, uglify) {
-  options = options || {};
-  input = input || '';
-  uglify = uglify || false;
-  let parsed;
-  try {
-    parsed = cssParser(options, input);
-  } catch (err) {
-    helpers.throwError(options, 'Error parsing CSS', err);
-  }
-  if (!parsed) {
-    helpers.throwError(options, 'Error parsing CSS', input);
-    return {
-      classMap: {},
-      output: ''
-    };
-  }
-
-  const output = {
-    type: 'stylesheet',
-    stylesheet: {
-      rules: [],
-      parsingErrors: []
-    }
-  };
-
-  let classMap = {};
-  const newRules = {};
-
+function processRules (options, rules, classMap, newRules, styleErrors) {
   /* A rule looks like:
      {
        type: 'rule',
@@ -275,32 +245,77 @@ const css = function (options, input, uglify) {
        ]
      }
   */
-
-  parsed.stylesheet.rules.forEach(function (rule) {
+  rules.forEach(function (rule) {
     // TODO: I think this needs improved
     let type = rule.selectors[0][0].type;
     let name = rule.selectors[0][0].name;
     if (type === 'tag' || (type === 'attribute' && name !== 'class')) {
-      rule = handleNonClasses(rule);
+      handleNonClasses(rule, newRules);
+    } else {
+      /* A declaration looks like:
+        {
+          type: 'declaration',
+          property: 'padding',
+          value: '10px'
+        }
+      */
+      rule.declarations.forEach(function (declaration) {
+        encodeDeclarationAsClassname(options, rule, declaration, classMap, newRules, styleErrors);
+      });
     }
-    /* A declaration looks like:
-      {
-        type: 'declaration',
-        property: 'padding',
-        value: '10px'
-      }
-    */
-    rule.declarations.forEach(function (declaration) {
-      encodeDeclarationAsClassname(options, rule, declaration, classMap, newRules);
-    });
   });
+}
 
-  classMap = removeIdenticalProperties(classMap);
+/**
+ * Takes in a string of CSS, parses it to AST, manipulates the AST to produce
+ * atomized CSS, optionally uglifies the atomized class names, stringifies the
+ * AST back to a string. Returns String and Atomization Map.
+ *
+ * @param  {object}  options      User's options
+ * @param  {string}  input        The CSS to be atomized/uglified
+ * @param  {boolean} uglify       Whether to uglify the atomized class names
+ * @param  {Array}   styleErrors  Array to contain style related errors
+ * @return {object}               The classMap of original to atomized names and the atomized CSS string
+ */
+const css = function (options, input, uglify, styleErrors) {
+  options = options || {};
+  input = input || '';
+  uglify = uglify || false;
+  styleErrors = styleErrors || [];
+  const message = 'Error parsing CSS';
+  let parsed;
+  try {
+    parsed = cssParser(options, input, styleErrors);
+  } catch (err) {
+    styleErrors.push(err);
+    helpers.throwError(options, message, err);
+  }
+  if (!parsed) {
+    styleErrors.push(message);
+    helpers.throwError(options, message, input);
+    return {
+      classMap: {},
+      atomizedCss: ''
+    };
+  }
+
+  let classMap = {};
+  const newRules = {};
+
+  processRules(options, parsed.stylesheet.rules, classMap, newRules, styleErrors);
+  removeIdenticalProperties(classMap);
 
   if (uglify) {
     uglifyClassNames(classMap, newRules);
   }
 
+  const output = {
+    type: 'stylesheet',
+    stylesheet: {
+      rules: [],
+      parsingErrors: []
+    }
+  };
   Object.keys(newRules).forEach(function (key) {
     output.stylesheet.rules.push(newRules[key]);
   });
@@ -313,7 +328,7 @@ const css = function (options, input, uglify) {
       '.rp__1 { border: none; }' +
       '.rp__2 { padding: 10px; }'
     */
-    output: cssStringify(output)
+    atomizedCss: cssStringify(output)
   };
 };
 

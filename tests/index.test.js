@@ -40,7 +40,7 @@ describe('Red Perfume', () => {
             _________________________
             Red-Perfume:
             options.tasks Must be an array of objects. See documentation for details.
-          `, 12), undefined);
+          `, 12));
 
         console.error = consoleError;
         consoleError = undefined;
@@ -60,16 +60,27 @@ describe('Red Perfume', () => {
             in: [
               'C:\\app.css'
             ],
-            result: function (data, err) {
-              expect(data)
-                .toEqual('');
+            hooks: {
+              afterOutput: function (options, { task, inputCss, atomizedCss, classMap, styleErrors }) {
+                expect(Object.keys(task))
+                  .toEqual(['uglify', 'styles', 'hooks']);
 
-              expect(testHelpers.removeErrno(err))
-                .toEqual({
-                  syscall: 'open',
-                  code: 'EACCES',
-                  path:'C:\\app.css'
-                });
+                expect(inputCss)
+                  .toEqual('');
+
+                expect(atomizedCss)
+                  .toEqual('');
+
+                expect(classMap)
+                  .toEqual({});
+
+                expect(testHelpers.removeErrno(styleErrors))
+                  .toEqual({
+                    syscall: 'open',
+                    code: 'EACCES',
+                    path:'C:\\app.css'
+                  });
+              }
             }
           }
         }];
@@ -108,22 +119,31 @@ describe('Red Perfume', () => {
               'C:\\app.css'
             ],
             out: 'C:\\out.css',
-            result: function (data, err) {
-              let expectation = testHelpers.trimIndentation(`
-                .rp__0 {
-                  margin: 0px;
-                }
-              `, 16);
+            hooks: {
+              afterOutput: function (options, { task, inputCss, atomizedCss, classMap, styleErrors }) {
+                expect(Object.keys(task))
+                  .toEqual(['uglify', 'styles', 'hooks']);
 
-              expect(data)
-                .toEqual(expectation);
+                expect(inputCss)
+                  .toEqual('.a{margin:0px;}');
 
-              expect(testHelpers.removeErrno(err))
-                .toEqual({
-                  code: 'EACCES',
-                  path: 'C:\\out.css',
-                  syscall: 'open'
-                });
+                expect(atomizedCss)
+                  .toEqual(testHelpers.trimIndentation(`
+                    .rp__0 {
+                      margin: 0px;
+                    }
+                  `, 20));
+
+                expect(classMap)
+                  .toEqual({ '.a': ['.rp__0'] });
+
+                expect(testHelpers.removeErrno(styleErrors))
+                  .toEqual({
+                    code: 'EACCES',
+                    path: 'C:\\out.css',
+                    syscall: 'open'
+                  });
+              }
             }
           }
         }];
@@ -157,16 +177,30 @@ describe('Red Perfume', () => {
             {
               in: 'C:\\home.html',
               out: 'C:\\home.dist.html',
-              result: function (data, err) {
-                expect(data)
-                  .toEqual('<html><head></head><body></body></html>');
+              hooks: {
+                afterOutput: function (options, { task, subTask, classMap, inputHtml, atomizedHtml, markupErrors }) {
+                  expect(Object.keys(task))
+                    .toEqual(['uglify', 'markup', 'hooks']);
 
-                expect(testHelpers.removeErrno(err))
-                  .toEqual({
-                    syscall: 'open',
-                    code: 'EACCES',
-                    path:'C:\\home.html'
-                  });
+                  expect(Object.keys(subTask))
+                    .toEqual(['in', 'out', 'hooks']);
+
+                  expect(classMap)
+                    .toEqual(undefined);
+
+                  expect(inputHtml)
+                    .toEqual('');
+
+                  expect(atomizedHtml)
+                    .toEqual('<html><head></head><body></body></html>');
+
+                  expect(testHelpers.removeErrno(markupErrors[0]))
+                    .toEqual({
+                      syscall: 'open',
+                      code: 'EACCES',
+                      path:'C:\\home.html'
+                    });
+                }
               }
             }
           ]
@@ -205,16 +239,30 @@ describe('Red Perfume', () => {
             {
               in: 'C:\\home.html',
               out: 'C:\\home.out.html',
-              result: function (data, err) {
-                expect(data)
-                  .toEqual('<html><head></head><body><h1 class="a">Hi</h1></body></html>');
+              hooks: {
+                afterOutput: function (options, { task, subTask, classMap, inputHtml, atomizedHtml, markupErrors }) {
+                  expect(Object.keys(task))
+                    .toEqual(['uglify', 'markup', 'hooks']);
 
-                expect(testHelpers.removeErrno(err))
-                  .toEqual({
-                    code: 'EACCES',
-                    path: 'C:\\home.out.html',
-                    syscall: 'open'
-                  });
+                  expect(Object.keys(subTask))
+                    .toEqual(['in', 'out', 'hooks']);
+
+                  expect(classMap)
+                    .toEqual(undefined);
+
+                  expect(inputHtml)
+                    .toEqual('<h1 class="a">Hi</h1>');
+
+                  expect(atomizedHtml)
+                    .toEqual('<html><head></head><body><h1 class="a">Hi</h1></body></html>');
+
+                  expect(testHelpers.removeErrno(markupErrors[0]))
+                    .toEqual({
+                      code: 'EACCES',
+                      path: 'C:\\home.out.html',
+                      syscall: 'open'
+                    });
+                }
               }
             }
           ]
@@ -256,19 +304,24 @@ describe('Red Perfume', () => {
           },
           scripts: {
             out: 'C:\\out.json',
-            result: function (data, err) {
-              expect(data)
-                .toEqual({
-                  '.a': ['.rp__0'],
-                  '.b': ['.rp__1']
-                });
+            hooks: {
+              afterOutput: function (options, { task, classMap, scriptErrors }) {
+                expect(Object.keys(task))
+                  .toEqual(['uglify', 'styles', 'scripts', 'hooks']);
 
-              expect(testHelpers.removeErrno(err))
-                .toEqual({
-                  code: 'EACCES',
-                  path: 'C:\\out.json',
-                  syscall: 'open'
-                });
+                expect(classMap)
+                  .toEqual({
+                    '.a': ['.rp__0'],
+                    '.b': ['.rp__1']
+                  });
+
+                expect(testHelpers.removeErrno(scriptErrors[0]))
+                  .toEqual({
+                    code: 'EACCES',
+                    path: 'C:\\out.json',
+                    syscall: 'open'
+                  });
+              }
             }
           }
         }];
@@ -284,6 +337,188 @@ describe('Red Perfume', () => {
             path: 'C:\\out.json',
             syscall: 'open'
           });
+
+        mockfs.restore();
+      });
+
+      test('Fails at everything, life is hard', () => {
+        const file = {
+          content: 'Fail',
+          mode: parseInt('0000', 8)
+        };
+        mockfs({
+          'C:\\app.css': mockfs.file(file),
+          'C:\\vendor.css': mockfs.file(file),
+          'C:\\out.css': mockfs.file(file),
+          'C:\\index.html': mockfs.file(file),
+          'C:\\out.html': mockfs.file(file),
+          'C:\\out.json': mockfs.file(file)
+        });
+
+        options.tasks = [
+          {
+            styles: {
+              in: [
+                'C:\\app.css',
+                'C:\\vendor.css'
+              ],
+              out: 'C:\\out.css'
+            },
+            markup: [{
+              in: 'C:\\index.html',
+              out: 'C:\\out.html'
+            }],
+            scripts: {
+              out: 'C:\\out.json'
+            },
+            uglify: true
+          },
+          {
+            styles: {
+              in: [
+                'C:\\app.css',
+                'C:\\vendor.css'
+              ],
+              out: 'C:\\out.css'
+            },
+            markup: [{
+              in: 'C:\\index.html',
+              out: 'C:\\out.html'
+            }],
+            scripts: { out: 'C:\\out.json' }
+          }
+        ];
+        let errorTracker = {
+          styles0: 0,
+          styles1: 0,
+          markup0: 0,
+          markup1: 0,
+          script0: 0,
+          script1: 0
+        };
+        options.hooks = {
+          afterTasks: function (options, results) {
+            results.forEach(function ({ task, inputCss, atomizedCss, classMap, allInputMarkup, allAtomizedMarkup, styleErrors, markupErrors, scriptErrors }, index) {
+              errorTracker['styles' + index] = styleErrors.length;
+              errorTracker['markup' + index] = markupErrors.length;
+              errorTracker['scripts' + index] = scriptErrors.length;
+
+              expect(Object.keys(task))
+                .toEqual(['styles', 'markup', 'scripts', 'uglify', 'hooks']);
+
+              expect(inputCss)
+                .toEqual('');
+
+              expect(atomizedCss)
+                .toEqual('');
+
+              expect(classMap)
+                .toEqual({});
+
+              expect(allInputMarkup)
+                .toEqual(['']);
+
+              expect(allAtomizedMarkup)
+                .toEqual(['<html><head></head><body></body></html>']);
+
+              expect(styleErrors.length)
+                .toEqual(5);
+
+              expect(markupErrors.length)
+                .toEqual(3);
+
+              expect(scriptErrors.length)
+                .toEqual(1);
+
+              expect(testHelpers.removeErrno(scriptErrors[0]))
+                .toEqual({
+                  code: 'EACCES',
+                  path: 'C:\\out.json',
+                  syscall: 'open'
+                });
+            });
+          }
+        };
+
+        const totalErrors = (
+          errorTracker.styles0 +
+          errorTracker.styles1 +
+          errorTracker.markup0 +
+          errorTracker.markup1 +
+          errorTracker.script0 +
+          errorTracker.script1
+        );
+
+        expect(totalErrors)
+          .toEqual(options.customLogger.mock.calls.length);
+
+        redPerfume.atomize(options);
+
+        const errorsForOneTask = [
+          [
+            'Error reading style file: C:\\app.css',
+            expect.objectContaining({
+              code: 'EACCES',
+              path: 'C:\\app.css',
+              syscall: 'open'
+            })
+          ],
+          [
+            'Error reading style file: C:\\vendor.css',
+            expect.objectContaining({
+              code: 'EACCES',
+              path: 'C:\\vendor.css',
+              syscall: 'open'
+            })
+          ],
+          [
+            'Invalid CSS input.',
+            null
+          ],
+          [
+            'Error parsing CSS',
+            ''
+          ],
+          [
+            'Error writing CSS file: C:\\out.css',
+            expect.objectContaining({
+              code: 'EACCES',
+              path: 'C:\\out.css',
+              syscall: 'open'
+            })
+          ],
+          [
+            'Error reading markup file: C:\\index.html',
+            expect.objectContaining({
+              code: 'EACCES',
+              path: 'C:\\index.html',
+              syscall: 'open'
+            })
+          ],
+          [
+            'Error parsing HTML',
+            '<html><head></head><body></body></html>'
+          ],
+          [
+            'Error writing markup file: C:\\out.html',
+            expect.objectContaining({
+              code: 'EACCES',
+              path: 'C:\\out.html',
+              syscall: 'open'
+            })
+          ],
+          [
+            'Error writing script file: C:\\out.json',
+            expect.objectContaining({
+              code: 'EACCES',
+              path: 'C:\\out.json',
+              syscall: 'open'
+            })
+          ]
+        ];
+
+        expect(JSON.parse(JSON.stringify(options.customLogger.mock.calls)))
+          .toEqual([...errorsForOneTask, ...errorsForOneTask]);
 
         mockfs.restore();
       });
@@ -306,54 +541,62 @@ describe('Red Perfume', () => {
               'C:\\vendor.css'
             ],
             out: 'C:\\out.css',
-            result: function () {
-              let expectation = testHelpers.trimIndentation(`
-                .rp__0 {
-                  margin: 0px;
-                }
-                .rp__1 {
-                  padding: 0px;
-                }
-              `, 16);
+            hooks: {
+              afterOutput: function () {
+                let expectation = testHelpers.trimIndentation(`
+                  .rp__0 {
+                    margin: 0px;
+                  }
+                  .rp__1 {
+                    padding: 0px;
+                  }
+                `, 18);
 
-              expect(String(fs.readFileSync('C:\\out.css')))
-                .toEqual(expectation + '\n');
+                expect(String(fs.readFileSync('C:\\out.css')))
+                  .toEqual(expectation + '\n');
+              }
             }
           },
           markup: [
             {
               in: 'C:\\home.html',
               out: 'C:\\home.out.html',
-              result: function () {
-                expect(String(fs.readFileSync('C:\\home.out.html')))
-                  .toEqual('<html><head></head><body><h1 class="rp__0">Hi</h1></body></html>\n');
+              hooks: {
+                afterOutput: function () {
+                  expect(String(fs.readFileSync('C:\\home.out.html')))
+                    .toEqual('<html><head></head><body><h1 class="rp__0">Hi</h1></body></html>\n');
+                }
               }
             },
             {
               in: 'C:\\about.html',
               out: 'C:\\about.out.html',
-              result: function () {
-                expect(String(fs.readFileSync('C:\\about.out.html')))
-                  .toEqual('<html><head></head><body><h2 class="rp__1">Yo</h2></body></html>\n');
+              hooks: {
+                afterOutput: function () {
+                  expect(String(fs.readFileSync('C:\\about.out.html')))
+                    .toEqual('<html><head></head><body><h2 class="rp__1">Yo</h2></body></html>\n');
+                }
               }
             }
           ],
           scripts: {
             out: 'C:\\out.json',
-            result: function () {
-              let expectation = testHelpers.trimIndentation(`
-                {
-                  ".a": [
-                    ".rp__0"
-                  ],
-                  ".b": [
-                    ".rp__1"
-                  ]
-                }
-              `, 16);
+            hooks: {
+              afterOutput: function () {
+                let expectation = testHelpers.trimIndentation(`
+                  {
+                    ".a": [
+                      ".rp__0"
+                    ],
+                    ".b": [
+                      ".rp__1"
+                    ]
+                  }
+                `, 18);
 
-              expect(String(fs.readFileSync('C:\\out.json')))
-                .toEqual(expectation + '\n');
+                expect(String(fs.readFileSync('C:\\out.json')))
+                  .toEqual(expectation + '\n');
+              }
             }
           }
         }];
@@ -382,34 +625,42 @@ describe('Red Perfume', () => {
               'C:\\vendor.css'
             ],
             out: 'C:\\out.css',
-            result: function () {
-              expect(String(fs.readFileSync('C:\\out.css')))
-                .toEqual('\n');
+            hooks: {
+              afterOutput: function () {
+                expect(String(fs.readFileSync('C:\\out.css')))
+                  .toEqual('\n');
+              }
             }
           },
           markup: [
             {
               in: 'C:\\home.html',
               out: 'C:\\home.out.html',
-              result: function () {
-                expect(String(fs.readFileSync('C:\\home.out.html')))
-                  .toEqual('<html><head></head><body></body></html>\n');
+              hooks: {
+                afterOutput: function () {
+                  expect(String(fs.readFileSync('C:\\home.out.html')))
+                    .toEqual('<html><head></head><body></body></html>\n');
+                }
               }
             },
             {
               in: 'C:\\about.html',
               out: 'C:\\about.out.html',
-              result: function () {
-                expect(String(fs.readFileSync('C:\\about.out.html')))
-                  .toEqual('<html><head></head><body></body></html>\n');
+              hooks: {
+                afterOutput: function () {
+                  expect(String(fs.readFileSync('C:\\about.out.html')))
+                    .toEqual('<html><head></head><body></body></html>\n');
+                }
               }
             }
           ],
           scripts: {
             out: 'C:\\out.json',
-            result: function () {
-              expect(String(fs.readFileSync('C:\\out.json')))
-                .toEqual('{}\n');
+            hooks: {
+              afterOutput: function () {
+                expect(String(fs.readFileSync('C:\\out.json')))
+                  .toEqual('{}\n');
+              }
             }
           }
         }];
@@ -428,7 +679,21 @@ describe('Red Perfume', () => {
         mockfs.restore();
       });
 
-      test('Using data and result', () => {
+      test('Using data and afterOutput hook', () => {
+        const cssString = '.example { padding: 10px; margin: 10px; }';
+        const markupString = '<!DOCTYPE html><html><body><div class="example"></div></body></html>';
+        const expectedClassMap = {
+          '.example': ['.rp__0', '.rp__1']
+        };
+        let output = testHelpers.trimIndentation(`
+          .rp__0 {
+            padding: 10px;
+          }
+          .rp__1 {
+            margin: 10px;
+          }
+        `, 10);
+
         options = {
           verbose: true,
           customLogger: jest.fn(),
@@ -436,48 +701,64 @@ describe('Red Perfume', () => {
             {
               uglify: true,
               styles: {
-                data: '.example { padding: 10px; margin: 10px; }',
-                result: function (result, err) {
-                  let expectation = testHelpers.trimIndentation(`
-                    .rp__0 {
-                      padding: 10px;
-                    }
-                    .rp__1 {
-                      margin: 10px;
-                    }
-                  `, 20);
+                data: cssString,
+                hooks: {
+                  afterOutput: function (options, { task, inputCss, atomizedCss, classMap, styleErrors }) {
+                    expect(Object.keys(task))
+                      .toEqual(['uglify', 'styles', 'markup', 'scripts', 'hooks']);
 
-                  expect(result)
-                    .toEqual(expectation, undefined);
+                    expect(inputCss)
+                      .toEqual(cssString);
 
-                  expect(err)
-                    .toEqual(undefined);
+                    expect(atomizedCss)
+                      .toEqual(output);
+
+                    expect(classMap)
+                      .toEqual(expectedClassMap);
+
+                    expect(styleErrors)
+                      .toEqual([]);
+                  }
                 }
               },
               markup: [
                 {
-                  data: '<!DOCTYPE html><html><body><div class="example"></div></body></html>',
-                  result: function (result, err) {
-                    expect(result)
-                      .toEqual('<!DOCTYPE html><html><head></head><body><div class="rp__0 rp__1"></div></body></html>');
+                  data: markupString,
+                  hooks: {
+                    afterOutput: function (options, { task, subTask, classMap, inputHtml, atomizedHtml, markupErrors }) {
+                      expect(Object.keys(task))
+                        .toEqual(['uglify', 'styles', 'markup', 'scripts', 'hooks']);
 
-                    expect(err)
-                      .toEqual(undefined);
+                      expect(Object.keys(subTask))
+                        .toEqual(['data', 'hooks']);
+
+                      expect(classMap)
+                        .toEqual(expectedClassMap);
+
+                      expect(inputHtml)
+                        .toEqual(markupString);
+
+                      expect(atomizedHtml)
+                        .toEqual('<!DOCTYPE html><html><head></head><body><div class="rp__0 rp__1"></div></body></html>');
+
+                      expect(markupErrors)
+                        .toEqual([]);
+                    }
                   }
                 }
               ],
               scripts: {
-                result: function (result, err) {
-                  expect(result)
-                    .toEqual({
-                      '.example': [
-                        '.rp__0',
-                        '.rp__1'
-                      ]
-                    });
+                hooks: {
+                  afterOutput: function (options, { task, classMap, scriptErrors }) {
+                    expect(Object.keys(task))
+                      .toEqual(['uglify', 'styles', 'markup', 'scripts', 'hooks']);
 
-                  expect(err)
-                    .toEqual(undefined);
+                    expect(classMap)
+                      .toEqual(expectedClassMap);
+
+                    expect(scriptErrors)
+                      .toEqual([]);
+                  }
                 }
               }
             }
@@ -488,6 +769,114 @@ describe('Red Perfume', () => {
 
         expect(options.customLogger)
           .not.toHaveBeenCalled();
+      });
+
+      test('Runs all global hooks', () => {
+        mockfs({
+          'C:\\app.css': '.a{margin:0px}',
+          'C:\\vendor.css': '.b{padding:0px}',
+          'C:\\home.html': '<h1 class="a">Hi</h1>',
+          'C:\\about.html': '<h2 class="b">Yo</h2>'
+        });
+
+        options.hooks = {
+          beforeValidation: function (options) {
+            expect(Object.keys(options))
+              .toEqual(['verbose', 'customLogger', 'hooks', 'tasks']);
+          },
+          afterValidation: function (options) {
+            expect(Object.keys(options))
+              .toEqual(['verbose', 'customLogger', 'hooks', 'tasks']);
+          },
+          beforeTasks: function (options) {
+            expect(Object.keys(options))
+              .toEqual(['verbose', 'customLogger', 'hooks', 'tasks']);
+          },
+          afterTasks: function (options, results) {
+            expect(Object.keys(options))
+              .toEqual(['verbose', 'customLogger', 'hooks', 'tasks']);
+
+            results.forEach(({ task, inputCss, atomizedCss, classMap, allInputMarkup, allAtomizedMarkup, styleErrors, markupErrors, scriptErrors }) => {
+              expect(Object.keys(task))
+                .toEqual(['uglify', 'styles', 'markup', 'scripts', 'hooks']);
+
+              expect(inputCss)
+                .toEqual('.a{margin:0px}.b{padding:0px}.c{border:0px}');
+
+              expect(atomizedCss)
+                .toEqual(testHelpers.trimIndentation(`
+                  .rp__0 {
+                    margin: 0px;
+                  }
+                  .rp__1 {
+                    padding: 0px;
+                  }
+                  .rp__2 {
+                    border: 0px;
+                  }`, 18));
+
+              expect(classMap)
+                .toEqual({
+                  '.a': ['.rp__0'],
+                  '.b': ['.rp__1'],
+                  '.c': ['.rp__2']
+                });
+
+              expect(allInputMarkup)
+                .toEqual([
+                  '<h1 class="a">Hi</h1>',
+                  '<h2 class="b">Yo</h2>'
+                ]);
+
+              expect(allAtomizedMarkup)
+                .toEqual([
+                  '<html><head></head><body><h1 class=\"rp__0\">Hi</h1></body></html>',
+                  '<html><head></head><body><h2 class=\"rp__1\">Yo</h2></body></html>'
+                ]);
+
+              expect(styleErrors)
+                .toEqual([]);
+
+              expect(markupErrors)
+                .toEqual([]);
+
+              expect(scriptErrors)
+                .toEqual([]);
+            });
+          }
+        };
+
+        options.tasks = [{
+          uglify: true,
+          styles: {
+            in: [
+              'C:\\app.css',
+              'C:\\vendor.css'
+            ],
+            data: '.c{border:0px}',
+            out: 'C:\\out.css'
+          },
+          markup: [
+            {
+              in: 'C:\\home.html',
+              out: 'C:\\home.out.html'
+            },
+            {
+              in: 'C:\\about.html',
+              out: 'C:\\about.out.html'
+            }
+          ],
+          scripts: {
+            out: 'C:\\out.json'
+          }
+        }];
+
+        redPerfume.atomize(options);
+
+        expect(options.customLogger)
+          .not.toHaveBeenCalled();
+
+        mockfs.restore();
       });
 
       describe('Every type of CSS', () => {
@@ -513,6 +902,20 @@ describe('Red Perfume', () => {
           `;
 
           test('Normal', () => {
+            const expectedClassMap = {
+              '.simple': [
+                '.rp__padding__--COLON10px',
+                '.rp__margin__--COLON10px'
+              ]
+            };
+            const output = testHelpers.trimIndentation(`
+              .rp__padding__--COLON10px {
+                padding: 10px;
+              }
+              .rp__margin__--COLON10px {
+                margin: 10px;
+              }
+            `, 14);
             options = {
               verbose: true,
               customLogger: jest.fn(),
@@ -521,55 +924,71 @@ describe('Red Perfume', () => {
                   uglify: false,
                   styles: {
                     data: simpleCSS,
-                    result: function (result, err) {
-                      const expectation = testHelpers.trimIndentation(`
-                        .rp__padding__--COLON10px {
-                          padding: 10px;
-                        }
-                        .rp__margin__--COLON10px {
-                          margin: 10px;
-                        }
-                      `, 24);
+                    hooks: {
+                      afterOutput: function (options, { task, inputCss, atomizedCss, classMap, styleErrors }) {
+                        expect(Object.keys(task))
+                          .toEqual(['uglify', 'styles', 'markup', 'scripts', 'hooks']);
 
-                      expect(result)
-                        .toEqual(expectation, undefined);
+                        expect(inputCss)
+                          .toEqual(simpleCSS);
 
-                      expect(err)
-                        .toEqual(undefined);
+                        expect(atomizedCss)
+                          .toEqual(output);
+
+                        expect(classMap)
+                          .toEqual(expectedClassMap);
+
+                        expect(styleErrors)
+                          .toEqual([]);
+                      }
                     }
                   },
                   markup: [
                     {
                       data: inputMarkup,
-                      result: function (result, err) {
-                        expect(testHelpers.trimIndentation(result))
-                          .toEqual(testHelpers.trimIndentation(`
-                            <!DOCTYPE html><html><head></head><body>
-                              <h1 class="qualifying"></h1>
-                              <div class="pseudo rp__padding__--COLON10px rp__margin__--COLON10px"></div>
-                              <div class="after">
-                                <div class="nested"></div>
-                              </div>
-                            </body></html>
-                          `, 28));
+                      hooks: {
+                        afterOutput: function (options, { task, subTask, classMap, inputHtml, atomizedHtml, markupErrors }) {
+                          expect(Object.keys(task))
+                            .toEqual(['uglify', 'styles', 'markup', 'scripts', 'hooks']);
 
-                        expect(err)
-                          .toEqual(undefined);
+                          expect(Object.keys(subTask))
+                            .toEqual(['data', 'hooks']);
+
+                          expect(classMap)
+                            .toEqual(expectedClassMap);
+
+                          expect(inputHtml)
+                            .toEqual(inputMarkup);
+
+                          expect(testHelpers.trimIndentation(atomizedHtml))
+                            .toEqual(testHelpers.trimIndentation(`
+                              <!DOCTYPE html><html><head></head><body>
+                                <h1 class="qualifying"></h1>
+                                <div class="pseudo rp__padding__--COLON10px rp__margin__--COLON10px"></div>
+                                <div class="after">
+                                  <div class="nested"></div>
+                                </div>
+                              </body></html>
+                            `, 30));
+
+                          expect(markupErrors)
+                            .toEqual([]);
+                        }
                       }
                     }
                   ],
                   scripts: {
-                    result: function (result, err) {
-                      expect(result)
-                        .toEqual({
-                          '.simple': [
-                            '.rp__padding__--COLON10px',
-                            '.rp__margin__--COLON10px'
-                          ]
-                        });
+                    hooks: {
+                      afterOutput: function (options, { task, classMap, scriptErrors }) {
+                        expect(Object.keys(task))
+                          .toEqual(['uglify', 'styles', 'markup', 'scripts', 'hooks']);
 
-                      expect(err)
-                        .toEqual(undefined);
+                        expect(classMap)
+                          .toEqual(expectedClassMap);
+
+                        expect(scriptErrors)
+                          .toEqual([]);
+                      }
                     }
                   }
                 }
@@ -583,6 +1002,21 @@ describe('Red Perfume', () => {
           });
 
           test('Uglify', () => {
+            const expectedClassMap = {
+              '.simple': [
+                '.rp__0',
+                '.rp__1'
+              ]
+            };
+            const output = testHelpers.trimIndentation(`
+              .rp__0 {
+                padding: 10px;
+              }
+              .rp__1 {
+                margin: 10px;
+              }
+            `, 14);
+
             options = {
               verbose: true,
               customLogger: jest.fn(),
@@ -591,55 +1025,71 @@ describe('Red Perfume', () => {
                   uglify: true,
                   styles: {
                     data: simpleCSS,
-                    result: function (result, err) {
-                      const expectation = testHelpers.trimIndentation(`
-                        .rp__0 {
-                          padding: 10px;
-                        }
-                        .rp__1 {
-                          margin: 10px;
-                        }
-                      `, 24);
+                    hooks: {
+                      afterOutput: function (options, { task, inputCss, atomizedCss, classMap, styleErrors }) {
+                        expect(Object.keys(task))
+                          .toEqual(['uglify', 'styles', 'markup', 'scripts', 'hooks']);
 
-                      expect(result)
-                        .toEqual(expectation, undefined);
+                        expect(inputCss)
+                          .toEqual(simpleCSS);
 
-                      expect(err)
-                        .toEqual(undefined);
+                        expect(atomizedCss)
+                          .toEqual(output);
+
+                        expect(classMap)
+                          .toEqual(expectedClassMap);
+
+                        expect(styleErrors)
+                          .toEqual([]);
+                      }
                     }
                   },
                   markup: [
                     {
                       data: inputMarkup,
-                      result: function (result, err) {
-                        expect(testHelpers.trimIndentation(result))
-                          .toEqual(testHelpers.trimIndentation(`
-                            <!DOCTYPE html><html><head></head><body>
-                              <h1 class="qualifying"></h1>
-                              <div class="pseudo rp__0 rp__1"></div>
-                              <div class="after">
-                                <div class="nested"></div>
-                              </div>
-                            </body></html>
-                          `, 28));
+                      hooks: {
+                        afterOutput: function (options, { task, subTask, classMap, inputHtml, atomizedHtml, markupErrors }) {
+                          expect(Object.keys(task))
+                            .toEqual(['uglify', 'styles', 'markup', 'scripts', 'hooks']);
 
-                        expect(err)
-                          .toEqual(undefined);
+                          expect(Object.keys(subTask))
+                            .toEqual(['data', 'hooks']);
+
+                          expect(classMap)
+                            .toEqual(expectedClassMap);
+
+                          expect(inputHtml)
+                            .toEqual(inputMarkup);
+
+                          expect(testHelpers.trimIndentation(atomizedHtml))
+                            .toEqual(testHelpers.trimIndentation(`
+                              <!DOCTYPE html><html><head></head><body>
+                                <h1 class="qualifying"></h1>
+                                <div class="pseudo rp__0 rp__1"></div>
+                                <div class="after">
+                                  <div class="nested"></div>
+                                </div>
+                              </body></html>
+                            `, 30));
+
+                          expect(markupErrors)
+                            .toEqual([]);
+                        }
                       }
                     }
                   ],
                   scripts: {
-                    result: function (result, err) {
-                      expect(result)
-                        .toEqual({
-                          '.simple': [
-                            '.rp__0',
-                            '.rp__1'
-                          ]
-                        });
+                    hooks: {
+                      afterOutput: function (options, { task, classMap, scriptErrors }) {
+                        expect(Object.keys(task))
+                          .toEqual(['uglify', 'styles', 'markup', 'scripts', 'hooks']);
 
-                      expect(err)
-                        .toEqual(undefined);
+                        expect(classMap)
+                          .toEqual(expectedClassMap);
+
+                        expect(scriptErrors)
+                          .toEqual([]);
+                      }
                     }
                   }
                 }
@@ -666,6 +1116,15 @@ describe('Red Perfume', () => {
           `;
 
           test('Normal', () => {
+            const expectedClassMap = {
+              '.pseudo': [
+                '.rp__color__--COLON__--OCTOTHORPF00',
+                '.rp__text-decoration__--COLONnone',
+                '.rp__color__--COLON__--OCTOTHORPA00___-HOVER',
+                '.rp__text-decoration__--COLONunderline___-HOVER'
+              ]
+            };
+
             options = {
               verbose: true,
               customLogger: jest.fn(),
@@ -674,63 +1133,84 @@ describe('Red Perfume', () => {
                   uglify: false,
                   styles: {
                     data: pseudoCSS,
-                    result: function (result, err) {
-                      const expectation = testHelpers.trimIndentation(`
-                        .rp__color__--COLON__--OCTOTHORPF00 {
-                          color: #F00;
-                        }
-                        .rp__text-decoration__--COLONnone {
-                          text-decoration: none;
-                        }
-                        .rp__color__--COLON__--OCTOTHORPA00___-HOVER:hover {
-                          color: #A00;
-                        }
-                        .rp__text-decoration__--COLONunderline___-HOVER:hover {
-                          text-decoration: underline;
-                        }
-                      `, 24);
+                    hooks: {
+                      afterOutput: function (options, { task, inputCss, atomizedCss, classMap, styleErrors }) {
+                        expect(Object.keys(task))
+                          .toEqual(['uglify', 'styles', 'markup', 'scripts', 'hooks']);
 
-                      expect(result)
-                        .toEqual(expectation, undefined);
+                        expect(inputCss)
+                          .toEqual(pseudoCSS);
 
-                      expect(err)
-                        .toEqual(undefined);
+                        expect(atomizedCss)
+                          .toEqual(testHelpers.trimIndentation(`
+                            .rp__color__--COLON__--OCTOTHORPF00 {
+                              color: #F00;
+                            }
+                            .rp__text-decoration__--COLONnone {
+                              text-decoration: none;
+                            }
+                            .rp__color__--COLON__--OCTOTHORPA00___-HOVER:hover {
+                              color: #A00;
+                            }
+                            .rp__text-decoration__--COLONunderline___-HOVER:hover {
+                              text-decoration: underline;
+                            }
+                          `, 28));
+
+                        expect(classMap)
+                          .toEqual(expectedClassMap);
+
+                        expect(styleErrors)
+                          .toEqual([]);
+                      }
                     }
                   },
                   markup: [
                     {
                       data: inputMarkup,
-                      result: function (result, err) {
-                        expect(testHelpers.trimIndentation(result))
-                          .toEqual(testHelpers.trimIndentation(`
-                            <!DOCTYPE html><html><head></head><body>
-                              <h1 class="qualifying"></h1>
-                              <div class="simple rp__color__--COLON__--OCTOTHORPF00 rp__text-decoration__--COLONnone rp__color__--COLON__--OCTOTHORPA00___-HOVER rp__text-decoration__--COLONunderline___-HOVER"></div>
-                              <div class="after">
-                                <div class="nested"></div>
-                              </div>
-                            </body></html>
-                          `, 28));
+                      hooks: {
+                        afterOutput: function (options, { task, subTask, classMap, inputHtml, atomizedHtml, markupErrors }) {
+                          expect(Object.keys(task))
+                            .toEqual(['uglify', 'styles', 'markup', 'scripts', 'hooks']);
 
-                        expect(err)
-                          .toEqual(undefined);
+                          expect(Object.keys(subTask))
+                            .toEqual(['data', 'hooks']);
+
+                          expect(classMap)
+                            .toEqual(expectedClassMap);
+
+                          expect(inputHtml)
+                            .toEqual(inputMarkup);
+
+                          expect(testHelpers.trimIndentation(atomizedHtml))
+                            .toEqual(testHelpers.trimIndentation(`
+                              <!DOCTYPE html><html><head></head><body>
+                                <h1 class="qualifying"></h1>
+                                <div class="simple rp__color__--COLON__--OCTOTHORPF00 rp__text-decoration__--COLONnone rp__color__--COLON__--OCTOTHORPA00___-HOVER rp__text-decoration__--COLONunderline___-HOVER"></div>
+                                <div class="after">
+                                  <div class="nested"></div>
+                                </div>
+                              </body></html>
+                            `, 30));
+
+                          expect(markupErrors)
+                            .toEqual([]);
+                        }
                       }
                     }
                   ],
                   scripts: {
-                    result: function (result, err) {
-                      expect(result)
-                        .toEqual({
-                          '.pseudo': [
-                            '.rp__color__--COLON__--OCTOTHORPF00',
-                            '.rp__text-decoration__--COLONnone',
-                            '.rp__color__--COLON__--OCTOTHORPA00___-HOVER',
-                            '.rp__text-decoration__--COLONunderline___-HOVER'
-                          ]
-                        });
+                    hooks: {
+                      afterOutput: function (options, { task, classMap, scriptErrors }) {
+                        expect(Object.keys(task))
+                          .toEqual(['uglify', 'styles', 'markup', 'scripts', 'hooks']);
 
-                      expect(err)
-                        .toEqual(undefined);
+                        expect(classMap)
+                          .toEqual(expectedClassMap);
+
+                        expect(scriptErrors)
+                          .toEqual([]);
+                      }
                     }
                   }
                 }
@@ -744,6 +1224,15 @@ describe('Red Perfume', () => {
           });
 
           test('Uglify', () => {
+            const expectedClassMap = {
+              '.pseudo': [
+                '.rp__0',
+                '.rp__1',
+                '.rp__2',
+                '.rp__3'
+              ]
+            };
+
             options = {
               verbose: true,
               customLogger: jest.fn(),
@@ -752,63 +1241,84 @@ describe('Red Perfume', () => {
                   uglify: true,
                   styles: {
                     data: pseudoCSS,
-                    result: function (result, err) {
-                      const expectation = testHelpers.trimIndentation(`
-                        .rp__0 {
-                          color: #F00;
-                        }
-                        .rp__1 {
-                          text-decoration: none;
-                        }
-                        .rp__2:hover {
-                          color: #A00;
-                        }
-                        .rp__3:hover {
-                          text-decoration: underline;
-                        }
-                      `, 24);
+                    hooks: {
+                      afterOutput: function (options, { task, inputCss, atomizedCss, classMap, styleErrors }) {
+                        expect(Object.keys(task))
+                          .toEqual(['uglify', 'styles', 'markup', 'scripts', 'hooks']);
 
-                      expect(result)
-                        .toEqual(expectation, undefined);
+                        expect(inputCss)
+                          .toEqual(pseudoCSS);
 
-                      expect(err)
-                        .toEqual(undefined);
+                        expect(atomizedCss)
+                          .toEqual(testHelpers.trimIndentation(`
+                            .rp__0 {
+                              color: #F00;
+                            }
+                            .rp__1 {
+                              text-decoration: none;
+                            }
+                            .rp__2:hover {
+                              color: #A00;
+                            }
+                            .rp__3:hover {
+                              text-decoration: underline;
+                            }
+                          `, 28));
+
+                        expect(classMap)
+                          .toEqual(expectedClassMap);
+
+                        expect(styleErrors)
+                          .toEqual([]);
+                      }
                     }
                   },
                   markup: [
                     {
                       data: inputMarkup,
-                      result: function (result, err) {
-                        expect(testHelpers.trimIndentation(result))
-                          .toEqual(testHelpers.trimIndentation(`
-                            <!DOCTYPE html><html><head></head><body>
-                              <h1 class="qualifying"></h1>
-                              <div class="simple rp__0 rp__1 rp__2 rp__3"></div>
-                              <div class="after">
-                                <div class="nested"></div>
-                              </div>
-                            </body></html>
-                          `, 28));
+                      hooks: {
+                        afterOutput: function (options, { task, subTask, classMap, inputHtml, atomizedHtml, markupErrors }) {
+                          expect(Object.keys(task))
+                            .toEqual(['uglify', 'styles', 'markup', 'scripts', 'hooks']);
 
-                        expect(err)
-                          .toEqual(undefined);
+                          expect(Object.keys(subTask))
+                            .toEqual(['data', 'hooks']);
+
+                          expect(classMap)
+                            .toEqual(expectedClassMap);
+
+                          expect(inputHtml)
+                            .toEqual(inputMarkup);
+
+                          expect(testHelpers.trimIndentation(atomizedHtml))
+                            .toEqual(testHelpers.trimIndentation(`
+                              <!DOCTYPE html><html><head></head><body>
+                                <h1 class="qualifying"></h1>
+                                <div class="simple rp__0 rp__1 rp__2 rp__3"></div>
+                                <div class="after">
+                                  <div class="nested"></div>
+                                </div>
+                              </body></html>
+                            `, 30));
+
+                          expect(markupErrors)
+                            .toEqual([]);
+                        }
                       }
                     }
                   ],
                   scripts: {
-                    result: function (result, err) {
-                      expect(result)
-                        .toEqual({
-                          '.pseudo': [
-                            '.rp__0',
-                            '.rp__1',
-                            '.rp__2',
-                            '.rp__3'
-                          ]
-                        });
+                    hooks: {
+                      afterOutput: function (options, { task, classMap, scriptErrors }) {
+                        expect(Object.keys(task))
+                          .toEqual(['uglify', 'styles', 'markup', 'scripts', 'hooks']);
 
-                      expect(err)
-                        .toEqual(undefined);
+                        expect(classMap)
+                          .toEqual(expectedClassMap);
+
+                        expect(scriptErrors)
+                          .toEqual([]);
+                      }
                     }
                   }
                 }
