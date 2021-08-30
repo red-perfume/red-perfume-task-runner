@@ -14,7 +14,7 @@ describe('CSS', () => {
   let options;
   const errorResponse = {
     classMap: {},
-    output: ''
+    atomizedCss: ''
   };
 
   beforeEach(() => {
@@ -26,7 +26,7 @@ describe('CSS', () => {
 
   describe('removeIdenticalProperties', () => {
     test('Removes dupes', () => {
-      expect(css.removeIdenticalProperties({
+      const classMap = {
         '.duplicates': [
           '.rp__display__--COLONnone',
           '.rp__display__--COLONblock',
@@ -35,7 +35,11 @@ describe('CSS', () => {
           '.rp__display__--COLONnone',
           '.rp__display__--COLONflex'
         ]
-      }))
+      };
+
+      css.removeIdenticalProperties(classMap);
+
+      expect(classMap)
         .toEqual({
           '.duplicates': [
             '.rp__display__--COLONblock',
@@ -89,49 +93,49 @@ describe('CSS', () => {
 
   describe('Process CSS', () => {
     test('One rule', () => {
-      let output = testHelpers.trimIndentation(`
+      const input = '.test { background: #F00; }';
+      const classMap = {
+        '.test': [
+          '.rp__background__--COLON__--OCTOTHORPF00'
+        ]
+      };
+      const atomizedCss = testHelpers.trimIndentation(`
         .rp__background__--COLON__--OCTOTHORPF00 {
           background: #F00;
         }
       `, 8);
+      const uglify = false;
 
-      expect(css(options, '.test { background: #F00; }', false))
-        .toEqual({
-          classMap: {
-            '.test': [
-              '.rp__background__--COLON__--OCTOTHORPF00'
-            ]
-          },
-          output
-        });
+      expect(css(options, input, uglify))
+        .toEqual({ classMap, atomizedCss });
 
       expect(options.customLogger)
         .not.toHaveBeenCalled();
     });
 
     test('One rule uglified', () => {
-      let output = testHelpers.trimIndentation(`
+      const input = '.test { background: #F00; }';
+      const classMap = {
+        '.test': [
+          '.rp__0'
+        ]
+      };
+      const atomizedCss = testHelpers.trimIndentation(`
         .rp__0 {
           background: #F00;
         }
       `, 8);
+      const uglify = true;
 
-      expect(css(options, '.test { background: #F00; }', true))
-        .toEqual({
-          classMap: {
-            '.test': [
-              '.rp__0'
-            ]
-          },
-          output
-        });
+      expect(css(options, input, uglify))
+        .toEqual({ classMap, atomizedCss });
 
       expect(options.customLogger)
         .not.toHaveBeenCalled();
     });
 
     test('Handle non-classes', () => {
-      let input = `
+      const input = `
         h1 {
           background: #F00;
           border: 1px solid #00F;
@@ -154,7 +158,7 @@ describe('CSS', () => {
         }
       `;
 
-      expect(css(options, input, false).output)
+      expect(css(options, input, false).atomizedCss)
         .toEqual(testHelpers.trimIndentation(`
           h1 {
             background: #F00;
@@ -180,7 +184,7 @@ describe('CSS', () => {
           }
         `, 10));
 
-      expect(css(options, input, true).output)
+      expect(css(options, input, true).atomizedCss)
         .toEqual(testHelpers.trimIndentation(`
           h1 {
             background: #F00;
@@ -205,10 +209,13 @@ describe('CSS', () => {
             text-align: center;
           }
         `, 10));
+
+      expect(options.customLogger)
+        .not.toHaveBeenCalled();
     });
 
     test('Handle pseudo-classes', () => {
-      let input = `
+      const input = `
         .example {
           display: inline-block;
           text-align: right;
@@ -238,7 +245,7 @@ describe('CSS', () => {
         }
       `;
 
-      expect(css(options, input, false).output)
+      expect(css(options, input, false).atomizedCss)
         .toEqual(testHelpers.trimIndentation(`
           .rp__display__--COLONinline-block {
             display: inline-block;
@@ -275,7 +282,7 @@ describe('CSS', () => {
           }
         `, 10));
 
-      expect(css(options, input, true).output)
+      expect(css(options, input, true).atomizedCss)
         .toEqual(testHelpers.trimIndentation(`
           h1:hover {
             color: #F00;
@@ -311,6 +318,9 @@ describe('CSS', () => {
             background: #0F0;
           }
         `, 10));
+
+      expect(options.customLogger)
+        .not.toHaveBeenCalled();
     });
   });
 });

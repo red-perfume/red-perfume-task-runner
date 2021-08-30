@@ -5,6 +5,7 @@
  * @author  TheJaredWilcurt
  */
 
+const constants = require('./constants.js');
 const helpers = require('./helpers.js');
 
 // Initially I thought this too verbose, but there is literally no limit on class lengths other than the machine's memory/CPU.
@@ -62,12 +63,12 @@ const propertyValueEncodingMap = {
  * otherwise returns '__--U' and the charCode.
  *
  * @example
- * unicodeEndocing('â'); // '__--U226'
+ * unicodeEncoding('â'); // '__--U226'
  *
  * @param  {string} character  A single character string
  * @return {string}            The original ASCII char or '__--U' + charCode
  */
-function unicodeEndocing (character) {
+function unicodeEncoding (character) {
   let code = character.charCodeAt();
   // 33 = !, 48 = 0, 65 = A, 97 = a, 126 = ~
   if (code < 33 || code > 126) {
@@ -86,29 +87,14 @@ const prefix = 'rp__';
  *
  * @param  {object} options      User's passed in options, containing verbose/customLoger
  * @param  {object} declaration  Contains the Property and Value strings
+ * @param  {Array}  styleErrors  Array containing all style related errors
  * @return {string}              A classname starting with . and a prefix
  */
-function encodeClassName (options, declaration) {
+function encodeClassName (options, declaration, styleErrors) {
+  styleErrors = styleErrors || [];
   if (!declaration || declaration.property === undefined || declaration.value === undefined) {
-    let message = [
-      'A rule declaration was missing details,',
-      'such as property or value.',
-      'This may result in a classname like',
-      '.rp__width__--COLONundefined,',
-      '.rp__undefined__--COLON100px,',
-      'or',
-      '.rp__undefined__--COLONundefined.',
-      'If there are multiples of these,',
-      'they may replace the previous.',
-      'Please report this error to',
-      'github.com/red-perfume/red-perfume/issues',
-      'because I have no idea how to',
-      'reproduce it with actual CSS input.',
-      'This was just meant for a safety check.',
-      'Honestly, if you actually got this',
-      'error, I\'m kind of impressed.'
-    ].join(' ');
-    helpers.throwError(options, message);
+    styleErrors.push(constants.IMPRESSED_MESSAGE);
+    helpers.throwError(options, constants.IMPRESSED_MESSAGE);
   }
   declaration = declaration || {};
   let newName = declaration.property + ':' + declaration.value;
@@ -116,7 +102,7 @@ function encodeClassName (options, declaration) {
   let encoded = nameArray.map(function (character) {
     return (
       propertyValueEncodingMap[character] ||
-      unicodeEndocing(character) ||
+      unicodeEncoding(character) ||
       character
     );
   });

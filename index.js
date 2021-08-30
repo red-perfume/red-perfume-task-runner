@@ -6,7 +6,25 @@
  */
 
 const validator = require('./src/validator.js');
-const processTask = require('./src/process-task.js');
+const processTasks = require('./src/process-tasks.js');
+
+/**
+ * Verifies a hook exists and then runs it.
+ *
+ * @param {object} options  The user's options object
+ * @param {string} hook     The hook to run
+ * @param {Array}  data     The data to be emitted
+ */
+function runHook (options, hook, data) {
+  if (
+    options &&
+    options.hooks &&
+    options.hooks[hook] &&
+    typeof(options.hooks[hook]) === 'function'
+  ) {
+    options.hooks[hook](options, data);
+  }
+}
 
 const redPerfume = {
   /**
@@ -36,10 +54,13 @@ const redPerfume = {
    * @param {object} options  User's options
    */
   atomize: function (options) {
+    runHook(options, 'beforeValidation');
     options = this.validate(options);
-    options.tasks.forEach((task) => {
-      processTask(options, task);
-    });
+    runHook(options, 'afterValidation');
+
+    runHook(options, 'beforeTasks');
+    const results = processTasks(options);
+    runHook(options, 'afterTasks', results);
   }
 };
 
