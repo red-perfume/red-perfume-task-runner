@@ -457,21 +457,19 @@ describe('Red Perfume', () => {
         const errorsForOneTask = [
           [
             'Error reading style file: C:\\app.css',
-            {
+            expect.objectContaining({
               code: 'EACCES',
-              errno: -4092,
               path: 'C:\\app.css',
               syscall: 'open'
-            }
+            })
           ],
           [
             'Error reading style file: C:\\vendor.css',
-            {
+            expect.objectContaining({
               code: 'EACCES',
-              errno: -4092,
               path: 'C:\\vendor.css',
               syscall: 'open'
-            }
+            })
           ],
           [
             'Invalid CSS input.',
@@ -483,21 +481,19 @@ describe('Red Perfume', () => {
           ],
           [
             'Error writing CSS file: C:\\out.css',
-            {
+            expect.objectContaining({
               code: 'EACCES',
-              errno: -4092,
               path: 'C:\\out.css',
               syscall: 'open'
-            }
+            })
           ],
           [
             'Error reading markup file: C:\\index.html',
-            {
+            expect.objectContaining({
               code: 'EACCES',
-              errno: -4092,
               path: 'C:\\index.html',
               syscall: 'open'
-            }
+            })
           ],
           [
             'Error parsing HTML',
@@ -505,21 +501,19 @@ describe('Red Perfume', () => {
           ],
           [
             'Error writing markup file: C:\\out.html',
-            {
+            expect.objectContaining({
               code: 'EACCES',
-              errno: -4092,
               path: 'C:\\out.html',
               syscall: 'open'
-            }
+            })
           ],
           [
             'Error writing script file: C:\\out.json',
-            {
+            expect.objectContaining({
               code: 'EACCES',
-              errno: -4092,
               path: 'C:\\out.json',
               syscall: 'open'
-            }
+            })
           ]
         ];
 
