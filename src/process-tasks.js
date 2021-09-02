@@ -176,12 +176,12 @@ function processMarkup (options, task, classMap) {
   const allAtomizedMarkup = [];
   const allInputMarkup = [];
   const markupErrors = [];
-  task.markup.forEach(function (subTask) {
+  task.markup.forEach(async function (subTask) {
     runHook(options, subTask, 'beforeRead', { task, subTask, classMap });
     const inputHtml = getHtmlString(options, subTask, markupErrors);
     runHook(options, subTask, 'afterRead', { task, subTask, classMap, inputHtml, markupErrors });
 
-    const atomizedHtml = html(options, inputHtml, classMap, markupErrors);
+    const atomizedHtml = await html(options, inputHtml, classMap, markupErrors, subTask.minify);
     runHook(options, subTask, 'afterProcessed', { task, subTask, classMap, inputHtml, atomizedHtml, markupErrors });
 
     outputAtomizedHTML(options, subTask, atomizedHtml, markupErrors);
