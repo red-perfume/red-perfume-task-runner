@@ -6,6 +6,7 @@
  */
 
 const parse5 = require('parse5');
+const minifier = require('html-minifier-terser').minify;
 
 const helpers = require('./helpers.js');
 const minificationSettings = require('./minification-settings.js');
@@ -110,7 +111,6 @@ function replaceSemanticClassWithAtomizedClasses (node, classToReplace, newClass
  * @return {string}                      Minified markup
  */
 async function minifyMarkup (options, markup, minificationOptions, markupErrors) {
-  const minifier = require('html-minifier-terser').minify;
   return await minifier(markup, minificationOptions)
     .then(function (output) {
       return output;

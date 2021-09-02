@@ -148,6 +148,16 @@ The alpha version of `red-perfume` already works for simple CSS, like the above 
 ```
 
 
+## FAQ
+
+1. What libraries is Red Perfume built on?
+   * The core atomization feature is handled in Red Perfume by manipulating Abstract Syntax Trees (ASTs) provided by `css` (CSS), `css-what` (CSS Selectors), and `parse5` (HTML).
+   * For minification we use `Clean-CSS` (CSS), `Terser` (JS), `HTML-Minifier-Terser` (HTML, uses Clean-CSS/Terser for embedded/inline styles/scripts).
+   * JavaScript's built in JSON parser/stringifier for minification and stringification.
+   * Node's built in `fs` module for reading/writing to disk.
+   * Post-CSS is not used anywhere in Red Perfume, though you may combine it with Red Perfume via the provided lifecycle hooks.
+
+
 ## API (subject to change before v1.0.0)
 
 ### API Example
@@ -266,12 +276,13 @@ Key       | Type    | Default     | Description
 redPerfume.atomize({ tasks: [{ styles: { in, data, out, hooks } }] });
 ```
 
-Key       | Type    | Default     | Description
-:--       | :--     | :--         | :--
-`in`      | Array   | `undefined` | An array of strings to valid paths for CSS files. All files will remain untouched. A new atomized string is produced for `out` and/or hooks.
-`data`    | String  | `undefined` | A string of CSS to be atomized. Files provived via `in` are concatenated with `data` at the end, then atomized and sent to `out` and/or hooks.
-`out`     | String  | `undefined` | A string file path output. If file exists it will be overwritten with the atomized styles from `in` and/or `data`
-`hooks`   | Object  | `{}`        | Lifecycle callback hooks (documented in next section)
+Key       | Type              | Default     | Description
+:--       | :--               | :--         | :--
+`in`      | Array             | `undefined` | An array of strings to valid paths for CSS files. All files will remain untouched. A new atomized string is produced for `out` and/or hooks.
+`data`    | String            | `undefined` | A string of CSS to be atomized. Files provived via `in` are concatenated with `data` at the end, then atomized and sent to `out` and/or hooks.
+`minify`  | Boolean or Object | `false`     | If `false`, does not minify output. If `true`, uses [default settings](./src/minification-settings.js). Or you can pass in [Clean-CSS](https://github.com/clean-css/clean-css#minify-method) options object.
+`out`     | String            | `undefined` | A string file path output. If file exists it will be overwritten with the atomized styles from `in` and/or `data`
+`hooks`   | Object            | `{}`        | Lifecycle callback hooks (documented in next section)
 
 
 **Markup Task API:**
@@ -280,12 +291,13 @@ Key       | Type    | Default     | Description
 redPerfume.atomize({ tasks: [{ markup: [{ in, data, out, hooks }] }] });
 ```
 
-Key       | Type    | Default     | Description
-:--       | :--     | :--         | :--
-`in`      | String  | `undefined` | Path to an HTML file to be processed.
-`data`    | String  | `undefined` | A string of markup to be processed. This is appended to the end of the `in` file contents if both are provided.
-`out`     | String  | `undefined` | Path where the modified version of the `in` file and/or `data` will be stored. If file already exists, it will be overwritten.
-`hooks`   | Object  | `{}`        | Lifecycle callback hooks (documented in next section)
+Key       | Type              | Default     | Description
+:--       | :--               | :--         | :--
+`in`      | String            | `undefined` | Path to an HTML file to be processed.
+`data`    | String            | `undefined` | A string of markup to be processed. This is appended to the end of the `in` file contents if both are provided.
+`minify`  | Boolean or Object | `false`     | If `false`, does not minify output. If `true`, uses [default settings](./src/minification-settings.js). Or you can pass in [HTML-Minifier-Terser](https://github.com/terser/html-minifier-terser#options-quick-reference) options object.
+`out`     | String            | `undefined` | Path where the modified version of the `in` file and/or `data` will be stored. If file already exists, it will be overwritten.
+`hooks`   | Object            | `{}`        | Lifecycle callback hooks (documented in next section)
 
 
 **Scripts Task API:**
@@ -296,6 +308,7 @@ redPerfume.atomize({ tasks: [{ scripts: { out, hooks } }] });
 
 Key       | Type    | Default     | Description
 :--       | :--     | :--         | :--
+`minify`  | Boolean | `false`     | If `true` minifies output.
 `out`     | String  | `undefined` | Path where a JSON object (`classMap`) will be stored. The object contains keys (selectors) and values (array of strings of atomized class names). If file already exists, it will be overwritten. Output subject to change before v1.0.0.
 `hooks`   | Object  | `{}`        | Lifecycle callback hooks (documented in next section)
 
