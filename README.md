@@ -172,6 +172,7 @@ redPerfume.atomize({
     {
       uglify: false,
       styles: {
+        minify: true,
         in: [
           './styles/file.css',
           './styles/style.css'
@@ -182,15 +183,18 @@ redPerfume.atomize({
       // The output markup will be a copy of the input but modified to have the class names replaced to match the new atomized styles in this task
       markup: [
         {
+          minify: true
           in: './index.html',
           out: './dist/index.html'
         },
         {
+          minify: true
           in: './contact.html',
           out: './dist/contact.html'
         }
       ],
       scripts: {
+        minify: true,
         // Design of this JSON file will change before v1.0.0.
         // The point is to allow your JavaScript to reference a map of the original class name (key) and the atomized classes produced from it (value)
         out: './dist/atomic-styles.json'

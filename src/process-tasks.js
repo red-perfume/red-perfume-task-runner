@@ -126,8 +126,12 @@ function outputAtomizedHTML (options, item, processedMarkup, markupErrors) {
 function outputAtomizedJSON (options, taskScripts, classMap) {
   let scriptErrors = [];
   if (taskScripts.out) {
+    let indentation = 2;
+    if (taskScripts.minify) {
+      indentation = null;
+    }
     try {
-      fs.writeFileSync(taskScripts.out, JSON.stringify(classMap, null, 2) + '\n');
+      fs.writeFileSync(taskScripts.out, JSON.stringify(classMap, null, indentation) + '\n');
     } catch (scriptErr) {
       helpers.throwError(options, 'Error writing script file: ' + taskScripts.out, scriptErr);
       scriptErrors.push(scriptErr);
