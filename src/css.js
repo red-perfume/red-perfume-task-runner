@@ -5,10 +5,13 @@
  * @author  TheJaredWilcurt
  */
 
+const CleanCSS = require('clean-css');
+
 const cssParser = require('./css-parser.js');
 const cssStringify = require('./css-stringify.js');
 const cssUglifier = require('./css-uglifier.js');
 const encodeClassName = require('./css-class-encoding.js');
+const minificationSettings = require('./minification-settings.js');
 const helpers = require('./helpers.js');
 
 /**
@@ -186,6 +189,34 @@ function uglifyClassNames (classMap, newRules) {
 }
 
 /**
+ * Minifies the styles.
+ *
+ * @param  {object} options              User's options
+ * @param  {string} atomizedCss          The atomized styles
+ * @param  {object} minificationOptions  The Clean-CSS minification options or a boolean
+ * @param  {Array}  styleErrors          Array to contain style related errors
+ * @return {string}                      Atomized, maybe uglified, maybe minified styles
+ */
+function minifyCss (options, atomizedCss, minificationOptions, styleErrors) {
+  const output = new CleanCSS(minificationOptions).minify(atomizedCss);
+  if (
+    output.errors &&
+    Array.isArray(output.errors) &&
+    output.errors.length
+  ) {
+    const message = 'There was an error minifyings CSS.';
+    output.errors.forEach(function (err) {
+      styleErrors.push(err);
+      helpers.throwError(options, message, err);
+    });
+  }
+  if (output && output.styles && output.styles.length) {
+    return output.styles;
+  }
+  return atomizedCss;
+}
+
+/**
  * Loop over all rules and atomize as needed.
  *
  * @param {object} options      User's options
@@ -251,17 +282,19 @@ function processRules (options, rules, classMap, newRules, styleErrors) {
  * atomized CSS, optionally uglifies the atomized class names, stringifies the
  * AST back to a string. Returns String and Atomization Map.
  *
- * @param  {object}  options      User's options
- * @param  {string}  input        The CSS to be atomized/uglified
- * @param  {boolean} uglify       Whether to uglify the atomized class names
- * @param  {Array}   styleErrors  Array to contain style related errors
- * @return {object}               The classMap of original to atomized names and the atomized CSS string
+ * @param  {object} options      User's options
+ * @param  {object} task         The settings for this specific task
+ * @param  {string} input        The CSS to be atomized/uglified
+ * @param  {Array}  styleErrors  Array to contain style related errors
+ * @return {object}              The classMap of original to atomized names and the atomized CSS string
  */
-const css = function (options, input, uglify, styleErrors) {
+const css = function (options, task, input, styleErrors) {
   options = options || {};
   input = input || '';
-  uglify = uglify || false;
   styleErrors = styleErrors || [];
+  const uglify = task.uglify || false;
+  const minificationOptions = minificationSettings.generateHtmlMinificationOptions(task.styles && task.styles.minify);
+
   const message = 'Error parsing CSS';
   let parsed;
   try {
@@ -300,6 +333,12 @@ const css = function (options, input, uglify, styleErrors) {
     output.stylesheet.rules.push(newRules[key]);
   });
 
+  let atomizedCss = cssStringify(output);
+
+  if (minificationOptions) {
+    atomizedCss = minifyCss(options, atomizedCss, minificationOptions, styleErrors);
+  }
+
   return {
     // classMap: { '.cow': [ '.rp__0', '.rp__1' ], '.moo': [ '.rp__2', '.rp__1' ] }
     classMap,
@@ -308,7 +347,7 @@ const css = function (options, input, uglify, styleErrors) {
       '.rp__1 { border: none; }' +
       '.rp__2 { padding: 10px; }'
     */
-    atomizedCss: cssStringify(output)
+    atomizedCss
   };
 };
 

@@ -151,7 +151,7 @@ function processStyles (options, task) {
   const inputCss = getCssString(options, task.styles, styleErrors);
   runHook(options, task.styles, 'afterRead', { task, inputCss, styleErrors });
 
-  const processedStyles = css(options, inputCss, task.uglify, styleErrors);
+  const processedStyles = css(options, task, inputCss, styleErrors);
   const atomizedCss = processedStyles.atomizedCss;
   const classMap = processedStyles.classMap;
   runHook(options, task.styles, 'afterProcessed', { task, inputCss, atomizedCss, classMap, styleErrors });
