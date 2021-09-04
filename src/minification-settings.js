@@ -98,7 +98,8 @@ function generateHtmlMinificationOptions (userOptions) {
     return {
       ...htmlMinificationDefaults,
       ...htmlMinificationOverrides,
-      minifyCss: generateCssMinificationOptions(true)
+      minifyCss: generateCssMinificationOptions(true),
+      minifyJs: generateJsMinificationOptions(true)
     };
   }
 
@@ -114,7 +115,8 @@ function generateHtmlMinificationOptions (userOptions) {
     ...htmlMinificationDefaults,
     ...userOptions,
     ...htmlMinificationOverrides,
-    minifyCss: generateCssMinificationOptions(userOptions.minifyCSS)
+    minifyCss: generateCssMinificationOptions(userOptions.minifyCSS),
+    minifyJs: generateJsMinificationOptions(userOptions.minifyJS)
   };
 }
 

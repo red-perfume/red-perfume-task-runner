@@ -151,14 +151,22 @@ The alpha version of `red-perfume` already works for simple CSS, like the above 
 ## FAQ
 
 1. What libraries is Red Perfume built on?
-   * The core atomization feature is handled in Red Perfume by manipulating Abstract Syntax Trees (ASTs) provided by `css` (CSS), `css-what` (CSS Selectors), and `parse5` (HTML).
-   * For minification we use `Clean-CSS` (CSS), `Terser` (JS), `HTML-Minifier-Terser` (HTML, uses Clean-CSS/Terser for embedded/inline styles/scripts).
-   * JavaScript's built in JSON parser/stringifier for minification and stringification.
-   * Node's built in `fs` module for reading/writing to disk.
-   * Post-CSS is not used anywhere in Red Perfume, though you may combine it with Red Perfume via the provided lifecycle hooks.
+   * The core atomization feature is handled in Red Perfume by manipulating Abstract Syntax Trees (ASTs) provided by:
+      * [rework/css](https://github.com/reworkcss/css) (CSS)
+      * [css-what](https://github.com/fb55/css-what) (CSS Selectors)
+      * [parse5](https://github.com/inikulin/parse5) (HTML)
+   * For `task.styles.minify` minification we use [Clean-CSS](https://github.com/clean-css/clean-css)
+   * For `task.markup[0].minify` minification we use [HTML-Minifier-Terser](https://github.com/terser/html-minifier-terser) which uses [Clean-CSS](https://github.com/clean-css/clean-css)/[Terser](https://github.com/terser/terser) for minifying embedded/inline styles/scripts in your markup.
+   * JavaScript's built in [JSON parser/stringifier](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify) is used for minification and stringification.
+   * Node's built in [fs module](https://nodejs.org/api/fs.html) for reading/writing to disk.
+   * Post-CSS is **not** used anywhere in Red Perfume, though you may combine it with Red Perfume via the provided lifecycle hooks if desired.
+1. Doesn't this just move the burden of text compression from a cachable CSS file to a non-cachable HTML file?
+   * Yep! It's important to understand the trade-offs in optimization techniques so you don't apply them in situations they aren't suited for. Though for most projects, if you are uglifying the atomized output, there will only be a marginal difference in your HTML files, but a significant difference in the CSS files. Smaller projects will always benefit less from these techniques, but can still benefit.
+   * Basically what I'm saying is, you should compare performance before and after adopting atomization, to ensure that it had a positive effect and is worth the additional cost of complexity in your build process.
 
 
 ## API (subject to change before v1.0.0)
+
 
 ### API Example
 
@@ -215,7 +223,9 @@ redPerfume.atomize({
       },
       markup: [
         {
-          data: '<!DOCTYPE html><html><body><div class="example"></div></body></html>',
+          data: '<!DOCTYPE html><html><body><div class="example"><!-- test --></div></body></html>',
+          // You can pass in minification options, or set it to true for default options, or false to skip minification
+          minify: { removeComments: false },
           hooks: {
             afterOutput: function (options, { task, subTask, classMap, inputHtml, atomizedHtml, markupErrors }) {
               console.log({ options, task, subTask, classMap, inputHtml, atomizedHtml, markupErrors });
