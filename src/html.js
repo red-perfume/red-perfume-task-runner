@@ -135,7 +135,7 @@ function minifyMarkup (options, markup, minificationOptions, markupErrors) {
  * @param  {object} minify        The minify options
  * @return {string}               String of HTML with the class names replaced
  */
-const html = function (options, input, classMap, markupErrors, minify) {
+const html = function (options, { input, classMap, markupErrors, minify }) {
   options = options || {};
   input = input || '';
   classMap = classMap || {};

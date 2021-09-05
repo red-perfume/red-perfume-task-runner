@@ -185,7 +185,7 @@ function processMarkup (options, task, classMap) {
     const inputHtml = getHtmlString(options, subTask, markupErrors);
     runHook(options, subTask, 'afterRead', { task, subTask, classMap, inputHtml, markupErrors });
 
-    const atomizedHtml = await html(options, inputHtml, classMap, markupErrors, subTask.minify);
+    const atomizedHtml = html(options, { input: inputHtml, classMap, markupErrors, minify: subTask.minify });
     runHook(options, subTask, 'afterProcessed', { task, subTask, classMap, inputHtml, atomizedHtml, markupErrors });
 
     outputAtomizedHTML(options, subTask, atomizedHtml, markupErrors);
