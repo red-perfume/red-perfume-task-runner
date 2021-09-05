@@ -5,8 +5,9 @@
  * @author  TheJaredWilcurt
  */
 
+const deasync = require('deasync');
+const minifier = deasync(require('html-minifier-terser').minify);
 const parse5 = require('parse5');
-const minifier = require('html-minifier-terser').minify;
 
 const helpers = require('./helpers.js');
 const minificationSettings = require('./minification-settings.js');
@@ -110,16 +111,16 @@ function replaceSemanticClassWithAtomizedClasses (node, classToReplace, newClass
  * @param  {Array}  markupErrors         Array of error messages
  * @return {string}                      Minified markup
  */
-async function minifyMarkup (options, markup, minificationOptions, markupErrors) {
-  return await minifier(markup, minificationOptions)
-    .then(function (output) {
-      return output;
-    })
-    .catch(function (err) {
-      const message = 'Error minifying HTML';
-      markupErrors.push(message);
-      helpers.throwError(options, message, err);
-    });
+function minifyMarkup (options, markup, minificationOptions, markupErrors) {
+  let output = markup;
+  try {
+    output = minifier(markup, minificationOptions);
+  } catch (err) {
+    const message = 'Error minifying HTML';
+    markupErrors.push(message);
+    helpers.throwError(options, message, err);
+  }
+  return output;
 }
 
 /**
@@ -134,7 +135,7 @@ async function minifyMarkup (options, markup, minificationOptions, markupErrors)
  * @param  {object} minify        The minify options
  * @return {string}               String of HTML with the class names replaced
  */
-const html = async function (options, input, classMap, markupErrors, minify) {
+const html = function (options, input, classMap, markupErrors, minify) {
   options = options || {};
   input = input || '';
   classMap = classMap || {};
@@ -166,7 +167,7 @@ const html = async function (options, input, classMap, markupErrors, minify) {
   }
 
   if (minificationOptions) {
-    atomizedHtml = await minifyMarkup(options, atomizedHtml, minificationOptions, markupErrors);
+    atomizedHtml = minifyMarkup(options, atomizedHtml, minificationOptions, markupErrors);
   }
 
   return atomizedHtml;
