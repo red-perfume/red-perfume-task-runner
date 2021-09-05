@@ -268,6 +268,7 @@ const validator = {
     styles.data = this.validateString(options, styles.data, 'Optional task.styles.data must be a string of CSS or undefined.');
     styles.hooks = this.validateObject(options, styles.hooks, 'Optional task.styles.hooks must be an object or undefined.');
     styles.hooks = this.validateHookTypes(options, allDocumentedHooks.styles, styles.hooks, 'task.styles.hooks.');
+    styles.minify = styles.minify || false;
 
     ['in', 'out', 'data'].forEach(function (setting) {
       if (!styles[setting]) {
@@ -297,6 +298,7 @@ const validator = {
       !Object.keys(styles.hooks).length
     ) {
       delete styles.hooks;
+      delete styles.minify;
     }
     if (!Object.keys(styles).length) {
       styles = undefined;
@@ -327,6 +329,7 @@ const validator = {
    * @param  {number} taskIndex  The index of the current task
    * @return {Array}             The validated task.markup array or undefined
    */
+  // eslint-disable-next-line max-lines-per-function
   validateTaskMarkup: function (options, task, taskIndex) {
     task = task || {};
     task.hooks = task.hooks || {};
@@ -338,6 +341,7 @@ const validator = {
       subTask.data = this.validateTaskMarkupData(options, subTask.data, taskIndex, subTaskIndex);
       subTask.hooks = this.validateObject(options, subTask.hooks, 'Optional task.markup.hooks must be an object or undefined.');
       subTask.hooks = this.validateHookTypes(options, allDocumentedHooks.markup, subTask.hooks, 'task.markup[subTask].hooks.');
+      subTask.minify = subTask.minify || false;
 
       ['in', 'data', 'out'].forEach(function (setting) {
         if (!subTask[setting]) {
@@ -360,8 +364,14 @@ const validator = {
           'or a task.hooks.afterTask callback.'
         ].join(' '));
       }
-      if (!subTask.in && !subTask.data && !subTask.out && !Object.keys(subTask.hooks).length) {
+      if (
+        !subTask.in &&
+        !subTask.data &&
+        !subTask.out &&
+        !Object.keys(subTask.hooks).length
+      ) {
         delete subTask.hooks;
+        delete subTask.minify;
       }
 
       if (!Object.keys(subTask).length) {
@@ -409,6 +419,7 @@ const validator = {
     task.hooks = task.hooks || {};
     taskIndex = taskIndex || 0;
     let scripts = task.scripts || {};
+    scripts.minify = scripts.minify || false;
     scripts.out = this.validateString(options, scripts.out, 'Optional task.scripts.out must be a string or undefined.');
     scripts.hooks = this.validateObject(options, scripts.hooks, 'Optional task.scripts.hooks must be an object or undefined.');
     scripts.hooks = this.validateHookTypes(options, allDocumentedHooks.scripts, scripts.hooks, 'task.scripts.hooks.');
@@ -426,6 +437,7 @@ const validator = {
     }
     if (!scripts.out && !Object.keys(scripts.hooks).length) {
       delete scripts.hooks;
+      delete scripts.minify;
     }
     if (!Object.keys(scripts).length) {
       scripts = undefined;
