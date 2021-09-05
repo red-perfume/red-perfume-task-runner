@@ -92,7 +92,6 @@ describe('CSS', () => {
   });
 
   describe('Process CSS', () => {
-    const task = {};
     test('One rule', () => {
       const input = '.test { background: #F00; }';
       const classMap = {
