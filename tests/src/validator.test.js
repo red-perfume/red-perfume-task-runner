@@ -316,7 +316,8 @@ describe('Validator', () => {
             uglify: false,
             styles: {
               data: '.a{margin:1px}',
-              hooks
+              hooks,
+              minify: false
             },
             hooks: {}
           }]
@@ -350,7 +351,8 @@ describe('Validator', () => {
           uglify: false,
           styles: {
             data: '.test { margin: 1px; }',
-            hooks: {}
+            hooks: {},
+            minify: false
           },
           hooks: {}
         });
@@ -367,7 +369,8 @@ describe('Validator', () => {
           uglify: false,
           styles: {
             data: '.test { margin: 1px; }',
-            hooks
+            hooks,
+            minify: false
           },
           hooks: {}
         });
@@ -383,7 +386,8 @@ describe('Validator', () => {
           styles: {
             data: '.test { margin: 1px; }',
             out: 'C:\\file.css',
-            hooks: {}
+            hooks: {},
+            minify: false
           },
           hooks: {}
         });
@@ -395,11 +399,12 @@ describe('Validator', () => {
     test('Markup, data, hook', () => {
       let data = '<h1 class="test">Hi</h1>';
       let hooks = { afterOutput: jest.fn() };
+      let minify = false;
 
       expect(validator.validateTask(options, { markup: [{ data, hooks }] }))
         .toEqual({
           uglify: false,
-          markup: [{ data, hooks }],
+          markup: [{ data, hooks, minify }],
           hooks: {}
         });
 
@@ -585,7 +590,8 @@ describe('Validator', () => {
       expect(validator.validateTaskScripts(options, { scripts: { out: 'C:\\file.json' } }))
         .toEqual({
           out: 'C:\\file.json',
-          hooks: {}
+          hooks: {},
+          minify: false
         });
 
       expect(options.customLogger)

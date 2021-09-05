@@ -183,7 +183,7 @@ describe('Red Perfume', () => {
                     .toEqual(['uglify', 'markup', 'hooks']);
 
                   expect(Object.keys(subTask))
-                    .toEqual(['in', 'out', 'hooks']);
+                    .toEqual(['in', 'out', 'hooks', 'minify']);
 
                   expect(classMap)
                     .toEqual(undefined);
@@ -245,7 +245,7 @@ describe('Red Perfume', () => {
                     .toEqual(['uglify', 'markup', 'hooks']);
 
                   expect(Object.keys(subTask))
-                    .toEqual(['in', 'out', 'hooks']);
+                    .toEqual(['in', 'out', 'hooks', 'minify']);
 
                   expect(classMap)
                     .toEqual(undefined);
@@ -730,7 +730,7 @@ describe('Red Perfume', () => {
                         .toEqual(['uglify', 'styles', 'markup', 'scripts', 'hooks']);
 
                       expect(Object.keys(subTask))
-                        .toEqual(['data', 'hooks']);
+                        .toEqual(['data', 'hooks', 'minify']);
 
                       expect(classMap)
                         .toEqual(expectedClassMap);
@@ -951,7 +951,7 @@ describe('Red Perfume', () => {
                             .toEqual(['uglify', 'styles', 'markup', 'scripts', 'hooks']);
 
                           expect(Object.keys(subTask))
-                            .toEqual(['data', 'hooks']);
+                            .toEqual(['data', 'hooks', 'minify']);
 
                           expect(classMap)
                             .toEqual(expectedClassMap);
@@ -1051,7 +1051,7 @@ describe('Red Perfume', () => {
                             .toEqual(['uglify', 'styles', 'markup', 'scripts', 'hooks']);
 
                           expect(Object.keys(subTask))
-                            .toEqual(['data', 'hooks']);
+                            .toEqual(['data', 'hooks', 'minify']);
 
                           expect(classMap)
                             .toEqual(expectedClassMap);
@@ -1171,7 +1171,7 @@ describe('Red Perfume', () => {
                             .toEqual(['uglify', 'styles', 'markup', 'scripts', 'hooks']);
 
                           expect(Object.keys(subTask))
-                            .toEqual(['data', 'hooks']);
+                            .toEqual(['data', 'hooks', 'minify']);
 
                           expect(classMap)
                             .toEqual(expectedClassMap);
@@ -1278,7 +1278,7 @@ describe('Red Perfume', () => {
                             .toEqual(['uglify', 'styles', 'markup', 'scripts', 'hooks']);
 
                           expect(Object.keys(subTask))
-                            .toEqual(['data', 'hooks']);
+                            .toEqual(['data', 'hooks', 'minify']);
 
                           expect(classMap)
                             .toEqual(expectedClassMap);

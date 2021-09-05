@@ -69,7 +69,7 @@ describe('CSS', () => {
     });
 
     test('Options, empty string', () => {
-      expect(css(options, ''))
+      expect(css(options, null, ''))
         .toEqual(errorResponse);
 
       expect(options.customLogger)
@@ -77,7 +77,7 @@ describe('CSS', () => {
     });
 
     test('Options, HTML', () => {
-      expect(css(options, '<h1>Bad</h1>'))
+      expect(css(options, null, '<h1>Bad</h1>'))
         .toEqual(errorResponse);
 
       let firstError = options.customLogger.mock.calls[0];
@@ -92,6 +92,7 @@ describe('CSS', () => {
   });
 
   describe('Process CSS', () => {
+    const task = {};
     test('One rule', () => {
       const input = '.test { background: #F00; }';
       const classMap = {
@@ -106,7 +107,7 @@ describe('CSS', () => {
       `, 8);
       const uglify = false;
 
-      expect(css(options, input, uglify))
+      expect(css(options, { uglify }, input))
         .toEqual({ classMap, atomizedCss });
 
       expect(options.customLogger)
@@ -127,7 +128,7 @@ describe('CSS', () => {
       `, 8);
       const uglify = true;
 
-      expect(css(options, input, uglify))
+      expect(css(options, { uglify }, input))
         .toEqual({ classMap, atomizedCss });
 
       expect(options.customLogger)
@@ -158,7 +159,7 @@ describe('CSS', () => {
         }
       `;
 
-      expect(css(options, input, false).atomizedCss)
+      expect(css(options, { uglify: false }, input).atomizedCss)
         .toEqual(testHelpers.trimIndentation(`
           h1 {
             background: #F00;
@@ -184,7 +185,7 @@ describe('CSS', () => {
           }
         `, 10));
 
-      expect(css(options, input, true).atomizedCss)
+      expect(css(options, { uglify: true }, input).atomizedCss)
         .toEqual(testHelpers.trimIndentation(`
           h1 {
             background: #F00;
@@ -245,7 +246,7 @@ describe('CSS', () => {
         }
       `;
 
-      expect(css(options, input, false).atomizedCss)
+      expect(css(options, { uglify: false }, input).atomizedCss)
         .toEqual(testHelpers.trimIndentation(`
           .rp__display__--COLONinline-block {
             display: inline-block;
@@ -282,7 +283,7 @@ describe('CSS', () => {
           }
         `, 10));
 
-      expect(css(options, input, true).atomizedCss)
+      expect(css(options, { uglify: true }, input).atomizedCss)
         .toEqual(testHelpers.trimIndentation(`
           h1:hover {
             color: #F00;

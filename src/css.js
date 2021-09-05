@@ -292,8 +292,8 @@ const css = function (options, task, input, styleErrors) {
   options = options || {};
   input = input || '';
   styleErrors = styleErrors || [];
-  const uglify = task.uglify || false;
-  const minificationOptions = minificationSettings.generateHtmlMinificationOptions(task.styles && task.styles.minify);
+  const uglify = (task && task.uglify) || false;
+  const minificationOptions = minificationSettings.generateHtmlMinificationOptions(task && task.styles && task.styles.minify);
 
   const message = 'Error parsing CSS';
   let parsed;
