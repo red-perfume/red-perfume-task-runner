@@ -10,6 +10,7 @@
     "debug": "node --inspect-brk manual-testing.js",
     "manual-test": "node manual-testing.js",
     "test": "jest --runInBand --coverage",
+    "test-debug": "node --inspect-brk ./node_modules/jest/bin/jest.js --runInBand -t \"minified\" \"html\"",
     "validate": "npm run lint && npm t"
   },
   "ManifestComments": [

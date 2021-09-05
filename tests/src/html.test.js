@@ -84,6 +84,32 @@ describe('HTML', () => {
         .not.toHaveBeenCalled();
     });
 
+    // test('One rule minified', async () => {
+    //   const input = `
+    //     <!DOCTYPE html>
+    //     <html lang="en">
+    //       <head></head>
+    //       <body>
+    //         <h1 class="test">Good</h1>
+    //       </body>
+    //     </html>
+    //   `;
+    //   const classMap = {
+    //     '.test': [
+    //       '.rp__background__--COLON__--OCTOTHORPF00'
+    //     ]
+    //   };
+    //   const minify = true;
+
+    //   const result = await html(options, { input, classMap, minify });
+
+    //   expect(result)
+    //     .toEqual('<!DOCTYPE html><html lang="en"><head></head><body><h1 class="rp__background__--COLON__--OCTOTHORPF00">Good</h1></body></html>');
+
+    //   expect(options.customLogger)
+    //     .not.toHaveBeenCalled();
+    // });
+
     test('Two rules, two properties', () => {
       const input = '<!DOCTYPE html><html lang="en"><head></head><body><h1 class="test example">Good</h1></body></html>';
       const classMap = {
