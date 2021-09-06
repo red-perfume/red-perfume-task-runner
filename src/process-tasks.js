@@ -180,7 +180,7 @@ function processMarkup (options, task, classMap) {
   const allAtomizedMarkup = [];
   const allInputMarkup = [];
   const markupErrors = [];
-  task.markup.forEach(async function (subTask) {
+  task.markup.forEach(function (subTask) {
     runHook(options, subTask, 'beforeRead', { task, subTask, classMap });
     const inputHtml = getHtmlString(options, subTask, markupErrors);
     runHook(options, subTask, 'afterRead', { task, subTask, classMap, inputHtml, markupErrors });
