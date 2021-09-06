@@ -28,6 +28,7 @@ redPerfume.atomize({
               padding: 8px;
           }
         `,
+        minify: false,
         hooks: {
           afterOutput: function (options, { task, inputCss, atomizedCss, classMap, styleErrors }) {
             console.log({ task, inputCss, atomizedCss, classMap, styleErrors });
@@ -59,6 +60,7 @@ redPerfume.atomize({
             </html>
           `,
           out: './manual-test/out.html',
+          minify: false,
           hooks: {
             afterOutput: function (options, { task, subTask, classMap, inputHtml, atomizedHtml, markupErrors }) {
               console.log({ task, subTask, classMap, inputHtml, atomizedHtml, markupErrors });
@@ -68,6 +70,7 @@ redPerfume.atomize({
       ],
       scripts: {
         out: './manual-test/out.json',
+        minify: false,
         hooks: {
           afterOutput: function (options, { task, classMap, scriptErrors }) {
             console.log({ task, classMap, scriptErrors });

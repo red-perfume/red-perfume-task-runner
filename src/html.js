@@ -6,7 +6,7 @@
  */
 
 const deasync = require('deasync');
-const minifier = deasync(require('html-minifier-terser').minify);
+const minifier = require('html-minifier-terser').minify;
 const parse5 = require('parse5');
 
 const helpers = require('./helpers.js');
@@ -112,14 +112,26 @@ function replaceSemanticClassWithAtomizedClasses (node, classToReplace, newClass
  * @return {string}                      Minified markup
  */
 function minifyMarkup (options, markup, minificationOptions, markupErrors) {
+  let done = false;
   let output = markup;
-  try {
-    output = minifier(markup, minificationOptions);
-  } catch (err) {
-    const message = 'Error minifying HTML';
-    markupErrors.push(message);
-    helpers.throwError(options, message, err);
-  }
+
+  minifier(markup, minificationOptions)
+    .then(function (result) {
+      output = result;
+    })
+    .catch((err) => {
+      const message = 'Error minifying HTML';
+      markupErrors.push(message);
+      helpers.throwError(options, message, err);
+    })
+    .finally(() => {
+      done = true;
+    });
+
+  deasync.loopWhile(function () {
+    return !done;
+  });
+
   return output;
 }
 
