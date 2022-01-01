@@ -18,7 +18,9 @@
   "dependencies": {
     "css": "^3.0.0",
     "css-what": "^5.0.1",
-    "parse5": "^6.0.1"
+    "parse5": "^6.0.1",
+    "red-perfume-css": "^0.4.1",
+    "red-perfume-html": "^0.4.1"
   },
   "devDependencies": {
     "babel-eslint": "^10.1.0",
