@@ -6,9 +6,11 @@
  */
 
 const fs = require('fs');
+
+const redPerfumeHtml = require('red-perfume-html');
+
 const helpers = require('./helpers.js');
 const css = require('./css.js');
-const html = require('./html.js');
 
 /**
  * Runs a callback hook if it exists.
@@ -175,13 +177,26 @@ function processStyles (options, task) {
 function processMarkup (options, task, classMap) {
   const allAtomizedMarkup = [];
   const allInputMarkup = [];
-  const markupErrors = [];
+  let markupErrors = [];
   task.markup.forEach(function (subTask) {
+    let atomizedHtml = '';
     runHook(options, subTask, 'beforeRead', { task, subTask, classMap });
     const inputHtml = getHtmlString(options, subTask, markupErrors);
     runHook(options, subTask, 'afterRead', { task, subTask, classMap, inputHtml, markupErrors });
 
-    const atomizedHtml = html(options, inputHtml, classMap, markupErrors);
+    if (inputHtml) {
+      const atomizedHtmlResult = redPerfumeHtml({
+        verbose: options.verbose,
+        customLogger: options.customLogger,
+        input: inputHtml,
+        classMap
+      });
+      atomizedHtml = atomizedHtmlResult.atomizedHtml;
+      markupErrors = [
+        ...markupErrors,
+        ...atomizedHtmlResult.markupErrors
+      ];
+    }
     runHook(options, subTask, 'afterProcessed', { task, subTask, classMap, inputHtml, atomizedHtml, markupErrors });
 
     outputAtomizedHTML(options, subTask, atomizedHtml, markupErrors);

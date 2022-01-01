@@ -192,7 +192,7 @@ describe('Red Perfume', () => {
                     .toEqual('');
 
                   expect(atomizedHtml)
-                    .toEqual('<html><head></head><body></body></html>');
+                    .toEqual('');
 
                   expect(testHelpers.removeErrno(markupErrors[0]))
                     .toEqual({
@@ -217,9 +217,6 @@ describe('Red Perfume', () => {
             path: 'C:\\home.html',
             syscall: 'open'
           });
-
-        expect(options.customLogger)
-          .toHaveBeenCalledWith('Error parsing HTML', '<html><head></head><body></body></html>');
 
         mockfs.restore();
       });
@@ -419,13 +416,13 @@ describe('Red Perfume', () => {
                 .toEqual(['']);
 
               expect(allAtomizedMarkup)
-                .toEqual(['<html><head></head><body></body></html>']);
+                .toEqual(['']);
 
               expect(styleErrors.length)
                 .toEqual(5);
 
               expect(markupErrors.length)
-                .toEqual(3);
+                .toEqual(2);
 
               expect(scriptErrors.length)
                 .toEqual(1);
@@ -494,10 +491,6 @@ describe('Red Perfume', () => {
               path: 'C:\\index.html',
               syscall: 'open'
             })
-          ],
-          [
-            'Error parsing HTML',
-            '<html><head></head><body></body></html>'
           ],
           [
             'Error writing markup file: C:\\out.html',
@@ -639,7 +632,7 @@ describe('Red Perfume', () => {
               hooks: {
                 afterOutput: function () {
                   expect(String(fs.readFileSync('C:\\home.out.html')))
-                    .toEqual('<html><head></head><body></body></html>\n');
+                    .toEqual('\n');
                 }
               }
             },
@@ -649,7 +642,7 @@ describe('Red Perfume', () => {
               hooks: {
                 afterOutput: function () {
                   expect(String(fs.readFileSync('C:\\about.out.html')))
-                    .toEqual('<html><head></head><body></body></html>\n');
+                    .toEqual('\n');
                 }
               }
             }
@@ -669,12 +662,6 @@ describe('Red Perfume', () => {
 
         expect(options.customLogger)
           .toHaveBeenCalledWith('Error parsing CSS', '');
-
-        expect(options.customLogger)
-          .toHaveBeenCalledWith('Error parsing HTML', '<html><head></head><body></body></html>');
-
-        expect(options.customLogger)
-          .toHaveBeenCalledWith('Error parsing HTML', '<html><head></head><body></body></html>');
 
         mockfs.restore();
       });
