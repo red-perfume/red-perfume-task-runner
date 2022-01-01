@@ -7,10 +7,10 @@
 
 const fs = require('fs');
 
+const redPerfumeCss = require('red-perfume-css');
 const redPerfumeHtml = require('red-perfume-html');
 
 const helpers = require('./helpers.js');
-const css = require('./css.js');
 
 /**
  * Runs a callback hook if it exists.
@@ -148,14 +148,28 @@ function outputAtomizedJSON (options, taskScripts, classMap) {
  * @return {object}          The map of original CSS class names to atomized classes & errors
  */
 function processStyles (options, task) {
+  let atomizedCss = '';
+  let classMap = {};
   runHook(options, task.styles, 'beforeRead', { task });
-  const styleErrors = [];
+  let styleErrors = [];
   const inputCss = getCssString(options, task.styles, styleErrors);
   runHook(options, task.styles, 'afterRead', { task, inputCss, styleErrors });
 
-  const processedStyles = css(options, inputCss, task.uglify, styleErrors);
-  const atomizedCss = processedStyles.atomizedCss;
-  const classMap = processedStyles.classMap;
+  if (inputCss) {
+    const redPerfumeCssResult = redPerfumeCss({
+      verbose: options.verbose,
+      customLogger: options.customLogger,
+      input: inputCss,
+      uglify: task.uglify
+    });
+    styleErrors = [
+      ...styleErrors,
+      ...redPerfumeCssResult.styleErrors
+    ];
+    atomizedCss = redPerfumeCssResult.atomizedCss;
+    classMap = redPerfumeCssResult.classMap;
+  }
+
   runHook(options, task.styles, 'afterProcessed', { task, inputCss, atomizedCss, classMap, styleErrors });
 
   outputAtomizedCSS(options, task.styles, atomizedCss, styleErrors);

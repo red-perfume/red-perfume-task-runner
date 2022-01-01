@@ -97,9 +97,6 @@ describe('Red Perfume', () => {
             syscall: 'open'
           });
 
-        expect(options.customLogger)
-          .toHaveBeenCalledWith('Error parsing CSS', '');
-
         mockfs.restore();
       });
 
@@ -419,7 +416,7 @@ describe('Red Perfume', () => {
                 .toEqual(['']);
 
               expect(styleErrors.length)
-                .toEqual(5);
+                .toEqual(3);
 
               expect(markupErrors.length)
                 .toEqual(2);
@@ -467,14 +464,6 @@ describe('Red Perfume', () => {
               path: 'C:\\vendor.css',
               syscall: 'open'
             })
-          ],
-          [
-            'Invalid CSS input.',
-            null
-          ],
-          [
-            'Error parsing CSS',
-            ''
           ],
           [
             'Error writing CSS file: C:\\out.css',
@@ -661,7 +650,7 @@ describe('Red Perfume', () => {
         redPerfume.atomize(options);
 
         expect(options.customLogger)
-          .toHaveBeenCalledWith('Error parsing CSS', '');
+          .not.toHaveBeenCalled();
 
         mockfs.restore();
       });
