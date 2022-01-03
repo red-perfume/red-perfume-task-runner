@@ -148,7 +148,25 @@ The alpha version of `red-perfume` already works for simple CSS, like the above 
 ```
 
 
+## FAQ
+
+1. What libraries is Red Perfume built on?
+   * The core atomization feature is handled in Red Perfume by manipulating Abstract Syntax Trees (ASTs) provided by:
+      * [rework/css](https://github.com/reworkcss/css) (CSS)
+      * [css-what](https://github.com/fb55/css-what) (CSS Selectors)
+      * [parse5](https://github.com/inikulin/parse5) (HTML)
+   * For `task.styles.minify` minification we use [Clean-CSS](https://github.com/clean-css/clean-css)
+   * For `task.markup[0].minify` minification we use [HTML-Minifier-Terser](https://github.com/terser/html-minifier-terser) which uses [Clean-CSS](https://github.com/clean-css/clean-css)/[Terser](https://github.com/terser/terser) for minifying embedded/inline styles/scripts in your markup.
+   * JavaScript's built in [JSON parser/stringifier](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify) is used for minification and stringification.
+   * Node's built in [fs module](https://nodejs.org/api/fs.html) for reading/writing to disk.
+   * Post-CSS is **not** used anywhere in Red Perfume, though you may combine it with Red Perfume via the provided lifecycle hooks if desired.
+1. Doesn't this just move the burden of text compression from a cachable CSS file to a non-cachable HTML file?
+   * Yep! It's important to understand the trade-offs in optimization techniques so you don't apply them in situations they aren't suited for. Though for most projects, if you are uglifying the atomized output, there will only be a marginal difference in your HTML files, but a significant difference in the CSS files. Smaller projects will always benefit less from these techniques, but can still benefit.
+   * Basically what I'm saying is, you should compare performance before and after adopting atomization, to ensure that it had a positive effect and is worth the additional cost of complexity in your build process.
+
+
 ## API (subject to change before v1.0.0)
+
 
 ### API Example
 
@@ -162,6 +180,7 @@ redPerfume.atomize({
     {
       uglify: false,
       styles: {
+        minify: true,
         in: [
           './styles/file.css',
           './styles/style.css'
@@ -172,15 +191,18 @@ redPerfume.atomize({
       // The output markup will be a copy of the input but modified to have the class names replaced to match the new atomized styles in this task
       markup: [
         {
+          minify: true
           in: './index.html',
           out: './dist/index.html'
         },
         {
+          minify: true
           in: './contact.html',
           out: './dist/contact.html'
         }
       ],
       scripts: {
+        minify: true,
         // Design of this JSON file will change before v1.0.0.
         // The point is to allow your JavaScript to reference a map of the original class name (key) and the atomized classes produced from it (value)
         out: './dist/atomic-styles.json'
@@ -201,7 +223,9 @@ redPerfume.atomize({
       },
       markup: [
         {
-          data: '<!DOCTYPE html><html><body><div class="example"></div></body></html>',
+          data: '<!DOCTYPE html><html><body><div class="example"><!-- test --></div></body></html>',
+          // You can pass in minification options, or set it to true for default options, or false to skip minification
+          minify: { removeComments: false },
           hooks: {
             afterOutput: function (options, { task, subTask, classMap, inputHtml, atomizedHtml, markupErrors }) {
               console.log({ options, task, subTask, classMap, inputHtml, atomizedHtml, markupErrors });
@@ -266,12 +290,13 @@ Key       | Type    | Default     | Description
 redPerfume.atomize({ tasks: [{ styles: { in, data, out, hooks } }] });
 ```
 
-Key       | Type    | Default     | Description
-:--       | :--     | :--         | :--
-`in`      | Array   | `undefined` | An array of strings to valid paths for CSS files. All files will remain untouched. A new atomized string is produced for `out` and/or hooks.
-`data`    | String  | `undefined` | A string of CSS to be atomized. Files provived via `in` are concatenated with `data` at the end, then atomized and sent to `out` and/or hooks.
-`out`     | String  | `undefined` | A string file path output. If file exists it will be overwritten with the atomized styles from `in` and/or `data`
-`hooks`   | Object  | `{}`        | Lifecycle callback hooks (documented in next section)
+Key       | Type              | Default     | Description
+:--       | :--               | :--         | :--
+`in`      | Array             | `undefined` | An array of strings to valid paths for CSS files. All files will remain untouched. A new atomized string is produced for `out` and/or hooks.
+`data`    | String            | `undefined` | A string of CSS to be atomized. Files provived via `in` are concatenated with `data` at the end, then atomized and sent to `out` and/or hooks.
+`minify`  | Boolean or Object | `false`     | If `false`, does not minify output. If `true`, uses [default settings](./src/minification-settings.js). Or you can pass in [Clean-CSS](https://github.com/clean-css/clean-css#minify-method) options object.
+`out`     | String            | `undefined` | A string file path output. If file exists it will be overwritten with the atomized styles from `in` and/or `data`
+`hooks`   | Object            | `{}`        | Lifecycle callback hooks (documented in next section)
 
 
 **Markup Task API:**
@@ -280,12 +305,13 @@ Key       | Type    | Default     | Description
 redPerfume.atomize({ tasks: [{ markup: [{ in, data, out, hooks }] }] });
 ```
 
-Key       | Type    | Default     | Description
-:--       | :--     | :--         | :--
-`in`      | String  | `undefined` | Path to an HTML file to be processed.
-`data`    | String  | `undefined` | A string of markup to be processed. This is appended to the end of the `in` file contents if both are provided.
-`out`     | String  | `undefined` | Path where the modified version of the `in` file and/or `data` will be stored. If file already exists, it will be overwritten.
-`hooks`   | Object  | `{}`        | Lifecycle callback hooks (documented in next section)
+Key       | Type              | Default     | Description
+:--       | :--               | :--         | :--
+`in`      | String            | `undefined` | Path to an HTML file to be processed.
+`data`    | String            | `undefined` | A string of markup to be processed. This is appended to the end of the `in` file contents if both are provided.
+`minify`  | Boolean or Object | `false`     | If `false`, does not minify output. If `true`, uses [default settings](./src/minification-settings.js). Or you can pass in [HTML-Minifier-Terser](https://github.com/terser/html-minifier-terser#options-quick-reference) options object.
+`out`     | String            | `undefined` | Path where the modified version of the `in` file and/or `data` will be stored. If file already exists, it will be overwritten.
+`hooks`   | Object            | `{}`        | Lifecycle callback hooks (documented in next section)
 
 
 **Scripts Task API:**
@@ -296,6 +322,7 @@ redPerfume.atomize({ tasks: [{ scripts: { out, hooks } }] });
 
 Key       | Type    | Default     | Description
 :--       | :--     | :--         | :--
+`minify`  | Boolean | `false`     | If `true` minifies output.
 `out`     | String  | `undefined` | Path where a JSON object (`classMap`) will be stored. The object contains keys (selectors) and values (array of strings of atomized class names). If file already exists, it will be overwritten. Output subject to change before v1.0.0.
 `hooks`   | Object  | `{}`        | Lifecycle callback hooks (documented in next section)
 

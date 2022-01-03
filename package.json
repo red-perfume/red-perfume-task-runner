@@ -10,12 +10,15 @@
     "debug": "node --inspect-brk manual-testing.js",
     "manual-test": "node manual-testing.js",
     "test": "jest --runInBand --coverage",
+    "test-debug": "node --inspect-brk ./node_modules/jest/bin/jest.js --runInBand -t \"minified\" \"html\"",
     "validate": "npm run lint && npm t"
   },
   "ManifestComments": [
     "Pinned jest to 24.9.0. 25.1.0 is broken on Windows. Waiting for issue #9459 to be resolved."
   ],
   "dependencies": {
+    "deasync": "^0.1.23",
+    "html-minifier-terser": "^6.0.2",
     "red-perfume-css": "^0.4.1",
     "red-perfume-html": "^0.4.1"
   },

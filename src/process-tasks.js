@@ -11,6 +11,7 @@ const redPerfumeCss = require('red-perfume-css');
 const redPerfumeHtml = require('red-perfume-html');
 
 const helpers = require('./helpers.js');
+const minifiers = require('./minifiers.js');
 
 /**
  * Runs a callback hook if it exists.
@@ -129,7 +130,8 @@ function outputAtomizedJSON (options, taskScripts, classMap) {
   let scriptErrors = [];
   if (taskScripts.out) {
     try {
-      fs.writeFileSync(taskScripts.out, JSON.stringify(classMap, null, 2) + '\n');
+      const minifiedJSON = minifiers.json(options, classMap, taskScripts.minify, scriptErrors);
+      fs.writeFileSync(taskScripts.out, minifiedJSON + '\n');
     } catch (scriptErr) {
       helpers.throwError(options, 'Error writing script file: ' + taskScripts.out, scriptErr);
       scriptErrors.push(scriptErr);
@@ -168,6 +170,10 @@ function processStyles (options, task) {
     ];
     atomizedCss = redPerfumeCssResult.atomizedCss;
     classMap = redPerfumeCssResult.classMap;
+  }
+
+  if (task.styles && task.styles.minify) {
+    atomizedCss = minifiers.css(options, atomizedCss, task.styles.minify, styleErrors);
   }
 
   runHook(options, task.styles, 'afterProcessed', { task, inputCss, atomizedCss, classMap, styleErrors });
@@ -211,6 +217,11 @@ function processMarkup (options, task, classMap) {
         ...atomizedHtmlResult.markupErrors
       ];
     }
+
+    if (subTask.minify) {
+      atomizedHtml = minifiers.html(options, atomizedHtml, subTask.minify, markupErrors);
+    }
+
     runHook(options, subTask, 'afterProcessed', { task, subTask, classMap, inputHtml, atomizedHtml, markupErrors });
 
     outputAtomizedHTML(options, subTask, atomizedHtml, markupErrors);

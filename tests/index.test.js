@@ -180,7 +180,7 @@ describe('Red Perfume', () => {
                     .toEqual(['uglify', 'markup', 'hooks']);
 
                   expect(Object.keys(subTask))
-                    .toEqual(['in', 'out', 'hooks']);
+                    .toEqual(['in', 'out', 'hooks', 'minify']);
 
                   expect(classMap)
                     .toEqual(undefined);
@@ -239,7 +239,7 @@ describe('Red Perfume', () => {
                     .toEqual(['uglify', 'markup', 'hooks']);
 
                   expect(Object.keys(subTask))
-                    .toEqual(['in', 'out', 'hooks']);
+                    .toEqual(['in', 'out', 'hooks', 'minify']);
 
                   expect(classMap)
                     .toEqual(undefined);
@@ -655,6 +655,106 @@ describe('Red Perfume', () => {
         mockfs.restore();
       });
 
+      test('Minifies everything', () => {
+        const cssString = `
+          .example {
+              padding: 10px;
+              margin: 10px;
+          }
+        `;
+        const markupString = `
+          <!DOCTYPE html>
+          <html>
+            <body>
+              <div class="example"></div>
+            </body>
+          </html>
+        `;
+        const expectedClassMap = {
+          '.example': ['.rp__0', '.rp__1']
+        };
+        const output = '.rp__0{padding:10px}.rp__1{margin:10px}';
+
+        options = {
+          verbose: true,
+          customLogger: jest.fn(),
+          tasks: [
+            {
+              uglify: true,
+              styles: {
+                data: cssString,
+                minify: true,
+                hooks: {
+                  afterOutput: function (options, { task, inputCss, atomizedCss, classMap, styleErrors }) {
+                    expect(Object.keys(task))
+                      .toEqual(['uglify', 'styles', 'markup', 'scripts', 'hooks']);
+
+                    expect(inputCss)
+                      .toEqual(cssString);
+
+                    expect(atomizedCss)
+                      .toEqual(output);
+
+                    expect(classMap)
+                      .toEqual(expectedClassMap);
+
+                    expect(styleErrors)
+                      .toEqual([]);
+                  }
+                }
+              },
+              markup: [
+                {
+                  data: markupString,
+                  minify: true,
+                  hooks: {
+                    afterOutput: function (options, { task, subTask, classMap, inputHtml, atomizedHtml, markupErrors }) {
+                      expect(Object.keys(task))
+                        .toEqual(['uglify', 'styles', 'markup', 'scripts', 'hooks']);
+
+                      expect(Object.keys(subTask))
+                        .toEqual(['data', 'minify', 'hooks']);
+
+                      expect(classMap)
+                        .toEqual(expectedClassMap);
+
+                      expect(inputHtml)
+                        .toEqual(markupString);
+
+                      expect(atomizedHtml)
+                        .toEqual('<!DOCTYPE html><html><head></head><body><div class="rp__0 rp__1"></div></body></html>');
+
+                      expect(markupErrors)
+                        .toEqual([]);
+                    }
+                  }
+                }
+              ],
+              scripts: {
+                minify: true,
+                hooks: {
+                  afterOutput: function (options, { task, classMap, scriptErrors }) {
+                    expect(Object.keys(task))
+                      .toEqual(['uglify', 'styles', 'markup', 'scripts', 'hooks']);
+
+                    expect(classMap)
+                      .toEqual(expectedClassMap);
+
+                    expect(scriptErrors)
+                      .toEqual([]);
+                  }
+                }
+              }
+            }
+          ]
+        };
+
+        redPerfume.atomize(options);
+
+        expect(options.customLogger)
+          .not.toHaveBeenCalled();
+      });
+
       test('Using data and afterOutput hook', () => {
         const cssString = '.example { padding: 10px; margin: 10px; }';
         const markupString = '<!DOCTYPE html><html><body><div class="example"></div></body></html>';
@@ -706,7 +806,7 @@ describe('Red Perfume', () => {
                         .toEqual(['uglify', 'styles', 'markup', 'scripts', 'hooks']);
 
                       expect(Object.keys(subTask))
-                        .toEqual(['data', 'hooks']);
+                        .toEqual(['data', 'hooks', 'minify']);
 
                       expect(classMap)
                         .toEqual(expectedClassMap);
@@ -928,7 +1028,7 @@ describe('Red Perfume', () => {
                             .toEqual(['uglify', 'styles', 'markup', 'scripts', 'hooks']);
 
                           expect(Object.keys(subTask))
-                            .toEqual(['data', 'hooks']);
+                            .toEqual(['data', 'hooks', 'minify']);
 
                           expect(classMap)
                             .toEqual(expectedClassMap);
@@ -1028,7 +1128,7 @@ describe('Red Perfume', () => {
                             .toEqual(['uglify', 'styles', 'markup', 'scripts', 'hooks']);
 
                           expect(Object.keys(subTask))
-                            .toEqual(['data', 'hooks']);
+                            .toEqual(['data', 'hooks', 'minify']);
 
                           expect(classMap)
                             .toEqual(expectedClassMap);
