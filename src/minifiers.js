@@ -73,9 +73,9 @@ function html (options, atomizedHtml, minificationOptions, markupErrors) {
       done = true;
     });
 
-  deasync.loopWhile(function () {
-    return !done;
-  });
+  // deasync.loopWhile(function () {
+  //   return !done;
+  // });
 
   return output;
 }
