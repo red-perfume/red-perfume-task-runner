@@ -6,9 +6,12 @@
  */
 
 const fs = require('fs');
+
+const redPerfumeCss = require('red-perfume-css');
+const redPerfumeHtml = require('red-perfume-html');
+
 const helpers = require('./helpers.js');
-const css = require('./css.js');
-const html = require('./html.js');
+const minifiers = require('./minifiers.js');
 
 /**
  * Runs a callback hook if it exists.
@@ -150,14 +153,32 @@ function outputAtomizedJSON (options, taskScripts, classMap) {
  * @return {object}          The map of original CSS class names to atomized classes & errors
  */
 function processStyles (options, task) {
+  let atomizedCss = '';
+  let classMap = {};
   runHook(options, task.styles, 'beforeRead', { task });
-  const styleErrors = [];
+  let styleErrors = [];
   const inputCss = getCssString(options, task.styles, styleErrors);
   runHook(options, task.styles, 'afterRead', { task, inputCss, styleErrors });
 
-  const processedStyles = css(options, task, inputCss, styleErrors);
-  const atomizedCss = processedStyles.atomizedCss;
-  const classMap = processedStyles.classMap;
+  if (inputCss) {
+    const redPerfumeCssResult = redPerfumeCss({
+      verbose: options.verbose,
+      customLogger: options.customLogger,
+      input: inputCss,
+      uglify: task.uglify
+    });
+    styleErrors = [
+      ...styleErrors,
+      ...redPerfumeCssResult.styleErrors
+    ];
+    atomizedCss = redPerfumeCssResult.atomizedCss;
+    classMap = redPerfumeCssResult.classMap;
+  }
+
+  if (task.styles && task.styles.minify) {
+    atomizedCss = minifiers.css(options, atomizedCss, task.styls.minify, styleErrors);
+  }
+
   runHook(options, task.styles, 'afterProcessed', { task, inputCss, atomizedCss, classMap, styleErrors });
 
   outputAtomizedCSS(options, task.styles, atomizedCss, styleErrors);
@@ -179,13 +200,31 @@ function processStyles (options, task) {
 function processMarkup (options, task, classMap) {
   const allAtomizedMarkup = [];
   const allInputMarkup = [];
-  const markupErrors = [];
+  let markupErrors = [];
   task.markup.forEach(function (subTask) {
+    let atomizedHtml = '';
     runHook(options, subTask, 'beforeRead', { task, subTask, classMap });
     const inputHtml = getHtmlString(options, subTask, markupErrors);
     runHook(options, subTask, 'afterRead', { task, subTask, classMap, inputHtml, markupErrors });
 
-    const atomizedHtml = html(options, { input: inputHtml, classMap, markupErrors, minify: subTask.minify });
+    if (inputHtml) {
+      const atomizedHtmlResult = redPerfumeHtml({
+        verbose: options.verbose,
+        customLogger: options.customLogger,
+        input: inputHtml,
+        classMap
+      });
+      atomizedHtml = atomizedHtmlResult.atomizedHtml;
+      markupErrors = [
+        ...markupErrors,
+        ...atomizedHtmlResult.markupErrors
+      ];
+    }
+
+    if (subTask.minify) {
+      atomizedHtml = minifiers.html(options, atomizedHtml, subTask.minify, markupErrors);
+    }
+
     runHook(options, subTask, 'afterProcessed', { task, subTask, classMap, inputHtml, atomizedHtml, markupErrors });
 
     outputAtomizedHTML(options, subTask, atomizedHtml, markupErrors);

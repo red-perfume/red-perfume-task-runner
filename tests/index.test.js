@@ -97,9 +97,6 @@ describe('Red Perfume', () => {
             syscall: 'open'
           });
 
-        expect(options.customLogger)
-          .toHaveBeenCalledWith('Error parsing CSS', '');
-
         mockfs.restore();
       });
 
@@ -192,7 +189,7 @@ describe('Red Perfume', () => {
                     .toEqual('');
 
                   expect(atomizedHtml)
-                    .toEqual('<html><head></head><body></body></html>');
+                    .toEqual('');
 
                   expect(testHelpers.removeErrno(markupErrors[0]))
                     .toEqual({
@@ -217,9 +214,6 @@ describe('Red Perfume', () => {
             path: 'C:\\home.html',
             syscall: 'open'
           });
-
-        expect(options.customLogger)
-          .toHaveBeenCalledWith('Error parsing HTML', '<html><head></head><body></body></html>');
 
         mockfs.restore();
       });
@@ -419,13 +413,13 @@ describe('Red Perfume', () => {
                 .toEqual(['']);
 
               expect(allAtomizedMarkup)
-                .toEqual(['<html><head></head><body></body></html>']);
+                .toEqual(['']);
 
               expect(styleErrors.length)
-                .toEqual(5);
+                .toEqual(3);
 
               expect(markupErrors.length)
-                .toEqual(3);
+                .toEqual(2);
 
               expect(scriptErrors.length)
                 .toEqual(1);
@@ -472,14 +466,6 @@ describe('Red Perfume', () => {
             })
           ],
           [
-            'Invalid CSS input.',
-            null
-          ],
-          [
-            'Error parsing CSS',
-            ''
-          ],
-          [
             'Error writing CSS file: C:\\out.css',
             expect.objectContaining({
               code: 'EACCES',
@@ -494,10 +480,6 @@ describe('Red Perfume', () => {
               path: 'C:\\index.html',
               syscall: 'open'
             })
-          ],
-          [
-            'Error parsing HTML',
-            '<html><head></head><body></body></html>'
           ],
           [
             'Error writing markup file: C:\\out.html',
@@ -639,7 +621,7 @@ describe('Red Perfume', () => {
               hooks: {
                 afterOutput: function () {
                   expect(String(fs.readFileSync('C:\\home.out.html')))
-                    .toEqual('<html><head></head><body></body></html>\n');
+                    .toEqual('\n');
                 }
               }
             },
@@ -649,7 +631,7 @@ describe('Red Perfume', () => {
               hooks: {
                 afterOutput: function () {
                   expect(String(fs.readFileSync('C:\\about.out.html')))
-                    .toEqual('<html><head></head><body></body></html>\n');
+                    .toEqual('\n');
                 }
               }
             }
@@ -668,13 +650,7 @@ describe('Red Perfume', () => {
         redPerfume.atomize(options);
 
         expect(options.customLogger)
-          .toHaveBeenCalledWith('Error parsing CSS', '');
-
-        expect(options.customLogger)
-          .toHaveBeenCalledWith('Error parsing HTML', '<html><head></head><body></body></html>');
-
-        expect(options.customLogger)
-          .toHaveBeenCalledWith('Error parsing HTML', '<html><head></head><body></body></html>');
+          .not.toHaveBeenCalled();
 
         mockfs.restore();
       });
@@ -979,7 +955,8 @@ describe('Red Perfume', () => {
         mockfs.restore();
       });
 
-      describe('Every type of CSS', () => {
+      // Advanced CSS or HTML specific tests should go in their own repos.
+      describe('One full pass', () => {
         const inputMarkup = testHelpers.trimIndentation(`
           <!DOCTYPE html>
           <html>
@@ -1163,233 +1140,6 @@ describe('Red Perfume', () => {
                             .toEqual(testHelpers.trimIndentation(`
                               <!DOCTYPE html><html><head></head><body>
                                 <div class="pseudo rp__0 rp__1"></div>
-                                <div class="after">
-                                  <div class="nested"></div>
-                                </div>
-                              </body></html>
-                            `, 30));
-
-                          expect(markupErrors)
-                            .toEqual([]);
-                        }
-                      }
-                    }
-                  ],
-                  scripts: {
-                    hooks: {
-                      afterOutput: function (options, { task, classMap, scriptErrors }) {
-                        expect(Object.keys(task))
-                          .toEqual(['uglify', 'styles', 'markup', 'scripts', 'hooks']);
-
-                        expect(classMap)
-                          .toEqual(expectedClassMap);
-
-                        expect(scriptErrors)
-                          .toEqual([]);
-                      }
-                    }
-                  }
-                }
-              ]
-            };
-
-            redPerfume.atomize(options);
-
-            expect(options.customLogger)
-              .not.toHaveBeenCalled();
-          });
-        });
-
-        describe('Pseudo', () => {
-          const pseudoCSS = `
-            .pseudo {
-              color: #F00;
-              text-decoration: none;
-            }
-            .pseudo:hover {
-              color: #A00;
-              text-decoration: underline;
-            }
-          `;
-
-          test('Normal', () => {
-            const expectedClassMap = {
-              '.pseudo': [
-                '.rp__color__--COLON__--OCTOTHORPF00',
-                '.rp__text-decoration__--COLONnone',
-                '.rp__color__--COLON__--OCTOTHORPA00___-HOVER',
-                '.rp__text-decoration__--COLONunderline___-HOVER'
-              ]
-            };
-
-            options = {
-              verbose: true,
-              customLogger: jest.fn(),
-              tasks: [
-                {
-                  uglify: false,
-                  styles: {
-                    data: pseudoCSS,
-                    hooks: {
-                      afterOutput: function (options, { task, inputCss, atomizedCss, classMap, styleErrors }) {
-                        expect(Object.keys(task))
-                          .toEqual(['uglify', 'styles', 'markup', 'scripts', 'hooks']);
-
-                        expect(inputCss)
-                          .toEqual(pseudoCSS);
-
-                        expect(atomizedCss)
-                          .toEqual(testHelpers.trimIndentation(`
-                            .rp__color__--COLON__--OCTOTHORPF00 {
-                              color: #F00;
-                            }
-                            .rp__text-decoration__--COLONnone {
-                              text-decoration: none;
-                            }
-                            .rp__color__--COLON__--OCTOTHORPA00___-HOVER:hover {
-                              color: #A00;
-                            }
-                            .rp__text-decoration__--COLONunderline___-HOVER:hover {
-                              text-decoration: underline;
-                            }
-                          `, 28));
-
-                        expect(classMap)
-                          .toEqual(expectedClassMap);
-
-                        expect(styleErrors)
-                          .toEqual([]);
-                      }
-                    }
-                  },
-                  markup: [
-                    {
-                      data: inputMarkup,
-                      hooks: {
-                        afterOutput: function (options, { task, subTask, classMap, inputHtml, atomizedHtml, markupErrors }) {
-                          expect(Object.keys(task))
-                            .toEqual(['uglify', 'styles', 'markup', 'scripts', 'hooks']);
-
-                          expect(Object.keys(subTask))
-                            .toEqual(['data', 'hooks', 'minify']);
-
-                          expect(classMap)
-                            .toEqual(expectedClassMap);
-
-                          expect(inputHtml)
-                            .toEqual(inputMarkup);
-
-                          expect(testHelpers.trimIndentation(atomizedHtml))
-                            .toEqual(testHelpers.trimIndentation(`
-                              <!DOCTYPE html><html><head></head><body>
-                                <div class="simple rp__color__--COLON__--OCTOTHORPF00 rp__text-decoration__--COLONnone rp__color__--COLON__--OCTOTHORPA00___-HOVER rp__text-decoration__--COLONunderline___-HOVER"></div>
-                                <div class="after">
-                                  <div class="nested"></div>
-                                </div>
-                              </body></html>
-                            `, 30));
-
-                          expect(markupErrors)
-                            .toEqual([]);
-                        }
-                      }
-                    }
-                  ],
-                  scripts: {
-                    hooks: {
-                      afterOutput: function (options, { task, classMap, scriptErrors }) {
-                        expect(Object.keys(task))
-                          .toEqual(['uglify', 'styles', 'markup', 'scripts', 'hooks']);
-
-                        expect(classMap)
-                          .toEqual(expectedClassMap);
-
-                        expect(scriptErrors)
-                          .toEqual([]);
-                      }
-                    }
-                  }
-                }
-              ]
-            };
-
-            redPerfume.atomize(options);
-
-            expect(options.customLogger)
-              .not.toHaveBeenCalled();
-          });
-
-          test('Uglify', () => {
-            const expectedClassMap = {
-              '.pseudo': [
-                '.rp__0',
-                '.rp__1',
-                '.rp__2',
-                '.rp__3'
-              ]
-            };
-
-            options = {
-              verbose: true,
-              customLogger: jest.fn(),
-              tasks: [
-                {
-                  uglify: true,
-                  styles: {
-                    data: pseudoCSS,
-                    hooks: {
-                      afterOutput: function (options, { task, inputCss, atomizedCss, classMap, styleErrors }) {
-                        expect(Object.keys(task))
-                          .toEqual(['uglify', 'styles', 'markup', 'scripts', 'hooks']);
-
-                        expect(inputCss)
-                          .toEqual(pseudoCSS);
-
-                        expect(atomizedCss)
-                          .toEqual(testHelpers.trimIndentation(`
-                            .rp__0 {
-                              color: #F00;
-                            }
-                            .rp__1 {
-                              text-decoration: none;
-                            }
-                            .rp__2:hover {
-                              color: #A00;
-                            }
-                            .rp__3:hover {
-                              text-decoration: underline;
-                            }
-                          `, 28));
-
-                        expect(classMap)
-                          .toEqual(expectedClassMap);
-
-                        expect(styleErrors)
-                          .toEqual([]);
-                      }
-                    }
-                  },
-                  markup: [
-                    {
-                      data: inputMarkup,
-                      hooks: {
-                        afterOutput: function (options, { task, subTask, classMap, inputHtml, atomizedHtml, markupErrors }) {
-                          expect(Object.keys(task))
-                            .toEqual(['uglify', 'styles', 'markup', 'scripts', 'hooks']);
-
-                          expect(Object.keys(subTask))
-                            .toEqual(['data', 'hooks', 'minify']);
-
-                          expect(classMap)
-                            .toEqual(expectedClassMap);
-
-                          expect(inputHtml)
-                            .toEqual(inputMarkup);
-
-                          expect(testHelpers.trimIndentation(atomizedHtml))
-                            .toEqual(testHelpers.trimIndentation(`
-                              <!DOCTYPE html><html><head></head><body>
-                                <div class="simple rp__0 rp__1 rp__2 rp__3"></div>
                                 <div class="after">
                                   <div class="nested"></div>
                                 </div>

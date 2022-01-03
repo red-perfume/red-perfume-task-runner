@@ -67,5 +67,17 @@ describe('helpers', () => {
       expect(console.error)
         .toHaveBeenCalledWith(output);
     });
+
+    test('Skip throwing error when verbose false', () => {
+      options.verbose = false;
+      options.customLogger = jest.fn();
+      helpers.throwError(options, longMessage.join(' '));
+
+      expect(console.error)
+        .not.toHaveBeenCalled();
+
+      expect(options.customLogger)
+        .not.toHaveBeenCalled();
+    });
   });
 });
