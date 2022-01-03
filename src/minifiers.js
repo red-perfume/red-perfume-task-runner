@@ -83,17 +83,24 @@ function html (options, atomizedHtml, minificationOptions, markupErrors) {
 /**
  * Minifies JSON (not JS).
  *
- * @param  {object}  options              User's options
- * @param  {object}  input                A JSON object
- * @param  {boolean} minificationOptions  True = minify
- * @return {string}                       Stringified, maybe minified, JSON
+ * @param  {object}  options       User's options
+ * @param  {object}  input         A JSON object
+ * @param  {boolean} minify        True = minify
+ * @param  {Array}   scriptErrors  Array to contain script related errors
+ * @return {string}                Stringified, maybe minified, JSON
  */
-function json (options, input, minificationOptions) {
+function json (options, input, minify, scriptErrors) {
   if (typeof(input) === 'object') {
-    if (minificationOptions) {
-      return JSON.stringify(input);
+    let indentation = 2;
+    if (minify) {
+      indentation = null;
     }
-    return JSON.stringify(input, null, 2);
+    try {
+      input = JSON.stringify(input, null, indentation);
+    } catch (err) {
+      scriptErrors.push(err);
+      helpers.throwError(options, 'Error stringifying JSON', err);
+    }
   }
   return input;
 }
