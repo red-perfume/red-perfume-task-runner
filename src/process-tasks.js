@@ -173,7 +173,7 @@ function processStyles (options, task) {
   }
 
   if (task.styles && task.styles.minify) {
-    atomizedCss = minifiers.css(options, atomizedCss, task.styls.minify, styleErrors);
+    atomizedCss = minifiers.css(options, atomizedCss, task.styles.minify, styleErrors);
   }
 
   runHook(options, task.styles, 'afterProcessed', { task, inputCss, atomizedCss, classMap, styleErrors });
