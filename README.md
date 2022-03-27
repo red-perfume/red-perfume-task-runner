@@ -21,6 +21,11 @@ Leave feedback as an issue or a response [on Twitter](https://twitter.com/TheJar
 Or follow me on [Twitter](https://twitter.com/TheJaredWilcurt) if that's easier.
 
 
+## Contributing
+
+All work for this project is documented and organized in [this GitHub Project](https://github.com/orgs/red-perfume/projects/2/views/1). Look for "Help Wanted". It is prioritized, top to bottom.
+
+
 ## Experimental CSS Atomizer (WIP)
 
 This is a library for a build tool that helps to drastically reduce the total amount of CSS that is shipped for your project. Facebook adopted this atomized CSS approach and it [reduced their homepage CSS by **80%**](https://engineering.fb.com/web/facebook-redesign/). Twitter also atomizes their CSS.
