@@ -78,7 +78,7 @@ describe('Red Perfume', () => {
                   .toEqual({
                     syscall: 'open',
                     code: 'EACCES',
-                    path:'C:\\app.css'
+                    path: 'C:\\app.css'
                   });
               }
             }
@@ -195,7 +195,7 @@ describe('Red Perfume', () => {
                     .toEqual({
                       syscall: 'open',
                       code: 'EACCES',
-                      path:'C:\\home.html'
+                      path: 'C:\\home.html'
                     });
                 }
               }

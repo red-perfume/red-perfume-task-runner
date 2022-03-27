@@ -28,7 +28,6 @@ describe('helpers', () => {
     });
 
     test('Long message', () => {
-
       expect(helpers.insertReturns(longMessage.join(' ')))
         .toEqual(longMessage.join('\n'));
     });
