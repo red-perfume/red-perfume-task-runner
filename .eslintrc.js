@@ -6,10 +6,6 @@
  */
 
 module.exports = {
-  parser: 'babel-eslint',
-  parserOptions: {
-    ecmaVersion: 2017
-  },
   env: {
     'es6': true,
     'node': true,
@@ -29,6 +25,7 @@ module.exports = {
         skipComments: true
       }
     ],
+    'jsdoc/check-examples': 'off',
     'jsdoc/require-example': 'off'
   }
 };
