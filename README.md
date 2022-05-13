@@ -432,6 +432,8 @@ The order hooks are called in:
 1. `npm install`
 1. `npm run manual-test`
 
+All work for this project is documented and organized in [this GitHub Project](https://github.com/orgs/red-perfume/projects/2/views/1). Look for "Help Wanted". It is prioritized, top to bottom.
+
 
 ## Why is it called "Red Perfume"
 
