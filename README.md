@@ -319,6 +319,10 @@ redPerfume.atomize({
   },
   tasks: [
     {
+      hooks: {
+        beforeTask: function (options, { task }) {},
+        afterTask:  function (options, { task, inputCss, atomizedCss, classMap, allInputMarkup, allAtomizedMarkup, styleErrors, markupErrors, scriptErrors }) {}
+      },
       styles: {
         hooks: {
           beforeRead:     function (options, { task }) {},
@@ -343,10 +347,6 @@ redPerfume.atomize({
           afterOutput:  function (options, { task, classMap, scriptErrors }) {}
         }
       }
-      hooks: {
-        beforeTask: function (options, { task }) {},
-        afterTask:  function (options, { task, inputCss, atomizedCss, classMap, allInputMarkup, allAtomizedMarkup, styleErrors, markupErrors, scriptErrors }) {}
-      },
     }
   ]
 });
