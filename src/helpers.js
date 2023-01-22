@@ -19,7 +19,8 @@ const helpers = {
     let words = message.split(' ');
     let line = '';
     let lines = [];
-    words.forEach(function (word) {
+    for (let i = 0; i < words.length; i++) {
+      let word = words[i];
       let potentialLine = line + ' ' + word;
       if (potentialLine.length < maxLineLength) {
         line = potentialLine;
@@ -27,7 +28,7 @@ const helpers = {
         lines.push(line);
         line = word;
       }
-    });
+    }
     lines.push(line.trim());
     return lines.join('\n').trim();
   },
