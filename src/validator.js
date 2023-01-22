@@ -229,14 +229,11 @@ const validator = {
       task.scripts = this.validateTaskScripts(options, task, taskIndex);
     }
 
-    let settings = ['styles', 'markup', 'scripts'];
-    for (let i = 0; i < settings.length; i++) {
-      let setting = settings[i];
+    ['styles', 'markup', 'scripts'].forEach(function (setting) {
       if (!task[setting]) {
         delete task[setting];
       }
-    }
-
+    });
     if (
       !task.styles &&
       !task.markup &&
@@ -272,13 +269,11 @@ const validator = {
     styles.hooks = this.validateObject(options, styles.hooks, 'Optional task.styles.hooks must be an object or undefined.');
     styles.hooks = this.validateHookTypes(options, allDocumentedHooks.styles, styles.hooks, 'task.styles.hooks.');
 
-    let settings = ['in', 'out', 'data'];
-    for (let i = 0; i < settings.length; i++) {
-      let setting = settings[i];
+    ['in', 'out', 'data'].forEach(function (setting) {
       if (!styles[setting]) {
         delete styles[setting];
       }
-    }
+    });
 
     if (!styles.in && !styles.data) {
       helpers.throwError(options, 'Tasks[' + taskIndex + '] did not contain a task.styles.in or a task.style.data');
@@ -344,13 +339,11 @@ const validator = {
       subTask.hooks = this.validateObject(options, subTask.hooks, 'Optional task.markup.hooks must be an object or undefined.');
       subTask.hooks = this.validateHookTypes(options, allDocumentedHooks.markup, subTask.hooks, 'task.markup[subTask].hooks.');
 
-      let settings = ['in', 'data', 'out'];
-      for (let i = 0; i < settings.length; i++) {
-        let setting = settings[i];
+      ['in', 'data', 'out'].forEach(function (setting) {
         if (!subTask[setting]) {
           delete subTask[setting];
         }
-      }
+      });
 
       if (!subTask.in && !subTask.data) {
         helpers.throwError(options, 'Tasks[' + taskIndex + '] did not contain a task.markup[' + subTaskIndex + '].in or a task.markup[' + subTaskIndex + '].data');
