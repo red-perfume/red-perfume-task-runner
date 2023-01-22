@@ -446,14 +446,15 @@ const validator = {
     options = options || {};
     documentedHooks = documentedHooks || [];
     hooksContainer = hooksContainer || {};
-    documentedHooks.forEach(function (hook) {
+    for (let i = 0; i < documentedHooks.length; i++) {
+      let hook = documentedHooks[i];
       const hookType = typeof(hooksContainer[hook]);
       const allowedTypes = ['function', 'undefined'];
       if (!allowedTypes.includes(hookType)) {
         helpers.throwError(options, 'The ' + location + hook + ' must be a function or undefined.');
         delete hooksContainer[hook];
       }
-    });
+    }
     return hooksContainer;
   },
 

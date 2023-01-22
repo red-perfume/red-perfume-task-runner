@@ -39,14 +39,15 @@ function getCssString (options, taskStyles, styleErrors) {
   let cssString = '';
 
   if (taskStyles.in) {
-    taskStyles.in.forEach(function (file) {
+    for (let i = 0; i < taskStyles.in.length; i++) {
+      let file = taskStyles.in[i];
       try {
         cssString = cssString + String(fs.readFileSync(file));
       } catch (err) {
         helpers.throwError(options, 'Error reading style file: ' + file, err);
         styleErrors.push(err);
       }
-    });
+    }
   }
   if (taskStyles.data) {
     cssString = cssString + taskStyles.data;
@@ -192,7 +193,8 @@ function processMarkup (options, task, classMap) {
   const allAtomizedMarkup = [];
   const allInputMarkup = [];
   let markupErrors = [];
-  task.markup.forEach(function (subTask) {
+  for (let i = 0; i < task.markup.length; i++) {
+    let subTask = task.markup[i];
     let atomizedHtml = '';
     runHook(options, subTask, 'beforeRead', { task, subTask, classMap });
     const inputHtml = getHtmlString(options, subTask, markupErrors);
@@ -218,7 +220,7 @@ function processMarkup (options, task, classMap) {
 
     allInputMarkup.push(inputHtml);
     allAtomizedMarkup.push(atomizedHtml);
-  });
+  }
   return { allInputMarkup, allAtomizedMarkup, markupErrors };
 }
 
@@ -292,9 +294,10 @@ function processTasks (options) {
   options.tasks = options.tasks || [];
 
   const finalOutputs = [];
-  options.tasks.forEach(function (task) {
+  for (let i = 0; i < options.tasks.length; i++) {
+    let task = options.tasks[i];
     finalOutputs.push(processTask(options, task));
-  });
+  }
 
   return finalOutputs;
 }
